@@ -1,9 +1,12 @@
 <?php
 
+use App\Exceptions\Neo4jQueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (Neo4jQueryException $exception, Request $request): Response|JsonResponse {
+            return $request->is('api/*') || $request->expectsJson()
+                ? response()->json(['message' => $exception->getMessage()], 503)
+                : response()->view('errors.neo4j', ['message' => $exception->getMessage()], 503);
+        });
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

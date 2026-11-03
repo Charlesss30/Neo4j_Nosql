@@ -24,6 +24,33 @@
             </div></section></div>
         @endforeach
     </div>
+    @if($statisticsAvailable)
+        <div class="row g-4 mb-4">
+            <section class="col-md-7"><div class="card card-body h-100 p-4"><h2 class="h5">Thành viên theo thế hệ</h2><p class="small text-secondary">Tính từ P001, gồm vợ/chồng của các thành viên trong nhánh.</p><div style="height: 260px;"><canvas id="generation-chart" role="img" aria-label="Biểu đồ thành viên theo thế hệ"></canvas></div><p class="small mt-3 mb-0">@forelse($generations as $row)Thế hệ {{ $row['generation'] }}: {{ $row['total'] }}@if(!$loop->last) · @endif @empty Chưa có dữ liệu thế hệ từ P001. @endforelse</p></div></section>
+            <section class="col-md-5"><div class="card card-body h-100 p-4"><h2 class="h5">Tỷ lệ giới tính</h2><div style="height: 300px;"><canvas id="gender-chart" role="img" aria-label="Biểu đồ tỷ lệ giới tính"></canvas></div><p id="chart-message" class="small text-secondary mt-2 mb-0">Số liệu chi tiết có trong các bảng bên dưới.</p></div></section>
+        </div>
+        @push('scripts')
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+            <script>
+                (() => {
+                    if (typeof Chart === 'undefined') {
+                        document.getElementById('chart-message').textContent = 'Chưa tải được biểu đồ. Hãy kiểm tra Internet; bảng số liệu vẫn có ở bên dưới.';
+                        return;
+                    }
+                    const generations = {{ Illuminate\Support\Js::from($generations) }};
+                    const gender = {{ Illuminate\Support\Js::from($gender) }};
+                    new Chart(document.getElementById('generation-chart'), {
+                        type: 'bar', data: {labels: generations.map(row => 'Thế hệ ' + row.generation), datasets: [{label: 'Thành viên', data: generations.map(row => row.total), backgroundColor: '#507766'}]},
+                        options: {maintainAspectRatio: false, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}, plugins: {legend: {display: false}}},
+                    });
+                    new Chart(document.getElementById('gender-chart'), {
+                        type: 'doughnut', data: {labels: gender.map(row => row.gender === 'M' ? 'Nam' : 'Nữ'), datasets: [{data: gender.map(row => row.total), backgroundColor: gender.map(row => row.gender === 'M' ? '#76aeea' : '#e8a1bc')}]},
+                        options: {maintainAspectRatio: false},
+                    });
+                })();
+            </script>
+        @endpush
+    @endif
     <div class="row g-4">
         <div class="col-lg-7">
             <section class="card h-100">

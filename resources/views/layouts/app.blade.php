@@ -29,7 +29,7 @@
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav ms-auto gap-xl-1">
-                @foreach ([['/', 'Tổng quan'], ['/persons', 'Thành viên'], ['/relationships', 'Quan hệ'], ['/tree', 'Cây gia phả'], ['/relation', 'Tra cứu quan hệ'], ['/console', 'Cypher Console'], ['/admin', 'Quản trị']] as [$path, $label])
+                @foreach ([['/', 'Tổng quan'], ['/persons', 'Thành viên'], ['/relationships', 'Quan hệ'], ['/tree', 'Cây gia phả'], ['/relation', 'Tra cứu quan hệ'], ['/admin', 'Quản trị']] as [$path, $label])
                     @php($active = $path === '/' ? request()->is('/') : request()->is(ltrim($path, '/'), ltrim($path, '/').'/*'))
                     <li class="nav-item"><a class="nav-link {{ $active ? 'active' : '' }}" href="{{ url($path) }}" @if($active) aria-current="page" @endif>{{ $label }}</a></li>
                 @endforeach

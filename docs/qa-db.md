@@ -1,7 +1,8 @@
 # 10 câu hỏi bảo vệ phần Neo4j và Cypher
 
-Các câu trả lời bám code đã merge mốc 2 và dữ liệu hư cấu 30 người. Số liệu PROFILE
-được đo lại qua Admin trong mốc 3; xem [báo cáo DB](report-db.md) và các JSON bằng chứng.
+Các câu trả lời bám catalog và dữ liệu hư cấu 30 người, đồng bộ với bản ứng dụng
+đã gỡ Console. Số liệu PROFILE được đo lại qua Admin trong mốc 3;
+xem [báo cáo DB](report-db.md) và các JSON bằng chứng.
 
 ## 1. Vì sao chọn Neo4j cho gia phả? SQL có làm được không?
 
@@ -61,14 +62,14 @@ cả hai lần: không index dùng `NodeByLabelScan`, tổng 67 DB hits; có ind
 `NodeIndexSeek`, tổng 8. Đây là DB hits trên fixture 30 người, không phải phép đo
 thời gian nhanh hơn 8,375 lần. Không lấy `toLower(name) CONTAINS` làm demo này.
 
-## 9. Console chặn DELETE thì đã là phân quyền chỉ đọc chưa? Có chống injection không?
+## 9. Ứng dụng kiểm soát truy cập và tránh Cypher injection thế nào?
 
-Console dùng `CypherGuard` để xét một câu lệnh sau khi che literal/comment, không
-tạo role DB. Community vẫn có xác thực nhưng không có RBAC theo role như Enterprise.
-Nếu dùng tài khoản đó ở công cụ khác, bộ lọc Laravel không còn áp dụng.
-Truy vấn nghiệp vụ truyền giá trị bằng tham số riêng, không nối chuỗi người dùng.
-Console cố ý nhận toàn bộ câu lệnh nên cần bộ lọc và giới hạn riêng; đó không phải
-bảo đảm thay thế phân quyền DB. [Giới hạn Community](https://neo4j.com/docs/operations-manual/current/authentication-authorization/manage-users/)
+Community vẫn có xác thực nhưng không có RBAC theo role như Enterprise. Bản app
+hiện tại chưa có đăng nhập/phân quyền riêng; APP_ENV=local chỉ giới hạn môi trường
+cho thao tác bảo trì, không xác định quyền người dùng. Console đã được gỡ.
+Các truy vấn nghiệp vụ truyền giá trị bằng tham số riêng, không nối chuỗi input.
+`CypherStatements` phục vụ tách schema/seed cho Admin, không phải cơ chế phân quyền.
+[Giới hạn Community](https://neo4j.com/docs/operations-manual/current/authentication-authorization/manage-users/)
 
 ## 10. Chuyển máy thì nạp dữ liệu và backup bằng cách nào?
 

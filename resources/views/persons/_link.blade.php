@@ -1,0 +1,1 @@
+<a href="{{ route('persons.show', $person['id']) }}">{{ ($person['gender'] ?? '') === 'M' ? '♂' : '♀' }} {{ $person['name'] }} <span class="small text-secondary">({{ $person['id'] }})</span></a>@if(isset($person['deathYear'])) <span class="text-secondary">† {{ $person['deathYear'] }}</span>@endif

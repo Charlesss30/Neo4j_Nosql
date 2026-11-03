@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Exceptions\Neo4jQueryException;
 use App\Services\Neo4jService;
 use Laudis\Neo4j\Contracts\ClientInterface;
+use Laudis\Neo4j\Contracts\TransactionInterface;
 use Laudis\Neo4j\Databags\SummarizedResult;
 use Laudis\Neo4j\Types\CypherList;
 use Laudis\Neo4j\Types\CypherMap;
@@ -13,6 +14,25 @@ use RuntimeException;
 
 class Neo4jServiceTest extends TestCase
 {
+    public function test_transaction_queries_share_the_driver_transaction_and_restore_normal_runs(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+        $transaction = $this->createMock(TransactionInterface::class);
+        $summary = null;
+        $client->expects($this->once())->method('writeTransaction')->willReturnCallback(fn (callable $callback): mixed => $callback($transaction));
+        $transaction->expects($this->exactly(2))->method('run')->willReturn(new SummarizedResult($summary, [new CypherMap(['value' => 1])]));
+        $client->expects($this->once())->method('run')->with('outside')->willReturn(new SummarizedResult($summary));
+        $service = new Neo4jService($client);
+
+        $this->assertSame(1, $service->transaction(function () use ($service): int {
+            $first = $service->run('check');
+            $service->transaction(fn (): array => $service->run('write'));
+
+            return $first[0]['value'];
+        }));
+        $this->assertSame([], $service->run('outside'));
+    }
+
     public function test_nested_driver_values_become_plain_arrays_without_losing_types(): void
     {
         $client = $this->createMock(ClientInterface::class);

@@ -17,13 +17,15 @@ class DashboardTest extends TestCase
         $this->app->instance(Neo4jService::class, $neo4j);
         $family = $this->createMock(FamilyRepository::class);
         $family->method('statsByGender')->willReturn([['gender' => 'M', 'total' => 16], ['gender' => 'F', 'total' => 14]]);
+        $family->expects($this->once())->method('statsByGeneration')->with('P001')->willReturn([['generation' => 1, 'total' => 2], ['generation' => 2, 'total' => 7]]);
         $family->method('livingVsDeceased')->willReturn([['living' => 25, 'deceased' => 5]]);
         $family->method('topParents')->willReturn([['id' => 'P001', 'name' => '<script>alert(1)</script>', 'childCount' => 4]]);
         $family->method('oldestPerson')->willReturn([['person' => ['id' => 'P001', 'name' => 'Nguyễn An', 'birthYear' => 1920]]]);
         $this->app->instance(FamilyRepository::class, $family);
 
         $this->get('/')->assertOk()->assertSee('Đã kết nối')->assertSee('30')
-            ->assertSee('Nguyễn An')->assertSee('&lt;script&gt;', false)->assertDontSee('<script>alert(1)</script>', false);
+            ->assertSee('Nguyễn An')->assertSee('&lt;script&gt;', false)->assertDontSee('<script>alert(1)</script>', false)
+            ->assertSee('generation-chart')->assertSee('gender-chart')->assertSee('Thế hệ 2: 7');
     }
 
     public function test_dashboard_stays_available_when_neo4j_is_down_without_querying_statistics(): void
@@ -51,17 +53,6 @@ class DashboardTest extends TestCase
 
         $this->get('/')->assertOk()->assertSee('Đã kết nối')->assertSee('Không thể thực hiện truy vấn Neo4j.')
             ->assertSee('Thống kê chưa sẵn sàng.');
-    }
-
-    public function test_future_routes_explain_their_status_and_never_pretend_to_write(): void
-    {
-        foreach (['/persons', '/persons/create', '/persons/P001', '/persons/P001/edit', '/persons/P001/delete', '/relationships', '/tree', '/relation'] as $path) {
-            $this->get($path)->assertOk()->assertSee('Milestone 2');
-        }
-
-        $this->getJson('/api/tree')->assertStatus(501)->assertJsonStructure(['message']);
-        $this->post('/persons')->assertStatus(501);
-        $this->delete('/relationships/spouse')->assertStatus(501);
     }
 
     public function test_connection_service_is_a_singleton_and_infrastructure_uses_no_sql_database(): void

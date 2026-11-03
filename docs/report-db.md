@@ -3,8 +3,10 @@
 ## 1. Phạm vi và nguồn số liệu
 
 Báo cáo trình bày mô hình dữ liệu, truy vấn Cypher, quản trị và kiểm chứng phần DB
-của đồ án quản lý gia phả. Hai trang `/console`, `/admin` của A đã được hợp nhất qua
-PR #3; code nền dùng để đo ở commit `993b129`. Các chức năng ứng dụng khác thuộc phần B.
+của đồ án quản lý gia phả. Code nền dùng để đo ở commit `993b129`, sau khi hợp nhất
+mốc 2 qua PR #3. Ở phiên bản ứng dụng hiện tại, Cypher Console đã được gỡ theo yêu cầu;
+trang `/admin` tiếp tục cung cấp schema, PROFILE và reset demo local.
+Chức năng ứng dụng hiện tại được mô tả trong [báo cáo app](report-app.md).
 
 Số liệu dưới đây được lấy từ những lần chạy thật, không lấy số minh họa của tài liệu:
 
@@ -19,6 +21,7 @@ Số liệu dưới đây được lấy từ những lần chạy thật, khôn
 | Giới tính / tình trạng | 14 nam, 16 nữ; 25 còn sống, 5 đã mất |
 | Thế hệ từ P001 | 5 thế hệ, lần lượt 2, 7, 11, 7, 3 người |
 | Kiểm thử Laravel ở mốc 2 | 72 test, 318 assertions đạt |
+| Kiểm thử ứng dụng hiện tại | 49 test, 752 assertions đạt; Console đã gỡ |
 
 Mốc 3 đã chạy lại **đủ 34 truy vấn** để xuất ví dụ. Các ví dụ ghi dùng P901–P903
 trong giao dịch và đã rollback; toàn bộ graph sau phép thử được so sánh với snapshot
@@ -196,7 +199,7 @@ docker exec familytree-neo4j cypher-shell -u neo4j -p familytree123 -d neo4j -f 
 Mốc 1 đã kiểm tra LOAD CSV thật trên Neo4j native: trong giao dịch, xóa graph demo,
 nạp CSV hai lần, đối chiếu toàn bộ thuộc tính/cạnh với seed rồi rollback.
 
-## 7. Kiểm tra trước khi ghi và giới hạn của Console
+## 7. Kiểm tra trước khi ghi và giới hạn truy cập
 
 Các helper `parentCount`, `wouldCreateCycle`, `parentExists`, `spouseExists` cung cấp
 dữ liệu cho lớp nghiệp vụ. Trước khi thêm cha mẹ, ứng dụng cần kiểm tra hai người
@@ -217,18 +220,20 @@ dịch; xử lý đồng thời vẫn cần thiết để tránh hai yêu cầu 
 Tương tự, sinh mã bằng `maxPersonNumber + 1` có thể tranh chấp; unique constraint
 phát hiện mã trùng nhưng không biến cách sinh mã này thành bộ đếm nguyên tử.
 
-`CypherGuard` bỏ qua nội dung chuỗi, tên có backtick và comment khi xét từ khóa;
-chặn các lệnh ghi, `SHOW`, nhiều câu lệnh và `CALL` ngoài ba procedure metadata được
-cho phép. Giới hạn đầu vào là 2000 ký tự; giao diện chỉ hiển thị 500 dòng đầu.
-Việc cắt dòng hiển thị không giới hạn lượng dữ liệu server đã tính hoặc client đã nhận.
+Ứng dụng hiện tại điều phối các quy tắc bằng `FamilyService`, dùng một transaction
+cho kiểm tra và ghi, kèm khóa tệp để tuần tự hóa các request ghi app trên cùng máy.
+Khóa này không bảo vệ client ghi trực tiếp hoặc nhiều máy chủ không chia sẻ khóa.
 
-Community vẫn có đăng nhập bằng tài khoản/mật khẩu nhưng không có role RBAC để cấp
-`reader`/`admin` như Enterprise. Vì vậy bộ lọc của Console là kiểm tra ở tầng Laravel,
-không tạo tài khoản chỉ đọc ở DB. [Neo4j: quản lý user và giới hạn Community](https://neo4j.com/docs/operations-manual/current/authentication-authorization/manage-users/)
+Community vẫn có xác thực bằng tài khoản/mật khẩu nhưng không có role RBAC như
+Enterprise. Ứng dụng hiện tại chưa có đăng nhập/phân quyền riêng.
+`APP_ENV=local` giới hạn môi trường được chạy reset và so sánh bỏ index, không phải
+quyền của từng người dùng. [Neo4j: quản lý user và giới hạn Community](https://neo4j.com/docs/operations-manual/current/authentication-authorization/manage-users/)
 
-Ảnh kết quả một truy vấn catalog không có tham số trên Console thật:
-
-![Console chạy statsByGender và hiển thị hai dòng kết quả](../neo4j/evidence/console-query-result.png)
+Cypher Console và bộ lọc câu lệnh của nó thuộc phiên bản mốc 2, đã được gỡ khỏi
+routes/menu ở bản hiện tại. `CypherStatements` chỉ giữ parser tách schema/seed cho
+Admin, không cung cấp endpoint thực thi Cypher tùy ý. Ảnh
+[Console mốc 2](../neo4j/evidence/console-query-result.png) được giữ làm bằng chứng
+lịch sử của lần đo, không phải chức năng còn trong ứng dụng.
 
 ## 8. PROFILE và EXPLAIN: số liệu đo lại từ Admin
 
@@ -348,8 +353,8 @@ khối lượng, index và phần cứng nên không kết luận bên nào nhan
 
 ## 11. Hạn chế và cách tái lập kiểm chứng
 
-- Community không có RBAC theo role; Console lọc từ khóa ở ứng dụng, không phải
-  phân quyền thật ở DB. Trang demo không thay thế một hệ thống kiểm soát truy cập hoàn chỉnh.
+- Community không có RBAC theo role; app chưa có đăng nhập/phân quyền riêng và đã
+  gỡ Console. Trang demo không thay thế một hệ thống kiểm soát truy cập hoàn chỉnh.
 - Tìm kiếm dùng `toLower` + `CONTAINS`, không bỏ dấu tiếng Việt: `nguyen` không được
   bảo đảm tìm thấy `Nguyễn`.
 - Hai schema declaration không kiểm tra toàn bộ quy tắc gia phả; dữ liệu ghi qua
@@ -371,8 +376,8 @@ php artisan test --compact
 php artisan serve --host=127.0.0.1 --port=8001
 ```
 
-Lần đầu cần làm các bước Composer, `.env` và application key trong README gốc do B
-quản lý. Sau khi Neo4j có seed, xem `/console` và `/admin`. Số liệu tĩnh của báo cáo
+Lần đầu cần làm các bước Composer, `.env` và application key trong README gốc.
+Sau khi Neo4j có seed, xem `/persons`, `/tree` và `/admin`. Số liệu tĩnh của báo cáo
 có thời điểm chụp riêng trong JSON; một lần đo mới có thể có ước tính hoặc timing khác.
 
 ### 11.1. Ảnh Neo4j Browser và phạm vi lệnh hiển thị
@@ -1660,5 +1665,5 @@ Hậu kiểm trong cùng giao dịch:
 - [Neo4j: LOAD CSV](https://neo4j.com/docs/getting-started/data-import/csv-import/).
 - [Neo4j: dump offline](https://neo4j.com/docs/operations-manual/current/backup-restore/offline-backup/).
 - Mã trong repository: [catalog](../neo4j/queries.cypher), [schema](../neo4j/schema.cypher),
-  [loader](../neo4j/load_csv.cypher), [CypherGuard](../app/Services/CypherGuard.php),
-  [AdminController](../app/Http/Controllers/AdminController.php), [ConsoleController](../app/Http/Controllers/ConsoleController.php).
+  [loader](../neo4j/load_csv.cypher), [CypherStatements](../app/Services/CypherStatements.php),
+  [AdminController](../app/Http/Controllers/AdminController.php), [FamilyService](../app/Services/FamilyService.php).
