@@ -1,0 +1,62 @@
+{
+  "method": "Independent headless Edge test session, live pages on localhost; local application screenshots captured from rendered DOM regions, without image editing.",
+  "fixturesOnly": true,
+  "captures": [
+    {
+      "file": "admin-constraints.png",
+      "meaning": "Live Admin SHOW CONSTRAINTS result",
+      "width": 1296,
+      "height": 184,
+      "sha256": "59a93b6033a5d968e9ea69918b8d4a08d79dcdc04134a66f46872e29e4b1a442",
+      "fileWrittenAt": "2026-11-03T09:40:00.370980+00:00"
+    },
+    {
+      "file": "admin-profile-without-index.png",
+      "meaning": "Live Admin equality PROFILE, no person_name index, 67 db hits",
+      "width": 1296,
+      "height": 557,
+      "sha256": "f8d8723e0256749fb9125269cf4f55ed17e8300f24f0500973a4d604e0df8e7b",
+      "fileWrittenAt": "2026-11-03T09:40:03.475996+00:00"
+    },
+    {
+      "file": "admin-profile-with-index.png",
+      "meaning": "Live Admin equality PROFILE, person_name ONLINE, 8 db hits",
+      "width": 1296,
+      "height": 506,
+      "sha256": "5abbd1d9b6e36836294e19266ecc2ac6251ae339afe4edba487fbab3502cd65e",
+      "fileWrittenAt": "2026-11-03T09:40:04.278856+00:00"
+    },
+    {
+      "file": "console-query-result.png",
+      "meaning": "Live Console statsByGender, F=16 and M=14",
+      "width": 1320,
+      "height": 1024,
+      "sha256": "352f4415b7aef5b01b469402d5825e2792db4262215a3df07cea75e0caa06df2",
+      "fileWrittenAt": "2026-11-03T09:40:07.227733+00:00"
+    },
+    {
+      "file": "neo4j-browser-graph.png",
+      "meaning": "Live Neo4j Browser graph renderer, 30 nodes and 47 relationships",
+      "width": 1552,
+      "height": 617,
+      "sha256": "65bc0bc6750577a87c443997b6475cd293743464b1faa56a977d7b2acd843566",
+      "fileWrittenAt": "2026-11-03T09:46:08.877260+00:00"
+    },
+    {
+      "file": "profile-without-index.png",
+      "meaning": "Verbatim Neo4j plan text rendered separately for readability",
+      "width": 1600,
+      "height": 720,
+      "sha256": "da2a63a04dec543d9f613bfbd59e7d60d492079d198eea5c2f68f492ec1f4f9a",
+      "fileWrittenAt": "2026-11-03T09:19:18.927911+00:00"
+    },
+    {
+      "file": "profile-with-index.png",
+      "meaning": "Verbatim Neo4j plan text rendered separately for readability",
+      "width": 1600,
+      "height": 720,
+      "sha256": "57071d9b67dddfd9c75da9e91d4dc24f6fa3278a125436fe8497804b181ab73b",
+      "fileWrittenAt": "2026-11-03T09:19:20.115347+00:00"
+    }
+  ]
+}
