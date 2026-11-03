@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-03T06:16:51.165075+00:00",
+  "verifiedAt": "2026-11-03T06:33:35.535703+00:00",
   "server": [
     {
       "name": "Neo4j Kernel",
@@ -11,7 +11,7 @@
   ],
   "catalogQueries": 34,
   "checksPassed": 245,
-  "durationSeconds": 5.628,
+  "durationSeconds": 8.412,
   "counts": {
     "persons": 30,
     "PARENT_OF": 36,
