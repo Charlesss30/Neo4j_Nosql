@@ -28,6 +28,6 @@ Route::get('/tree', [TreeController::class, 'index'])->name('tree.index');
 Route::get('/api/tree', [TreeController::class, 'data'])->name('tree.data');
 Route::get('/relation', RelationController::class)->name('relation.index');
 
-if (file_exists(__DIR__.'/admin_console.php')) {
-    require __DIR__.'/admin_console.php';
+if (file_exists(__DIR__.'/admin.php')) {
+    require __DIR__.'/admin.php';
 }

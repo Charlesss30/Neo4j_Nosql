@@ -7,9 +7,10 @@ class FamilyGraphService
     public function __construct(
         private readonly FamilyRepository $family,
         private readonly FamilyService $service,
+        private readonly FamilyTreeLayout $layout = new FamilyTreeLayout,
     ) {}
 
-    /** @return array{root: ?string, nodes: list<array<string, mixed>>, edges: list<array<string, mixed>>} */
+    /** @return array<string, mixed> */
     public function tree(?string $root, bool $all = false): array
     {
         $root ??= isset($this->family->getPerson('P001')[0]) ? 'P001' : ($this->family->roots()[0]['person']['id'] ?? null);
@@ -23,32 +24,12 @@ class FamilyGraphService
             $levels[$row['person']['id']] = (int) $row['generation'] - 1;
         }
 
-        $groups = [];
-        foreach ($graph['nodes'] as $person) {
-            $groups[$person['id']] = $person['id'];
+        if ($graph['nodes'] === []) {
+            return ['root' => $root, 'nodes' => [], 'edges' => []];
         }
-        foreach ($graph['edges'] as $edge) {
-            if ($edge['type'] === 'SPOUSE_OF') {
-                $oldGroup = $groups[$edge['to']];
-                $newGroup = $groups[$edge['from']];
-                foreach ($groups as $id => $group) {
-                    if ($group === $oldGroup) {
-                        $groups[$id] = $newGroup;
-                    }
-                }
-            }
-        }
-        $groupLevels = [];
-        foreach ($levels as $id => $level) {
-            if (isset($groups[$id])) {
-                $groupLevels[$groups[$id]] = min($groupLevels[$groups[$id]] ?? $level, $level);
-            }
-        }
-        foreach ($groups as $id => $group) {
-            $levels[$id] = $groupLevels[$group] ?? 0;
-        }
+        $diagram = $this->layout->arrange($graph, $levels, $root);
 
-        return ['root' => $root, ...$this->present($graph, $levels)];
+        return ['root' => $root, ...$this->present($graph, $diagram['positions']), 'families' => $diagram['families']];
     }
 
     /** @return array{sentence: string, nodes: list<array<string, mixed>>, edges: list<array<string, mixed>>} */
@@ -84,20 +65,20 @@ class FamilyGraphService
 
     /**
      * @param  array{nodes: list<array<string, mixed>>, edges: list<array<string, mixed>>}  $graph
-     * @param  array<string, int>  $levels
+     * @param  array<string, array<string, mixed>>  $positions
      * @return array{nodes: list<array<string, mixed>>, edges: list<array<string, mixed>>}
      */
-    private function present(array $graph, array $levels = []): array
+    private function present(array $graph, array $positions = []): array
     {
         $nodes = [];
         foreach ($graph['nodes'] as $person) {
             $deceased = isset($person['deathYear']);
             $nodes[] = [
                 'id' => $person['id'], 'name' => $person['name'], 'gender' => $person['gender'],
-                'label' => ($deceased ? '† ' : '').$person['name']."\n".$person['id'],
+                'label' => ($deceased ? '† ' : '').(mb_strlen($person['name']) > 36 ? mb_substr($person['name'], 0, 35).'…' : $person['name'])."\n".$person['id'].($positions === [] ? '' : ' · '.($person['birthYear'] ?? '—')),
                 'title' => e($person['name'].' · '.($person['birthYear'] ?? '—').($deceased ? ' – '.$person['deathYear'] : '')),
                 'color' => $deceased ? '#d9dde1' : ($person['gender'] === 'M' ? '#b9d9ff' : '#ffd1e2'),
-                ...($levels === [] ? [] : ['level' => $levels[$person['id']] ?? 0]),
+                ...($positions[$person['id']] ?? []),
             ];
         }
         $edges = [];

@@ -8,12 +8,17 @@ class FamilyGraphTest extends Neo4jTestCase
 {
     public function test_tree_default_subtree_and_all_graph_with_spouse_levels(): void
     {
-        $this->get('/tree')->assertOk()->assertSee('Cây gia phả')->assertSee('vis-network@9.1.9');
+        $this->get('/tree')->assertOk()->assertSee('Cây gia phả')->assertSee('vis-network@9.1.9')->assertSee('Con lớn ở bên trái')->assertSee('Vừa khung')->assertDontSee('Cypher Console');
         $this->getJson('/api/tree')->assertOk()->assertJsonPath('root', 'P001')->assertJsonCount(30, 'nodes')->assertJsonCount(47, 'edges');
         $branch = $this->getJson('/api/tree?root=P010')->assertOk()->assertJsonCount(7, 'nodes')->assertJsonCount(10, 'edges')->json();
         $this->assertSame(0, array_column($branch['nodes'], 'level', 'id')['P010']);
         $graph = $this->getJson('/api/tree?all=1')->assertOk()->assertJsonCount(30, 'nodes')->assertJsonCount(47, 'edges')->json();
         $levels = array_column($graph['nodes'], 'level', 'id');
+        $this->assertCount(11, $graph['families']);
+        $positions = array_column($graph['nodes'], null, 'id');
+        $this->assertLessThan($positions['P004']['x'], $positions['P003']['x']);
+        $this->assertLessThan($positions['P005']['x'], $positions['P004']['x']);
+        $this->assertTrue($positions['P001']['fixed']);
         foreach ($graph['edges'] as $edge) {
             if ($edge['type'] === 'SPOUSE_OF') {
                 $this->assertSame($levels[$edge['from']], $levels[$edge['to']]);

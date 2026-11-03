@@ -4,39 +4,8 @@ namespace App\Services;
 
 use InvalidArgumentException;
 
-class CypherGuard
+class CypherStatements
 {
-    public function validate(string $query): void
-    {
-        if (mb_strlen($query) > 2000) {
-            throw new InvalidArgumentException('Truy vấn không được vượt quá 2000 ký tự.');
-        }
-
-        $masked = trim($this->mask($query));
-
-        if ($masked === '' || $masked === ';') {
-            throw new InvalidArgumentException('Vui lòng nhập truy vấn Cypher.');
-        }
-
-        $semicolon = strpos($masked, ';');
-
-        if ($semicolon !== false && trim(substr($masked, $semicolon + 1)) !== '') {
-            throw new InvalidArgumentException('Chỉ được chạy một câu lệnh mỗi lần.');
-        }
-
-        if (preg_match('/\b(?:CREATE|MERGE|DELETE|DETACH|SET|REMOVE|DROP|FOREACH|INSERT|ALTER|RENAME|GRANT|DENY|REVOKE|TERMINATE|START|STOP|ENABLE|DISABLE|SHOW)\b|\bLOAD\s+CSV\b/i', $masked)) {
-            throw new InvalidArgumentException('Console chỉ cho phép đọc dữ liệu; truy vấn có từ khóa bị chặn.');
-        }
-
-        preg_match_all('/\bCALL\b/i', $masked, $calls, PREG_OFFSET_CAPTURE);
-
-        foreach ($calls[0] as [, $offset]) {
-            if (! preg_match('/\ACALL\s+db\s*\.\s*(?:labels|relationshipTypes|propertyKeys)\s*\(\s*\)/i', substr($masked, $offset))) {
-                throw new InvalidArgumentException('CALL chỉ được dùng với db.labels(), db.relationshipTypes() hoặc db.propertyKeys().');
-            }
-        }
-    }
-
     /** @return list<string> */
     public function splitStatements(string $source): array
     {
