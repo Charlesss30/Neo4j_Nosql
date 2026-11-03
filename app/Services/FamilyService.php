@@ -81,6 +81,84 @@ class FamilyService
         });
     }
 
+    /** @return list<array<string, mixed>> */
+    public function choices(): array
+    {
+        $total = (int) ($this->family->countPersons('')[0]['total'] ?? 0);
+
+        return $this->family->searchPersons('', 0, max(1, $total));
+    }
+
+    public function addParent(string $parentId, string $childId): void
+    {
+        $this->write(function () use ($parentId, $childId): void {
+            [$parent, $child] = $this->relationshipPeople($parentId, $childId);
+            if ($parentId === $childId) {
+                $this->reject('Một người không thể là cha mẹ của chính mình.');
+            }
+            if ($this->family->parentExists($parentId, $childId)[0]['exists']) {
+                $this->reject('Quan hệ cha mẹ – con đã tồn tại.');
+            }
+            if ($this->family->parentCount($childId)[0]['total'] >= 2) {
+                $this->reject('Một người chỉ được có tối đa hai cha mẹ.');
+            }
+            if ($this->family->wouldCreateCycle($parentId, $childId)[0]['exists']) {
+                $this->reject('Quan hệ này tạo vòng lặp trong gia phả.');
+            }
+            $this->validateBirthOrder($parent, $child);
+            $this->family->addParentOf($parentId, $childId);
+        });
+    }
+
+    public function removeParent(string $parentId, string $childId): void
+    {
+        $this->write(function () use ($parentId, $childId): void {
+            $this->relationshipPeople($parentId, $childId);
+            if (! $this->family->parentExists($parentId, $childId)[0]['exists']) {
+                $this->reject('Không tìm thấy quan hệ cha mẹ – con để xóa.');
+            }
+            $this->family->removeParentOf($parentId, $childId);
+        });
+    }
+
+    public function addSpouse(string $a, string $b, ?int $marriageYear): void
+    {
+        $this->write(function () use ($a, $b, $marriageYear): void {
+            [$first, $second] = $this->relationshipPeople($a, $b);
+            if ($a === $b) {
+                $this->reject('Một người không thể kết hôn với chính mình.');
+            }
+            if ($this->family->spouseExists($a, $b)[0]['exists']) {
+                $this->reject('Quan hệ vợ chồng đã tồn tại, kể cả theo chiều ngược lại.');
+            }
+            $this->validateMarriageYear($first, $second, $marriageYear);
+            $this->family->addSpouseOf($a, $b, $marriageYear);
+        });
+    }
+
+    public function removeSpouse(string $a, string $b): void
+    {
+        $this->write(function () use ($a, $b): void {
+            $this->relationshipPeople($a, $b);
+            if (! $this->family->spouseExists($a, $b)[0]['exists']) {
+                $this->reject('Không tìm thấy quan hệ vợ chồng để xóa.');
+            }
+            $this->family->removeSpouseOf($a, $b);
+        });
+    }
+
+    /** @return array{array<string, mixed>, array<string, mixed>} */
+    private function relationshipPeople(string $firstId, string $secondId): array
+    {
+        $first = $this->family->getPerson($firstId)[0]['person'] ?? null;
+        $second = $this->family->getPerson($secondId)[0]['person'] ?? null;
+        if ($first === null || $second === null) {
+            $this->reject('Cả hai thành viên phải tồn tại trong gia phả.');
+        }
+
+        return [$first, $second];
+    }
+
     /**
      * @param  array<string, mixed>  $parent
      * @param  array<string, mixed>  $child

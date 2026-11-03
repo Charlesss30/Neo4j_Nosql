@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PendingFeatureController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\RelationshipController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', DashboardController::class)->name('dashboard');
@@ -16,11 +17,11 @@ Route::get('/persons/{id}', [PersonController::class, 'show'])->name('persons.sh
 Route::match(['put', 'patch'], '/persons/{id}', [PersonController::class, 'update'])->name('persons.update');
 Route::delete('/persons/{id}', [PersonController::class, 'destroy'])->name('persons.destroy');
 
-Route::get('/relationships', PendingFeatureController::class)->name('relationships.index');
-Route::post('/relationships/parent', PendingFeatureController::class)->name('relationships.parent.store');
-Route::delete('/relationships/parent', PendingFeatureController::class)->name('relationships.parent.destroy');
-Route::post('/relationships/spouse', PendingFeatureController::class)->name('relationships.spouse.store');
-Route::delete('/relationships/spouse', PendingFeatureController::class)->name('relationships.spouse.destroy');
+Route::get('/relationships', [RelationshipController::class, 'index'])->name('relationships.index');
+Route::post('/relationships/parent', [RelationshipController::class, 'storeParent'])->name('relationships.parent.store');
+Route::delete('/relationships/parent', [RelationshipController::class, 'destroyParent'])->name('relationships.parent.destroy');
+Route::post('/relationships/spouse', [RelationshipController::class, 'storeSpouse'])->name('relationships.spouse.store');
+Route::delete('/relationships/spouse', [RelationshipController::class, 'destroySpouse'])->name('relationships.spouse.destroy');
 
 Route::get('/tree', PendingFeatureController::class)->name('tree.index');
 Route::get('/api/tree', PendingFeatureController::class)->name('tree.data');
