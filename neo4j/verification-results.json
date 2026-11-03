@@ -1,0 +1,1079 @@
+{
+  "verifiedAt": "2026-11-03T06:16:51.165075+00:00",
+  "server": [
+    {
+      "name": "Neo4j Kernel",
+      "versions": [
+        "5.26.31"
+      ],
+      "edition": "community"
+    }
+  ],
+  "catalogQueries": 34,
+  "checksPassed": 245,
+  "durationSeconds": 5.628,
+  "counts": {
+    "persons": 30,
+    "PARENT_OF": 36,
+    "SPOUSE_OF": 11,
+    "generations": [
+      2,
+      7,
+      11,
+      7,
+      3
+    ],
+    "living": 25,
+    "deceased": 5
+  },
+  "chosenPersons": {
+    "P010": {
+      "siblings": [
+        "P011"
+      ],
+      "uncles": [
+        "P004",
+        "P005"
+      ],
+      "cousins": [
+        "P012",
+        "P013",
+        "P014",
+        "P015",
+        "P016"
+      ],
+      "ancestors": [
+        "P001",
+        "P002",
+        "P003",
+        "P006"
+      ]
+    },
+    "P012": {
+      "siblings": [
+        "P013"
+      ],
+      "uncles": [
+        "P003",
+        "P005"
+      ],
+      "cousins": [
+        "P010",
+        "P011",
+        "P014",
+        "P015",
+        "P016"
+      ],
+      "ancestors": [
+        "P001",
+        "P002",
+        "P004",
+        "P007"
+      ]
+    },
+    "P014": {
+      "siblings": [
+        "P015",
+        "P016"
+      ],
+      "uncles": [
+        "P003",
+        "P004"
+      ],
+      "cousins": [
+        "P010",
+        "P011",
+        "P012",
+        "P013"
+      ],
+      "ancestors": [
+        "P001",
+        "P002",
+        "P005",
+        "P008"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "check": "graphAll: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll: return contract",
+      "passed": true
+    },
+    {
+      "check": "all seed properties",
+      "passed": true
+    },
+    {
+      "check": "fixture node count",
+      "passed": true
+    },
+    {
+      "check": "fixture PARENT_OF count",
+      "passed": true
+    },
+    {
+      "check": "fixture SPOUSE_OF count",
+      "passed": true
+    },
+    {
+      "check": "graphAll: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll: return contract",
+      "passed": true
+    },
+    {
+      "check": "seed is idempotent",
+      "passed": true
+    },
+    {
+      "check": "unique id constraint",
+      "passed": true
+    },
+    {
+      "check": "name index online",
+      "passed": true
+    },
+    {
+      "check": "parent age gap >= 15",
+      "passed": true
+    },
+    {
+      "check": "maximum two parents",
+      "passed": true
+    },
+    {
+      "check": "no ancestry cycles",
+      "passed": true
+    },
+    {
+      "check": "valid gender",
+      "passed": true
+    },
+    {
+      "check": "no duplicate directed parents",
+      "passed": true
+    },
+    {
+      "check": "one stored spouse relationship per pair",
+      "passed": true
+    },
+    {
+      "check": "no deceased parent before birth",
+      "passed": true
+    },
+    {
+      "check": "siblings: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "siblings: return contract",
+      "passed": true
+    },
+    {
+      "check": "siblings(P010)",
+      "passed": true
+    },
+    {
+      "check": "uncles: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "uncles: return contract",
+      "passed": true
+    },
+    {
+      "check": "uncles(P010)",
+      "passed": true
+    },
+    {
+      "check": "cousins: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "cousins: return contract",
+      "passed": true
+    },
+    {
+      "check": "cousins(P010)",
+      "passed": true
+    },
+    {
+      "check": "ancestors: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "ancestors: return contract",
+      "passed": true
+    },
+    {
+      "check": "ancestors(P010)",
+      "passed": true
+    },
+    {
+      "check": "siblings: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "siblings: return contract",
+      "passed": true
+    },
+    {
+      "check": "siblings(P012)",
+      "passed": true
+    },
+    {
+      "check": "uncles: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "uncles: return contract",
+      "passed": true
+    },
+    {
+      "check": "uncles(P012)",
+      "passed": true
+    },
+    {
+      "check": "cousins: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "cousins: return contract",
+      "passed": true
+    },
+    {
+      "check": "cousins(P012)",
+      "passed": true
+    },
+    {
+      "check": "ancestors: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "ancestors: return contract",
+      "passed": true
+    },
+    {
+      "check": "ancestors(P012)",
+      "passed": true
+    },
+    {
+      "check": "siblings: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "siblings: return contract",
+      "passed": true
+    },
+    {
+      "check": "siblings(P014)",
+      "passed": true
+    },
+    {
+      "check": "uncles: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "uncles: return contract",
+      "passed": true
+    },
+    {
+      "check": "uncles(P014)",
+      "passed": true
+    },
+    {
+      "check": "cousins: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "cousins: return contract",
+      "passed": true
+    },
+    {
+      "check": "cousins(P014)",
+      "passed": true
+    },
+    {
+      "check": "ancestors: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "ancestors: return contract",
+      "passed": true
+    },
+    {
+      "check": "ancestors(P014)",
+      "passed": true
+    },
+    {
+      "check": "getPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "getPerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "getPerson",
+      "passed": true
+    },
+    {
+      "check": "parents: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "parents: return contract",
+      "passed": true
+    },
+    {
+      "check": "parents",
+      "passed": true
+    },
+    {
+      "check": "children: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "children: return contract",
+      "passed": true
+    },
+    {
+      "check": "children",
+      "passed": true
+    },
+    {
+      "check": "descendants: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "descendants: return contract",
+      "passed": true
+    },
+    {
+      "check": "descendants",
+      "passed": true
+    },
+    {
+      "check": "searchPersons: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "searchPersons: return contract",
+      "passed": true
+    },
+    {
+      "check": "case insensitive search",
+      "passed": true
+    },
+    {
+      "check": "searchPersons: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "searchPersons: return contract",
+      "passed": true
+    },
+    {
+      "check": "empty search and pagination",
+      "passed": true
+    },
+    {
+      "check": "searchPersons: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "searchPersons: return contract",
+      "passed": true
+    },
+    {
+      "check": "search treats injection as text",
+      "passed": true
+    },
+    {
+      "check": "countPersons: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "countPersons: return contract",
+      "passed": true
+    },
+    {
+      "check": "count all",
+      "passed": true
+    },
+    {
+      "check": "countPersons: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "countPersons: return contract",
+      "passed": true
+    },
+    {
+      "check": "count search",
+      "passed": true
+    },
+    {
+      "check": "spouses: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "spouses: return contract",
+      "passed": true
+    },
+    {
+      "check": "spouses and two marriages",
+      "passed": true
+    },
+    {
+      "check": "generations: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "generations: return contract",
+      "passed": true
+    },
+    {
+      "check": "all five generations including married-in spouses",
+      "passed": true
+    },
+    {
+      "check": "statsByGeneration: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "statsByGeneration: return contract",
+      "passed": true
+    },
+    {
+      "check": "generation totals",
+      "passed": true
+    },
+    {
+      "check": "statsByGender: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "statsByGender: return contract",
+      "passed": true
+    },
+    {
+      "check": "gender totals",
+      "passed": true
+    },
+    {
+      "check": "livingVsDeceased: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "livingVsDeceased: return contract",
+      "passed": true
+    },
+    {
+      "check": "living and deceased",
+      "passed": true
+    },
+    {
+      "check": "oldestPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "oldestPerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "oldest means earliest birth year",
+      "passed": true
+    },
+    {
+      "check": "roots: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "roots: return contract",
+      "passed": true
+    },
+    {
+      "check": "roots include married-in people",
+      "passed": true
+    },
+    {
+      "check": "topParents: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "topParents: return contract",
+      "passed": true
+    },
+    {
+      "check": "top parents",
+      "passed": true
+    },
+    {
+      "check": "maxPersonNumber: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "maxPersonNumber: return contract",
+      "passed": true
+    },
+    {
+      "check": "maximum person number",
+      "passed": true
+    },
+    {
+      "check": "relationshipCount: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationshipCount: return contract",
+      "passed": true
+    },
+    {
+      "check": "incident relationship count",
+      "passed": true
+    },
+    {
+      "check": "subtree: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "subtree: return contract",
+      "passed": true
+    },
+    {
+      "check": "subtree members",
+      "passed": true
+    },
+    {
+      "check": "subtree internal edges",
+      "passed": true
+    },
+    {
+      "check": "subtree: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "subtree: return contract",
+      "passed": true
+    },
+    {
+      "check": "whole clan subtree",
+      "passed": true
+    },
+    {
+      "check": "parentCount: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "parentCount: return contract",
+      "passed": true
+    },
+    {
+      "check": "two parents",
+      "passed": true
+    },
+    {
+      "check": "parentCount: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "parentCount: return contract",
+      "passed": true
+    },
+    {
+      "check": "married-in has no parents",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: return contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle(P010,P010)",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: return contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle(P021,P001)",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: return contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle(P001,P028)",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle: return contract",
+      "passed": true
+    },
+    {
+      "check": "wouldCreateCycle(P017,P001)",
+      "passed": true
+    },
+    {
+      "check": "parentExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "parentExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "parentExists direction",
+      "passed": true
+    },
+    {
+      "check": "parentExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "parentExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "parentExists direction",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists either direction",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists either direction",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists either direction",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists either direction",
+      "passed": true
+    },
+    {
+      "check": "relationPath: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationPath: return contract",
+      "passed": true
+    },
+    {
+      "check": "cousin shortest path endpoints",
+      "passed": true
+    },
+    {
+      "check": "cousin common grandparent",
+      "passed": true
+    },
+    {
+      "check": "path relationship types",
+      "passed": true
+    },
+    {
+      "check": "path stored edge directions",
+      "passed": true
+    },
+    {
+      "check": "relationPath: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationPath: return contract",
+      "passed": true
+    },
+    {
+      "check": "cousin shortest path endpoints",
+      "passed": true
+    },
+    {
+      "check": "cousin common grandparent",
+      "passed": true
+    },
+    {
+      "check": "path relationship types",
+      "passed": true
+    },
+    {
+      "check": "path stored edge directions",
+      "passed": true
+    },
+    {
+      "check": "relationPath: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationPath: return contract",
+      "passed": true
+    },
+    {
+      "check": "self path zero length",
+      "passed": true
+    },
+    {
+      "check": "getPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "getPerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "missing person",
+      "passed": true
+    },
+    {
+      "check": "relationPath: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationPath: return contract",
+      "passed": true
+    },
+    {
+      "check": "missing path",
+      "passed": true
+    },
+    {
+      "check": "createPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "createPerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "createPerson scalar/map output",
+      "passed": true
+    },
+    {
+      "check": "createPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "createPerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "createPerson scalar/map output",
+      "passed": true
+    },
+    {
+      "check": "createPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "createPerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "createPerson scalar/map output",
+      "passed": true
+    },
+    {
+      "check": "relationPath: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationPath: return contract",
+      "passed": true
+    },
+    {
+      "check": "disconnected path",
+      "passed": true
+    },
+    {
+      "check": "updatePerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "updatePerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "updatePerson fields and nullable removal",
+      "passed": true
+    },
+    {
+      "check": "addParentOf: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "addParentOf: return contract",
+      "passed": true
+    },
+    {
+      "check": "addParentOf: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "addParentOf: return contract",
+      "passed": true
+    },
+    {
+      "check": "parentCount: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "parentCount: return contract",
+      "passed": true
+    },
+    {
+      "check": "addParentOf idempotent",
+      "passed": true
+    },
+    {
+      "check": "addSpouseOf: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "addSpouseOf: return contract",
+      "passed": true
+    },
+    {
+      "check": "addSpouseOf: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "addSpouseOf: return contract",
+      "passed": true
+    },
+    {
+      "check": "relationshipCount: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationshipCount: return contract",
+      "passed": true
+    },
+    {
+      "check": "spouse merge reversed remains single",
+      "passed": true
+    },
+    {
+      "check": "removeSpouseOf: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "removeSpouseOf: return contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "spouseExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "remove spouse reversed",
+      "passed": true
+    },
+    {
+      "check": "removeParentOf: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "removeParentOf: return contract",
+      "passed": true
+    },
+    {
+      "check": "parentExists: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "parentExists: return contract",
+      "passed": true
+    },
+    {
+      "check": "remove parent",
+      "passed": true
+    },
+    {
+      "check": "addParentOf: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "addParentOf: return contract",
+      "passed": true
+    },
+    {
+      "check": "deletePerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "deletePerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "getPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "getPerson: return contract",
+      "passed": true
+    },
+    {
+      "check": "DETACH DELETE person",
+      "passed": true
+    },
+    {
+      "check": "relationshipCount: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "relationshipCount: return contract",
+      "passed": true
+    },
+    {
+      "check": "DETACH DELETE incident edges",
+      "passed": true
+    },
+    {
+      "check": "graphAll: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll: return contract",
+      "passed": true
+    },
+    {
+      "check": "write tests rolled back",
+      "passed": true
+    },
+    {
+      "check": "createPerson: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "unique constraint rejects duplicate id",
+      "passed": true
+    },
+    {
+      "check": "graphAll: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll: return contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll on empty database",
+      "passed": true
+    },
+    {
+      "check": "maxPersonNumber: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "maxPersonNumber: return contract",
+      "passed": true
+    },
+    {
+      "check": "max number on empty database",
+      "passed": true
+    },
+    {
+      "check": "graphAll: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll: return contract",
+      "passed": true
+    },
+    {
+      "check": "LOAD CSV from empty graph equals seed",
+      "passed": true
+    },
+    {
+      "check": "graphAll: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll: return contract",
+      "passed": true
+    },
+    {
+      "check": "LOAD CSV is idempotent",
+      "passed": true
+    },
+    {
+      "check": "graphAll: parameter contract",
+      "passed": true
+    },
+    {
+      "check": "graphAll: return contract",
+      "passed": true
+    },
+    {
+      "check": "import test rolled back",
+      "passed": true
+    },
+    {
+      "check": "every catalog query executed",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+id,name,gender,birthYear,deathYear,birthPlace,note
+P001,Nguyễn Văn An,M,1920,2000,Hà Nội,Thủy tổ dòng họ Nguyễn; dữ liệu hư cấu.
+P002,Trần Thị Bình,F,1923,2008,Hà Nội,Phối ngẫu của thủy tổ.
+P003,Nguyễn Văn Cường,M,1945,2018,Hà Nội,
+P004,Nguyễn Thị Đào,F,1948,,Hà Nội,
+P005,Nguyễn Văn Đức,M,1951,,Hà Nội,Có hai cuộc hôn nhân; không suy diễn thời điểm ly hôn.
+P006,Lê Thị Dung,F,1947,,Hải Phòng,Kết hôn vào gia phả; không có cha mẹ trong cây.
+P007,Phạm Văn Hải,M,1946,2021,Nam Định,
+P008,Võ Thị Hoa,F,1953,1999,Huế,Người vợ thứ nhất của Nguyễn Văn Đức.
+P009,Bùi Thị Lan,F,1958,,Ninh Bình,Người vợ thứ hai của Nguyễn Văn Đức.
+P010,Nguyễn Minh Khang,M,1968,,Hà Nội,
+P011,Nguyễn Thị Linh,F,1971,,Hà Nội,
+P012,Phạm Minh Nam,M,1969,,Nam Định,
+P013,Phạm Thị Ngọc,F,1973,,Nam Định,
+P014,Nguyễn Quốc Phúc,M,1974,,Hà Nội,
+P015,Nguyễn Thị Quỳnh,F,1978,,Hà Nội,
+P016,Nguyễn Văn Sơn,M,2002,,Hà Nội,Em cùng cha khác mẹ của Phúc và Quỳnh.
+P017,Đỗ Thị Mai,F,1970,,Bắc Ninh,
+P018,Hoàng Văn Long,M,1969,,Hà Nam,
+P019,Đặng Thị Oanh,F,1972,,Thái Bình,
+P020,Trần Thị Yến,F,1976,,Huế,
+P021,Nguyễn Gia Bảo,M,1992,,Hà Nội,
+P022,Nguyễn Thảo Chi,F,1995,,Hà Nội,
+P023,Hoàng Minh Đạt,M,1994,,Hà Nội,
+P024,Phạm Ngọc Hà,F,1993,,Nam Định,
+P025,Nguyễn Gia Huy,M,1996,,Hà Nội,
+P026,Lê Thị Ánh,F,1993,,Hải Dương,
+P027,Vũ Văn Bình,M,1992,,Nam Định,
+P028,Nguyễn An Nhiên,F,2015,,Hà Nội,
+P029,Nguyễn Minh Quân,M,2018,,Hà Nội,
+P030,Vũ Phương Thảo,F,2014,,Nam Định,
