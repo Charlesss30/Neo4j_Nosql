@@ -1,0 +1,7 @@
+{
+  "neo4jVersion": "5.26.31",
+  "checkedCommand": "neo4j-admin database dump --help",
+  "helpCommandSucceeded": true,
+  "backupActuallyPerformed": false,
+  "reportStatus": "Reference only; not performed"
+}

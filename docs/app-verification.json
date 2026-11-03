@@ -1,0 +1,224 @@
+{
+  "verifiedAt": "2026-11-03T23:03:49.851561+07:00",
+  "codeCommit": "f18b678c0d18045f5b6a79836ac5c4f5523eb8a9",
+  "environment": {
+    "php": "8.3.30",
+    "laravel": "13.39.0",
+    "laudis": "3.7.1",
+    "neo4j": "5.26.31",
+    "runtime": "native Windows demo store",
+    "dockerTested": false
+  },
+  "phpunit": {
+    "tests": 49,
+    "passed": 49,
+    "assertions": 752,
+    "durationMs": 77424
+  },
+  "pint": "passed",
+  "composerValidate": "passed",
+  "composerPlatformRequirements": "passed",
+  "queryComparison": {
+    "queries": 34,
+    "mismatches": 0,
+    "scriptLocation": "temporary directory outside repository"
+  },
+  "seedCountsAfterTests": {
+    "persons": 30,
+    "parentOf": 36,
+    "spouseOf": 11
+  },
+  "allSeedPropertiesAndEdgesMatchCsv": true,
+  "temporaryPeopleRemaining": 0,
+  "samples": {
+    "siblingsP014": [
+      "P015",
+      "P016"
+    ],
+    "cousinsP010": [
+      "P012",
+      "P013",
+      "P014",
+      "P015",
+      "P016"
+    ],
+    "relationP010P012": {
+      "nodes": [
+        {
+          "name": "Nguyễn Minh Khang",
+          "id": "P010"
+        },
+        {
+          "name": "Nguyễn Văn Cường",
+          "id": "P003"
+        },
+        {
+          "name": "Trần Thị Bình",
+          "id": "P002"
+        },
+        {
+          "name": "Nguyễn Thị Đào",
+          "id": "P004"
+        },
+        {
+          "name": "Phạm Minh Nam",
+          "id": "P012"
+        }
+      ],
+      "relTypes": [
+        "PARENT_OF",
+        "PARENT_OF",
+        "PARENT_OF",
+        "PARENT_OF"
+      ],
+      "relFrom": [
+        "P003",
+        "P002",
+        "P002",
+        "P004"
+      ]
+    }
+  },
+  "liveBrowser": {
+    "charts": {
+      "generations": [
+        2,
+        7,
+        11,
+        7,
+        3
+      ],
+      "gender": {
+        "M": 14,
+        "F": 16
+      }
+    },
+    "treeNodes": 30,
+    "treeEdges": 47,
+    "relationNodes": 5,
+    "relationEdges": 4,
+    "realCsrfSelfParentRejected": true,
+    "screenshots": [
+      {
+        "path": "docs/screenshots/app-dashboard.png",
+        "width": 1320,
+        "height": 1267,
+        "sha256": "6ed7e69bb05c56329134d78b707cf8d672fec41618fbecf0091869e3e062705e",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-invalid-self-parent.png",
+        "width": 1320,
+        "height": 974,
+        "sha256": "89d0938bd00cb83b9aef00cb1ce927eb356f0a6bb52373a06b5c6b9774361808",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-person-p014.png",
+        "width": 1320,
+        "height": 929,
+        "sha256": "d0e37c29a2e111c2b466c4d578cf1c89d34a499d42c432a5b65424e0a54fad70",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-relation-p010-p012.png",
+        "width": 1320,
+        "height": 1444,
+        "sha256": "baf4190fce55ec53fe882043332b27bb6628616212d33cd0e31718ae45f9f000",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-relationships.png",
+        "width": 1320,
+        "height": 900,
+        "sha256": "c2a37a1249afa2f03e678951e847d4d9ba943ec558d67a65de07ca1df32a1c56",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-tree-phone.png",
+        "width": 390,
+        "height": 1351,
+        "sha256": "a77632e2db5c36227961b0ecb36e07e65694c44599c936e6761ae5cb97e23b91",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-tree-tablet.png",
+        "width": 720,
+        "height": 1411,
+        "sha256": "e361cc725210d5de24b147d91e2519d776cea52b4eebb08dd46ba3367d2f69fb",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-tree-two-marriages.png",
+        "width": 1320,
+        "height": 1418,
+        "sha256": "0ed1999a6e07a1d1bd9111187f1e13509014e7448f3307694af3b940a8c44e9c",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-tree.png",
+        "width": 1320,
+        "height": 1390,
+        "sha256": "035bcac739e25138808c80a5c8afbf53269123ee1e301cd42667ca40f0781c5f",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      }
+    ],
+    "pedigree": {
+      "viewports": [
+        {
+          "width": 1600,
+          "scrollWidth": 1585,
+          "scale": 0.4107744107744108,
+          "navToggleVisible": false,
+          "consoleLink": false,
+          "device": "desktop",
+          "nodes": 30,
+          "noOverlappingCards": true,
+          "zoomControls": "passed",
+          "stablePositions": true,
+          "mobileMenu": "not applicable"
+        },
+        {
+          "width": 820,
+          "scrollWidth": 820,
+          "scale": 0.95,
+          "navToggleVisible": true,
+          "consoleLink": false,
+          "device": "tablet",
+          "nodes": 30,
+          "noOverlappingCards": true,
+          "zoomControls": "passed",
+          "stablePositions": true,
+          "mobileMenu": "passed"
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "scale": 0.7323232323232324,
+          "navToggleVisible": true,
+          "consoleLink": false,
+          "device": "phone",
+          "nodes": 30,
+          "noOverlappingCards": true,
+          "zoomControls": "passed",
+          "stablePositions": true,
+          "mobileMenu": "passed"
+        }
+      ],
+      "twoMarriagesNodes": 8,
+      "adminStatus": 200,
+      "consoleStatus": 404,
+      "relationStatus": 200
+    },
+    "personClick": {
+      "personClick": "passed",
+      "path": "/persons/P005",
+      "realCsrfSelfParentRejected": true
+    }
+  },
+  "console": {
+    "removed": true,
+    "getStatus": 404,
+    "postRouteRemoved": true
+  }
+}

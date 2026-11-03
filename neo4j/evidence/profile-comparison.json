@@ -1,0 +1,55 @@
+{
+  "capturedAt": "2026-11-03T09:19:18.239820+00:00",
+  "sourceCommit": "993b129bb3cf4af8d7b30125aaf19d9a7900e6ab",
+  "source": "Actual POST /admin/profile response, using the Laudis client against native Neo4j",
+  "figureMethod": "Edge headless renders verbatim Neo4j string-representation text extracted from that response; figures are plan captures, not a reconstructed application screenshot.",
+  "server": [
+    {
+      "versions": [
+        "5.26.31"
+      ],
+      "edition": "community"
+    }
+  ],
+  "query": "MATCH (p:Person) WHERE p.name = $name RETURN p {.*} AS person",
+  "params": {
+    "name": "Nguyễn Minh Khang"
+  },
+  "indexRestoredOnline": true,
+  "graphUnchanged": true,
+  "withoutIndex": {
+    "rows": 1,
+    "dbHits": 67,
+    "accessOperator": "NodeByLabelScan",
+    "figure": "profile-without-index.png"
+  },
+  "withIndex": {
+    "rows": 1,
+    "dbHits": 8,
+    "accessOperator": "NodeIndexSeek",
+    "figure": "profile-with-index.png"
+  },
+  "explain": {
+    "estimatedRows": 1,
+    "queryResultRows": 0,
+    "actualDbHitsAvailable": false
+  },
+  "liveAdminScreenshots": [
+    {
+      "file": "admin-profile-without-index.png",
+      "meaning": "Live Admin equality PROFILE, no person_name index, 67 db hits",
+      "width": 1296,
+      "height": 557,
+      "sha256": "f8d8723e0256749fb9125269cf4f55ed17e8300f24f0500973a4d604e0df8e7b",
+      "fileWrittenAt": "2026-11-03T09:40:03.475996+00:00"
+    },
+    {
+      "file": "admin-profile-with-index.png",
+      "meaning": "Live Admin equality PROFILE, person_name ONLINE, 8 db hits",
+      "width": 1296,
+      "height": 506,
+      "sha256": "5abbd1d9b6e36836294e19266ecc2ac6251ae339afe4edba487fbab3502cd65e",
+      "fileWrittenAt": "2026-11-03T09:40:04.278856+00:00"
+    }
+  ]
+}

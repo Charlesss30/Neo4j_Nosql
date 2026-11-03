@@ -1,0 +1,50 @@
+{
+  "columns": [
+    "person"
+  ],
+  "data": [],
+  "plan": {
+    "root": {
+      "operatorType": "ProduceResults@neo4j",
+      "string-representation": "Cypher 5\r\n\r\nPlanner COST\r\n\r\nRuntime SLOTTED\r\n\r\nRuntime version 5.26.31\r\n\r\n+-----------------+----+-----------------------------------------------+----------------+\r\n| Operator        | Id | Details                                       | Estimated Rows |\r\n+-----------------+----+-----------------------------------------------+----------------+\r\n| +ProduceResults |  0 | person                                        |              1 |\r\n| |               +----+-----------------------------------------------+----------------+\r\n| +Projection     |  1 | p{.*} AS person                               |              1 |\r\n| |               +----+-----------------------------------------------+----------------+\r\n| +NodeIndexSeek  |  2 | RANGE INDEX p:Person(name) WHERE name = $name |              1 |\r\n+-----------------+----+-----------------------------------------------+----------------+\r\n\r\nTotal database accesses: ?\r\n",
+      "Id": 0,
+      "runtime-impl": "SLOTTED",
+      "planner-impl": "IDP",
+      "runtime-version": "5.26.31",
+      "planner-version": "5.26.31",
+      "EstimatedRows": 1.0,
+      "planner": "COST",
+      "runtime": "SLOTTED",
+      "Details": "person",
+      "version": "5",
+      "identifiers": [
+        "p",
+        "person"
+      ],
+      "children": [
+        {
+          "operatorType": "Projection@neo4j",
+          "Details": "p{.*} AS person",
+          "EstimatedRows": 1.0,
+          "Id": 1,
+          "identifiers": [
+            "p",
+            "person"
+          ],
+          "children": [
+            {
+              "operatorType": "NodeIndexSeek@neo4j",
+              "Details": "RANGE INDEX p:Person(name) WHERE name = $name",
+              "EstimatedRows": 1.0,
+              "Id": 2,
+              "identifiers": [
+                "p"
+              ],
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

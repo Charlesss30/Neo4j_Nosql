@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\Neo4jQueryException;
-use App\Services\CypherGuard;
+use App\Services\CypherStatements;
 use App\Services\Neo4jService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +19,7 @@ use Throwable;
 
 class AdminController extends Controller
 {
-    public function __construct(private readonly Neo4jService $neo4j, private readonly CypherGuard $guard) {}
+    public function __construct(private readonly Neo4jService $neo4j, private readonly CypherStatements $statements) {}
 
     public function index(): View
     {
@@ -71,8 +71,8 @@ class AdminController extends Controller
         ]);
 
         try {
-            $schema = $this->guard->splitStatements(File::get(base_path('neo4j/schema.cypher')));
-            $seed = $this->guard->splitStatements(File::get(base_path('neo4j/seed.cypher')));
+            $schema = $this->statements->splitStatements(File::get(base_path('neo4j/schema.cypher')));
+            $seed = $this->statements->splitStatements(File::get(base_path('neo4j/seed.cypher')));
 
             if ($schema === [] || $seed === []) {
                 throw new RuntimeException('Tệp schema hoặc seed rỗng.');
@@ -142,7 +142,7 @@ class AdminController extends Controller
             throw new RuntimeException('Không tìm thấy truy vấn mẫu trong danh mục.');
         }
 
-        $statements = $this->guard->splitStatements($matches[1]);
+        $statements = $this->statements->splitStatements($matches[1]);
 
         if (count($statements) !== 1) {
             throw new RuntimeException('Truy vấn mẫu phải có đúng một câu lệnh.');

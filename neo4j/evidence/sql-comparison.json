@@ -1,0 +1,81 @@
+{
+  "engine": "SQLite 3.45.3 (in memory, comparison only)",
+  "params": {
+    "id": "P028"
+  },
+  "rows": [
+    {
+      "id": "P001",
+      "name": "Nguyễn Văn An",
+      "gender": "M",
+      "birthYear": 1920,
+      "deathYear": 2000,
+      "birthPlace": "Hà Nội",
+      "note": "Thủy tổ dòng họ Nguyễn; dữ liệu hư cấu."
+    },
+    {
+      "id": "P002",
+      "name": "Trần Thị Bình",
+      "gender": "F",
+      "birthYear": 1923,
+      "deathYear": 2008,
+      "birthPlace": "Hà Nội",
+      "note": "Phối ngẫu của thủy tổ."
+    },
+    {
+      "id": "P003",
+      "name": "Nguyễn Văn Cường",
+      "gender": "M",
+      "birthYear": 1945,
+      "deathYear": 2018,
+      "birthPlace": "Hà Nội",
+      "note": null
+    },
+    {
+      "id": "P006",
+      "name": "Lê Thị Dung",
+      "gender": "F",
+      "birthYear": 1947,
+      "deathYear": null,
+      "birthPlace": "Hải Phòng",
+      "note": "Kết hôn vào gia phả; không có cha mẹ trong cây."
+    },
+    {
+      "id": "P010",
+      "name": "Nguyễn Minh Khang",
+      "gender": "M",
+      "birthYear": 1968,
+      "deathYear": null,
+      "birthPlace": "Hà Nội",
+      "note": null
+    },
+    {
+      "id": "P017",
+      "name": "Đỗ Thị Mai",
+      "gender": "F",
+      "birthYear": 1970,
+      "deathYear": null,
+      "birthPlace": "Bắc Ninh",
+      "note": null
+    },
+    {
+      "id": "P021",
+      "name": "Nguyễn Gia Bảo",
+      "gender": "M",
+      "birthYear": 1992,
+      "deathYear": null,
+      "birthPlace": "Hà Nội",
+      "note": null
+    },
+    {
+      "id": "P026",
+      "name": "Lê Thị Ánh",
+      "gender": "F",
+      "birthYear": 1993,
+      "deathYear": null,
+      "birthPlace": "Hải Dương",
+      "note": null
+    }
+  ],
+  "matchesNeo4jAncestors": true
+}

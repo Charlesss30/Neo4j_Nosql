@@ -1,0 +1,2013 @@
+{
+  "capturedAt": "2026-11-03T09:16:38.321265+00:00",
+  "sourceCommit": "993b129bb3cf4af8d7b30125aaf19d9a7900e6ab",
+  "catalogSha256": "239e73cbbf236eb97e41504fd0f5b26244467eba17dcb5dc9d4f3f3c9ca7603e",
+  "server": [
+    {
+      "versions": [
+        "5.26.31"
+      ],
+      "edition": "community"
+    }
+  ],
+  "catalogCount": 34,
+  "writesRolledBack": true,
+  "graphUnchanged": true,
+  "samples": {
+    "getPerson": {
+      "purpose": "Tìm một thành viên bằng mã định danh duy nhất.",
+      "params": {
+        "id": "P010"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1968,
+            "name": "Nguyễn Minh Khang",
+            "id": "P010"
+          }
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "searchPersons": {
+      "purpose": "Tìm tên chứa chuỗi không phân biệt hoa/thường, sắp xếp và phân trang.",
+      "params": {
+        "q": "minh",
+        "skip": 0,
+        "limit": 3
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1994,
+            "name": "Hoàng Minh Đạt",
+            "id": "P023"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1968,
+            "name": "Nguyễn Minh Khang",
+            "id": "P010"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 2018,
+            "name": "Nguyễn Minh Quân",
+            "id": "P029"
+          }
+        }
+      ],
+      "rowCount": 3,
+      "transaction": "read only"
+    },
+    "countPersons": {
+      "purpose": "Đếm số thành viên cùng điều kiện tìm kiếm để tính phân trang.",
+      "params": {
+        "q": ""
+      },
+      "columns": [
+        "total"
+      ],
+      "rows": [
+        {
+          "total": 30
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "parents": {
+      "purpose": "Lấy cha mẹ theo cạnh PARENT_OF đi vào người được chọn.",
+      "params": {
+        "id": "P014"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "note": "Có hai cuộc hôn nhân; không suy diễn thời điểm ly hôn.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1951,
+            "name": "Nguyễn Văn Đức",
+            "id": "P005"
+          }
+        },
+        {
+          "person": {
+            "note": "Người vợ thứ nhất của Nguyễn Văn Đức.",
+            "birthPlace": "Huế",
+            "gender": "F",
+            "birthYear": 1953,
+            "deathYear": 1999,
+            "name": "Võ Thị Hoa",
+            "id": "P008"
+          }
+        }
+      ],
+      "rowCount": 2,
+      "transaction": "read only"
+    },
+    "children": {
+      "purpose": "Lấy con theo cạnh PARENT_OF đi ra từ người được chọn.",
+      "params": {
+        "id": "P005"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1974,
+            "name": "Nguyễn Quốc Phúc",
+            "id": "P014"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1978,
+            "name": "Nguyễn Thị Quỳnh",
+            "id": "P015"
+          }
+        },
+        {
+          "person": {
+            "note": "Em cùng cha khác mẹ của Phúc và Quỳnh.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 2002,
+            "name": "Nguyễn Văn Sơn",
+            "id": "P016"
+          }
+        }
+      ],
+      "rowCount": 3,
+      "transaction": "read only"
+    },
+    "siblings": {
+      "purpose": "Suy ra anh chị em có ít nhất một cha/mẹ chung, kể cả cùng cha khác mẹ.",
+      "params": {
+        "id": "P014"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1978,
+            "name": "Nguyễn Thị Quỳnh",
+            "id": "P015"
+          }
+        },
+        {
+          "person": {
+            "note": "Em cùng cha khác mẹ của Phúc và Quỳnh.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 2002,
+            "name": "Nguyễn Văn Sơn",
+            "id": "P016"
+          }
+        }
+      ],
+      "rowCount": 2,
+      "transaction": "read only"
+    },
+    "uncles": {
+      "purpose": "Suy ra anh chị em ruột/cùng cha mẹ của cha hoặc mẹ; gồm cả nam và nữ, không gồm phối ngẫu của họ.",
+      "params": {
+        "id": "P012"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "deathYear": 2018,
+            "birthYear": 1945,
+            "name": "Nguyễn Văn Cường",
+            "id": "P003"
+          }
+        },
+        {
+          "person": {
+            "note": "Có hai cuộc hôn nhân; không suy diễn thời điểm ly hôn.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1951,
+            "name": "Nguyễn Văn Đức",
+            "id": "P005"
+          }
+        }
+      ],
+      "rowCount": 2,
+      "transaction": "read only"
+    },
+    "cousins": {
+      "purpose": "Suy ra anh em họ đời thứ nhất; loại chính người đó và anh chị em của họ.",
+      "params": {
+        "id": "P010"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "M",
+            "birthYear": 1969,
+            "name": "Phạm Minh Nam",
+            "id": "P012"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "F",
+            "birthYear": 1973,
+            "name": "Phạm Thị Ngọc",
+            "id": "P013"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1974,
+            "name": "Nguyễn Quốc Phúc",
+            "id": "P014"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1978,
+            "name": "Nguyễn Thị Quỳnh",
+            "id": "P015"
+          }
+        },
+        {
+          "person": {
+            "note": "Em cùng cha khác mẹ của Phúc và Quỳnh.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 2002,
+            "name": "Nguyễn Văn Sơn",
+            "id": "P016"
+          }
+        }
+      ],
+      "rowCount": 5,
+      "transaction": "read only"
+    },
+    "ancestors": {
+      "purpose": "Lấy tất cả tổ tiên qua một hoặc nhiều cạnh cha mẹ–con.",
+      "params": {
+        "id": "P028"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "note": "Thủy tổ dòng họ Nguyễn; dữ liệu hư cấu.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1920,
+            "deathYear": 2000,
+            "name": "Nguyễn Văn An",
+            "id": "P001"
+          }
+        },
+        {
+          "person": {
+            "note": "Phối ngẫu của thủy tổ.",
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1923,
+            "deathYear": 2008,
+            "name": "Trần Thị Bình",
+            "id": "P002"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "deathYear": 2018,
+            "birthYear": 1945,
+            "name": "Nguyễn Văn Cường",
+            "id": "P003"
+          }
+        },
+        {
+          "person": {
+            "note": "Kết hôn vào gia phả; không có cha mẹ trong cây.",
+            "birthPlace": "Hải Phòng",
+            "gender": "F",
+            "birthYear": 1947,
+            "name": "Lê Thị Dung",
+            "id": "P006"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1968,
+            "name": "Nguyễn Minh Khang",
+            "id": "P010"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Bắc Ninh",
+            "gender": "F",
+            "birthYear": 1970,
+            "name": "Đỗ Thị Mai",
+            "id": "P017"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1992,
+            "name": "Nguyễn Gia Bảo",
+            "id": "P021"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hải Dương",
+            "gender": "F",
+            "birthYear": 1993,
+            "name": "Lê Thị Ánh",
+            "id": "P026"
+          }
+        }
+      ],
+      "rowCount": 8,
+      "transaction": "read only"
+    },
+    "descendants": {
+      "purpose": "Lấy tất cả hậu duệ qua hướng cha mẹ đến con.",
+      "params": {
+        "id": "P010"
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1992,
+            "name": "Nguyễn Gia Bảo",
+            "id": "P021"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1995,
+            "name": "Nguyễn Thảo Chi",
+            "id": "P022"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 2015,
+            "name": "Nguyễn An Nhiên",
+            "id": "P028"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 2018,
+            "name": "Nguyễn Minh Quân",
+            "id": "P029"
+          }
+        }
+      ],
+      "rowCount": 4,
+      "transaction": "read only"
+    },
+    "spouses": {
+      "purpose": "Tìm vợ/chồng theo cả hai hướng cạnh và trả năm kết hôn.",
+      "params": {
+        "id": "P005"
+      },
+      "columns": [
+        "person",
+        "marriageYear"
+      ],
+      "rows": [
+        {
+          "person": {
+            "note": "Người vợ thứ nhất của Nguyễn Văn Đức.",
+            "birthPlace": "Huế",
+            "gender": "F",
+            "birthYear": 1953,
+            "deathYear": 1999,
+            "name": "Võ Thị Hoa",
+            "id": "P008"
+          },
+          "marriageYear": 1973
+        },
+        {
+          "person": {
+            "note": "Người vợ thứ hai của Nguyễn Văn Đức.",
+            "birthPlace": "Ninh Bình",
+            "gender": "F",
+            "birthYear": 1958,
+            "name": "Bùi Thị Lan",
+            "id": "P009"
+          },
+          "marriageYear": 2001
+        }
+      ],
+      "rowCount": 2,
+      "transaction": "read only"
+    },
+    "relationPath": {
+      "purpose": "Tìm một đường đi ngắn nhất qua hai loại quan hệ; relFrom cho biết hướng lưu của từng cạnh.",
+      "params": {
+        "a": "P010",
+        "b": "P012"
+      },
+      "columns": [
+        "nodes",
+        "relTypes",
+        "relFrom"
+      ],
+      "rows": [
+        {
+          "nodes": [
+            {
+              "name": "Nguyễn Minh Khang",
+              "id": "P010"
+            },
+            {
+              "name": "Nguyễn Văn Cường",
+              "id": "P003"
+            },
+            {
+              "name": "Trần Thị Bình",
+              "id": "P002"
+            },
+            {
+              "name": "Nguyễn Thị Đào",
+              "id": "P004"
+            },
+            {
+              "name": "Phạm Minh Nam",
+              "id": "P012"
+            }
+          ],
+          "relTypes": [
+            "PARENT_OF",
+            "PARENT_OF",
+            "PARENT_OF",
+            "PARENT_OF"
+          ],
+          "relFrom": [
+            "P003",
+            "P002",
+            "P002",
+            "P004"
+          ]
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "generations": {
+      "purpose": "Tính thế hệ theo đường PARENT_OF ngắn nhất từ gốc; bổ sung phối ngẫu kết hôn vào cây.",
+      "params": {
+        "root": "P001"
+      },
+      "columns": [
+        "person",
+        "generation"
+      ],
+      "rows": [
+        {
+          "person": {
+            "note": "Thủy tổ dòng họ Nguyễn; dữ liệu hư cấu.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1920,
+            "deathYear": 2000,
+            "name": "Nguyễn Văn An",
+            "id": "P001"
+          },
+          "generation": 1
+        },
+        {
+          "person": {
+            "note": "Phối ngẫu của thủy tổ.",
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1923,
+            "deathYear": 2008,
+            "name": "Trần Thị Bình",
+            "id": "P002"
+          },
+          "generation": 1
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "deathYear": 2018,
+            "birthYear": 1945,
+            "name": "Nguyễn Văn Cường",
+            "id": "P003"
+          },
+          "generation": 2
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1948,
+            "name": "Nguyễn Thị Đào",
+            "id": "P004"
+          },
+          "generation": 2
+        },
+        {
+          "person": {
+            "note": "Có hai cuộc hôn nhân; không suy diễn thời điểm ly hôn.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1951,
+            "name": "Nguyễn Văn Đức",
+            "id": "P005"
+          },
+          "generation": 2
+        },
+        {
+          "person": {
+            "note": "Kết hôn vào gia phả; không có cha mẹ trong cây.",
+            "birthPlace": "Hải Phòng",
+            "gender": "F",
+            "birthYear": 1947,
+            "name": "Lê Thị Dung",
+            "id": "P006"
+          },
+          "generation": 2
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "M",
+            "deathYear": 2021,
+            "birthYear": 1946,
+            "name": "Phạm Văn Hải",
+            "id": "P007"
+          },
+          "generation": 2
+        },
+        {
+          "person": {
+            "note": "Người vợ thứ nhất của Nguyễn Văn Đức.",
+            "birthPlace": "Huế",
+            "gender": "F",
+            "birthYear": 1953,
+            "deathYear": 1999,
+            "name": "Võ Thị Hoa",
+            "id": "P008"
+          },
+          "generation": 2
+        },
+        {
+          "person": {
+            "note": "Người vợ thứ hai của Nguyễn Văn Đức.",
+            "birthPlace": "Ninh Bình",
+            "gender": "F",
+            "birthYear": 1958,
+            "name": "Bùi Thị Lan",
+            "id": "P009"
+          },
+          "generation": 2
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1968,
+            "name": "Nguyễn Minh Khang",
+            "id": "P010"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1971,
+            "name": "Nguyễn Thị Linh",
+            "id": "P011"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "M",
+            "birthYear": 1969,
+            "name": "Phạm Minh Nam",
+            "id": "P012"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "F",
+            "birthYear": 1973,
+            "name": "Phạm Thị Ngọc",
+            "id": "P013"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1974,
+            "name": "Nguyễn Quốc Phúc",
+            "id": "P014"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1978,
+            "name": "Nguyễn Thị Quỳnh",
+            "id": "P015"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "note": "Em cùng cha khác mẹ của Phúc và Quỳnh.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 2002,
+            "name": "Nguyễn Văn Sơn",
+            "id": "P016"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Bắc Ninh",
+            "gender": "F",
+            "birthYear": 1970,
+            "name": "Đỗ Thị Mai",
+            "id": "P017"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nam",
+            "gender": "M",
+            "birthYear": 1969,
+            "name": "Hoàng Văn Long",
+            "id": "P018"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Thái Bình",
+            "gender": "F",
+            "birthYear": 1972,
+            "name": "Đặng Thị Oanh",
+            "id": "P019"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Huế",
+            "gender": "F",
+            "birthYear": 1976,
+            "name": "Trần Thị Yến",
+            "id": "P020"
+          },
+          "generation": 3
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1992,
+            "name": "Nguyễn Gia Bảo",
+            "id": "P021"
+          },
+          "generation": 4
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1995,
+            "name": "Nguyễn Thảo Chi",
+            "id": "P022"
+          },
+          "generation": 4
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1994,
+            "name": "Hoàng Minh Đạt",
+            "id": "P023"
+          },
+          "generation": 4
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "F",
+            "birthYear": 1993,
+            "name": "Phạm Ngọc Hà",
+            "id": "P024"
+          },
+          "generation": 4
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1996,
+            "name": "Nguyễn Gia Huy",
+            "id": "P025"
+          },
+          "generation": 4
+        },
+        {
+          "person": {
+            "birthPlace": "Hải Dương",
+            "gender": "F",
+            "birthYear": 1993,
+            "name": "Lê Thị Ánh",
+            "id": "P026"
+          },
+          "generation": 4
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "M",
+            "birthYear": 1992,
+            "name": "Vũ Văn Bình",
+            "id": "P027"
+          },
+          "generation": 4
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 2015,
+            "name": "Nguyễn An Nhiên",
+            "id": "P028"
+          },
+          "generation": 5
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 2018,
+            "name": "Nguyễn Minh Quân",
+            "id": "P029"
+          },
+          "generation": 5
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "F",
+            "birthYear": 2014,
+            "name": "Vũ Phương Thảo",
+            "id": "P030"
+          },
+          "generation": 5
+        }
+      ],
+      "rowCount": 30,
+      "transaction": "read only"
+    },
+    "statsByGender": {
+      "purpose": "Đếm số người theo giới tính.",
+      "params": {},
+      "columns": [
+        "gender",
+        "total"
+      ],
+      "rows": [
+        {
+          "gender": "F",
+          "total": 16
+        },
+        {
+          "gender": "M",
+          "total": 14
+        }
+      ],
+      "rowCount": 2,
+      "transaction": "read only"
+    },
+    "statsByGeneration": {
+      "purpose": "Đếm số người ở từng thế hệ, dùng cùng thuật toán với generations.",
+      "params": {
+        "root": "P001"
+      },
+      "columns": [
+        "generation",
+        "total"
+      ],
+      "rows": [
+        {
+          "generation": 1,
+          "total": 2
+        },
+        {
+          "generation": 2,
+          "total": 7
+        },
+        {
+          "generation": 3,
+          "total": 11
+        },
+        {
+          "generation": 4,
+          "total": 7
+        },
+        {
+          "generation": 5,
+          "total": 3
+        }
+      ],
+      "rowCount": 5,
+      "transaction": "read only"
+    },
+    "topParents": {
+      "purpose": "Lấy tối đa năm người có nhiều con nhất, đồng hạng sắp theo id.",
+      "params": {},
+      "columns": [
+        "id",
+        "name",
+        "childCount"
+      ],
+      "rows": [
+        {
+          "id": "P001",
+          "name": "Nguyễn Văn An",
+          "childCount": 3
+        },
+        {
+          "id": "P002",
+          "name": "Trần Thị Bình",
+          "childCount": 3
+        },
+        {
+          "id": "P005",
+          "name": "Nguyễn Văn Đức",
+          "childCount": 3
+        },
+        {
+          "id": "P003",
+          "name": "Nguyễn Văn Cường",
+          "childCount": 2
+        },
+        {
+          "id": "P004",
+          "name": "Nguyễn Thị Đào",
+          "childCount": 2
+        }
+      ],
+      "rowCount": 5,
+      "transaction": "read only"
+    },
+    "livingVsDeceased": {
+      "purpose": "Đếm người còn sống/đã mất dựa trên việc có deathYear.",
+      "params": {},
+      "columns": [
+        "living",
+        "deceased"
+      ],
+      "rows": [
+        {
+          "living": 25,
+          "deceased": 5
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "oldestPerson": {
+      "purpose": "Lấy người sinh sớm nhất, bao gồm người đã mất; không tính tuổi thọ hay người sống lâu nhất.",
+      "params": {},
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "note": "Thủy tổ dòng họ Nguyễn; dữ liệu hư cấu.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1920,
+            "deathYear": 2000,
+            "name": "Nguyễn Văn An",
+            "id": "P001"
+          }
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "roots": {
+      "purpose": "Lấy mọi người không có cha mẹ trong graph, gồm thủy tổ và người kết hôn từ ngoài vào.",
+      "params": {},
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "note": "Thủy tổ dòng họ Nguyễn; dữ liệu hư cấu.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1920,
+            "deathYear": 2000,
+            "name": "Nguyễn Văn An",
+            "id": "P001"
+          }
+        },
+        {
+          "person": {
+            "note": "Phối ngẫu của thủy tổ.",
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1923,
+            "deathYear": 2008,
+            "name": "Trần Thị Bình",
+            "id": "P002"
+          }
+        },
+        {
+          "person": {
+            "note": "Kết hôn vào gia phả; không có cha mẹ trong cây.",
+            "birthPlace": "Hải Phòng",
+            "gender": "F",
+            "birthYear": 1947,
+            "name": "Lê Thị Dung",
+            "id": "P006"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "M",
+            "deathYear": 2021,
+            "birthYear": 1946,
+            "name": "Phạm Văn Hải",
+            "id": "P007"
+          }
+        },
+        {
+          "person": {
+            "note": "Người vợ thứ nhất của Nguyễn Văn Đức.",
+            "birthPlace": "Huế",
+            "gender": "F",
+            "birthYear": 1953,
+            "deathYear": 1999,
+            "name": "Võ Thị Hoa",
+            "id": "P008"
+          }
+        },
+        {
+          "person": {
+            "note": "Người vợ thứ hai của Nguyễn Văn Đức.",
+            "birthPlace": "Ninh Bình",
+            "gender": "F",
+            "birthYear": 1958,
+            "name": "Bùi Thị Lan",
+            "id": "P009"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Bắc Ninh",
+            "gender": "F",
+            "birthYear": 1970,
+            "name": "Đỗ Thị Mai",
+            "id": "P017"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hà Nam",
+            "gender": "M",
+            "birthYear": 1969,
+            "name": "Hoàng Văn Long",
+            "id": "P018"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Thái Bình",
+            "gender": "F",
+            "birthYear": 1972,
+            "name": "Đặng Thị Oanh",
+            "id": "P019"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Huế",
+            "gender": "F",
+            "birthYear": 1976,
+            "name": "Trần Thị Yến",
+            "id": "P020"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Hải Dương",
+            "gender": "F",
+            "birthYear": 1993,
+            "name": "Lê Thị Ánh",
+            "id": "P026"
+          }
+        },
+        {
+          "person": {
+            "birthPlace": "Nam Định",
+            "gender": "M",
+            "birthYear": 1992,
+            "name": "Vũ Văn Bình",
+            "id": "P027"
+          }
+        }
+      ],
+      "rowCount": 12,
+      "transaction": "read only"
+    },
+    "graphAll": {
+      "purpose": "Trả một dòng chứa toàn bộ node maps và edge maps; graph rỗng vẫn có hai danh sách rỗng.",
+      "params": {},
+      "columns": [
+        "nodes",
+        "edges"
+      ],
+      "rows": [
+        {
+          "nodes": [
+            {
+              "note": "Thủy tổ dòng họ Nguyễn; dữ liệu hư cấu.",
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1920,
+              "deathYear": 2000,
+              "name": "Nguyễn Văn An",
+              "id": "P001"
+            },
+            {
+              "note": "Phối ngẫu của thủy tổ.",
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 1923,
+              "deathYear": 2008,
+              "name": "Trần Thị Bình",
+              "id": "P002"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "deathYear": 2018,
+              "birthYear": 1945,
+              "name": "Nguyễn Văn Cường",
+              "id": "P003"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 1948,
+              "name": "Nguyễn Thị Đào",
+              "id": "P004"
+            },
+            {
+              "note": "Có hai cuộc hôn nhân; không suy diễn thời điểm ly hôn.",
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1951,
+              "name": "Nguyễn Văn Đức",
+              "id": "P005"
+            },
+            {
+              "note": "Kết hôn vào gia phả; không có cha mẹ trong cây.",
+              "birthPlace": "Hải Phòng",
+              "gender": "F",
+              "birthYear": 1947,
+              "name": "Lê Thị Dung",
+              "id": "P006"
+            },
+            {
+              "birthPlace": "Nam Định",
+              "gender": "M",
+              "deathYear": 2021,
+              "birthYear": 1946,
+              "name": "Phạm Văn Hải",
+              "id": "P007"
+            },
+            {
+              "note": "Người vợ thứ nhất của Nguyễn Văn Đức.",
+              "birthPlace": "Huế",
+              "gender": "F",
+              "birthYear": 1953,
+              "deathYear": 1999,
+              "name": "Võ Thị Hoa",
+              "id": "P008"
+            },
+            {
+              "note": "Người vợ thứ hai của Nguyễn Văn Đức.",
+              "birthPlace": "Ninh Bình",
+              "gender": "F",
+              "birthYear": 1958,
+              "name": "Bùi Thị Lan",
+              "id": "P009"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1968,
+              "name": "Nguyễn Minh Khang",
+              "id": "P010"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 1971,
+              "name": "Nguyễn Thị Linh",
+              "id": "P011"
+            },
+            {
+              "birthPlace": "Nam Định",
+              "gender": "M",
+              "birthYear": 1969,
+              "name": "Phạm Minh Nam",
+              "id": "P012"
+            },
+            {
+              "birthPlace": "Nam Định",
+              "gender": "F",
+              "birthYear": 1973,
+              "name": "Phạm Thị Ngọc",
+              "id": "P013"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1974,
+              "name": "Nguyễn Quốc Phúc",
+              "id": "P014"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 1978,
+              "name": "Nguyễn Thị Quỳnh",
+              "id": "P015"
+            },
+            {
+              "note": "Em cùng cha khác mẹ của Phúc và Quỳnh.",
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 2002,
+              "name": "Nguyễn Văn Sơn",
+              "id": "P016"
+            },
+            {
+              "birthPlace": "Bắc Ninh",
+              "gender": "F",
+              "birthYear": 1970,
+              "name": "Đỗ Thị Mai",
+              "id": "P017"
+            },
+            {
+              "birthPlace": "Hà Nam",
+              "gender": "M",
+              "birthYear": 1969,
+              "name": "Hoàng Văn Long",
+              "id": "P018"
+            },
+            {
+              "birthPlace": "Thái Bình",
+              "gender": "F",
+              "birthYear": 1972,
+              "name": "Đặng Thị Oanh",
+              "id": "P019"
+            },
+            {
+              "birthPlace": "Huế",
+              "gender": "F",
+              "birthYear": 1976,
+              "name": "Trần Thị Yến",
+              "id": "P020"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1992,
+              "name": "Nguyễn Gia Bảo",
+              "id": "P021"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 1995,
+              "name": "Nguyễn Thảo Chi",
+              "id": "P022"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1994,
+              "name": "Hoàng Minh Đạt",
+              "id": "P023"
+            },
+            {
+              "birthPlace": "Nam Định",
+              "gender": "F",
+              "birthYear": 1993,
+              "name": "Phạm Ngọc Hà",
+              "id": "P024"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1996,
+              "name": "Nguyễn Gia Huy",
+              "id": "P025"
+            },
+            {
+              "birthPlace": "Hải Dương",
+              "gender": "F",
+              "birthYear": 1993,
+              "name": "Lê Thị Ánh",
+              "id": "P026"
+            },
+            {
+              "birthPlace": "Nam Định",
+              "gender": "M",
+              "birthYear": 1992,
+              "name": "Vũ Văn Bình",
+              "id": "P027"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 2015,
+              "name": "Nguyễn An Nhiên",
+              "id": "P028"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 2018,
+              "name": "Nguyễn Minh Quân",
+              "id": "P029"
+            },
+            {
+              "birthPlace": "Nam Định",
+              "gender": "F",
+              "birthYear": 2014,
+              "name": "Vũ Phương Thảo",
+              "id": "P030"
+            }
+          ],
+          "edges": [
+            {
+              "from": "P001",
+              "marriageYear": 1942,
+              "to": "P002",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P001",
+              "marriageYear": null,
+              "to": "P003",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P001",
+              "marriageYear": null,
+              "to": "P004",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P001",
+              "marriageYear": null,
+              "to": "P005",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P002",
+              "marriageYear": null,
+              "to": "P003",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P002",
+              "marriageYear": null,
+              "to": "P004",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P002",
+              "marriageYear": null,
+              "to": "P005",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P003",
+              "marriageYear": 1967,
+              "to": "P006",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P003",
+              "marriageYear": null,
+              "to": "P010",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P003",
+              "marriageYear": null,
+              "to": "P011",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P004",
+              "marriageYear": 1968,
+              "to": "P007",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P004",
+              "marriageYear": null,
+              "to": "P012",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P004",
+              "marriageYear": null,
+              "to": "P013",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P005",
+              "marriageYear": 1973,
+              "to": "P008",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P005",
+              "marriageYear": 2001,
+              "to": "P009",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P005",
+              "marriageYear": null,
+              "to": "P014",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P005",
+              "marriageYear": null,
+              "to": "P015",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P005",
+              "marriageYear": null,
+              "to": "P016",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P006",
+              "marriageYear": null,
+              "to": "P010",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P006",
+              "marriageYear": null,
+              "to": "P011",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P007",
+              "marriageYear": null,
+              "to": "P012",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P007",
+              "marriageYear": null,
+              "to": "P013",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P008",
+              "marriageYear": null,
+              "to": "P014",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P008",
+              "marriageYear": null,
+              "to": "P015",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P009",
+              "marriageYear": null,
+              "to": "P016",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P010",
+              "marriageYear": 1990,
+              "to": "P017",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P010",
+              "marriageYear": null,
+              "to": "P021",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P010",
+              "marriageYear": null,
+              "to": "P022",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P011",
+              "marriageYear": 1992,
+              "to": "P018",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P011",
+              "marriageYear": null,
+              "to": "P023",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P012",
+              "marriageYear": 1991,
+              "to": "P019",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P012",
+              "marriageYear": null,
+              "to": "P024",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P014",
+              "marriageYear": 1995,
+              "to": "P020",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P014",
+              "marriageYear": null,
+              "to": "P025",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P017",
+              "marriageYear": null,
+              "to": "P021",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P017",
+              "marriageYear": null,
+              "to": "P022",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P018",
+              "marriageYear": null,
+              "to": "P023",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P019",
+              "marriageYear": null,
+              "to": "P024",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P020",
+              "marriageYear": null,
+              "to": "P025",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P021",
+              "marriageYear": 2014,
+              "to": "P026",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P021",
+              "marriageYear": null,
+              "to": "P028",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P021",
+              "marriageYear": null,
+              "to": "P029",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P024",
+              "marriageYear": 2013,
+              "to": "P027",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P024",
+              "marriageYear": null,
+              "to": "P030",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P026",
+              "marriageYear": null,
+              "to": "P028",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P026",
+              "marriageYear": null,
+              "to": "P029",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P027",
+              "marriageYear": null,
+              "to": "P030",
+              "type": "PARENT_OF"
+            }
+          ]
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "subtree": {
+      "purpose": "Lấy gốc, hậu duệ và phối ngẫu trực tiếp của họ; chỉ giữ cạnh có cả hai đầu thuộc tập này.",
+      "params": {
+        "root": "P010"
+      },
+      "columns": [
+        "nodes",
+        "edges"
+      ],
+      "rows": [
+        {
+          "nodes": [
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1968,
+              "name": "Nguyễn Minh Khang",
+              "id": "P010"
+            },
+            {
+              "birthPlace": "Bắc Ninh",
+              "gender": "F",
+              "birthYear": 1970,
+              "name": "Đỗ Thị Mai",
+              "id": "P017"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 1992,
+              "name": "Nguyễn Gia Bảo",
+              "id": "P021"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 1995,
+              "name": "Nguyễn Thảo Chi",
+              "id": "P022"
+            },
+            {
+              "birthPlace": "Hải Dương",
+              "gender": "F",
+              "birthYear": 1993,
+              "name": "Lê Thị Ánh",
+              "id": "P026"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "F",
+              "birthYear": 2015,
+              "name": "Nguyễn An Nhiên",
+              "id": "P028"
+            },
+            {
+              "birthPlace": "Hà Nội",
+              "gender": "M",
+              "birthYear": 2018,
+              "name": "Nguyễn Minh Quân",
+              "id": "P029"
+            }
+          ],
+          "edges": [
+            {
+              "from": "P010",
+              "marriageYear": 1990,
+              "to": "P017",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P010",
+              "marriageYear": null,
+              "to": "P021",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P010",
+              "marriageYear": null,
+              "to": "P022",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P017",
+              "marriageYear": null,
+              "to": "P021",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P017",
+              "marriageYear": null,
+              "to": "P022",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P021",
+              "marriageYear": 2014,
+              "to": "P026",
+              "type": "SPOUSE_OF"
+            },
+            {
+              "from": "P021",
+              "marriageYear": null,
+              "to": "P028",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P021",
+              "marriageYear": null,
+              "to": "P029",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P026",
+              "marriageYear": null,
+              "to": "P028",
+              "type": "PARENT_OF"
+            },
+            {
+              "from": "P026",
+              "marriageYear": null,
+              "to": "P029",
+              "type": "PARENT_OF"
+            }
+          ]
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "parentCount": {
+      "purpose": "Đếm quan hệ cha/mẹ hiện có của một người trước khi xét thêm cha mẹ.",
+      "params": {
+        "id": "P014"
+      },
+      "columns": [
+        "total"
+      ],
+      "rows": [
+        {
+          "total": 2
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "wouldCreateCycle": {
+      "purpose": "Kiểm tra cạnh cha mẹ dự kiến có tạo chu trình, kể cả trường hợp tự làm cha mẹ.",
+      "params": {
+        "parentId": "P021",
+        "childId": "P001"
+      },
+      "columns": [
+        "exists"
+      ],
+      "rows": [
+        {
+          "exists": true
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "parentExists": {
+      "purpose": "Kiểm tra quan hệ cha mẹ–con đã tồn tại theo đúng hướng hay chưa.",
+      "params": {
+        "parentId": "P001",
+        "childId": "P003"
+      },
+      "columns": [
+        "exists"
+      ],
+      "rows": [
+        {
+          "exists": true
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "spouseExists": {
+      "purpose": "Kiểm tra hôn nhân đã tồn tại theo một trong hai hướng hay chưa.",
+      "params": {
+        "a": "P008",
+        "b": "P005"
+      },
+      "columns": [
+        "exists"
+      ],
+      "rows": [
+        {
+          "exists": true
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "maxPersonNumber": {
+      "purpose": "Lấy phần số lớn nhất của mã P...; graph rỗng trả 0.",
+      "params": {},
+      "columns": [
+        "maxNum"
+      ],
+      "rows": [
+        {
+          "maxNum": 30
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "relationshipCount": {
+      "purpose": "Đếm các cạnh gắn với một người để thông báo trước khi xóa.",
+      "params": {
+        "id": "P005"
+      },
+      "columns": [
+        "total"
+      ],
+      "rows": [
+        {
+          "total": 7
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "read only"
+    },
+    "createPerson": {
+      "purpose": "Tạo người mới; mã trùng bị constraint person_id từ chối.",
+      "params": {
+        "id": "P901",
+        "name": "Nhân vật minh họa P901",
+        "gender": "M",
+        "birthYear": 1960,
+        "deathYear": null,
+        "birthPlace": "Hà Nội",
+        "note": "Ví dụ mốc 3; giao dịch sẽ hoàn tác."
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "note": "Ví dụ mốc 3; giao dịch sẽ hoàn tác.",
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1960,
+            "name": "Nhân vật minh họa P901",
+            "id": "P901"
+          }
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "rolled back"
+    },
+    "updatePerson": {
+      "purpose": "Cập nhật thông tin người; gán null sẽ bỏ thuộc tính tùy chọn khỏi node.",
+      "params": {
+        "id": "P901",
+        "name": "Nhân vật cập nhật P901",
+        "gender": "M",
+        "birthYear": 1960,
+        "deathYear": 2020,
+        "birthPlace": "Hà Nội",
+        "note": null
+      },
+      "columns": [
+        "person"
+      ],
+      "rows": [
+        {
+          "person": {
+            "birthPlace": "Hà Nội",
+            "gender": "M",
+            "birthYear": 1960,
+            "deathYear": 2020,
+            "name": "Nhân vật cập nhật P901",
+            "id": "P901"
+          }
+        }
+      ],
+      "rowCount": 1,
+      "transaction": "rolled back"
+    },
+    "deletePerson": {
+      "purpose": "Xóa người cùng các cạnh gắn với người đó bằng DETACH DELETE.",
+      "params": {
+        "id": "P901"
+      },
+      "columns": [],
+      "rows": [],
+      "rowCount": 0,
+      "transaction": "rolled back",
+      "postcheck": {
+        "incidentEdgesBefore": 2,
+        "personAfter": [],
+        "childIncidentEdgesAfter": [
+          {
+            "total": 0
+          }
+        ],
+        "spouseIncidentEdgesAfter": [
+          {
+            "total": 0
+          }
+        ]
+      }
+    },
+    "addParentOf": {
+      "purpose": "MERGE cạnh cha mẹ đến con; lớp ứng dụng phải kiểm tra quy tắc nghiệp vụ trước.",
+      "params": {
+        "parentId": "P901",
+        "childId": "P902"
+      },
+      "columns": [],
+      "rows": [],
+      "rowCount": 0,
+      "transaction": "rolled back",
+      "postcheck": [
+        {
+          "total": 1
+        }
+      ]
+    },
+    "addSpouseOf": {
+      "purpose": "MERGE hôn nhân bằng mẫu vô hướng để tránh tạo hai cạnh khi đảo đầu vào; cập nhật năm kết hôn.",
+      "params": {
+        "a": "P901",
+        "b": "P903",
+        "marriageYear": 1985
+      },
+      "columns": [],
+      "rows": [],
+      "rowCount": 0,
+      "transaction": "rolled back",
+      "postcheck": [
+        {
+          "person": {
+            "note": "Ví dụ mốc 3; giao dịch sẽ hoàn tác.",
+            "birthPlace": "Hà Nội",
+            "gender": "F",
+            "birthYear": 1962,
+            "name": "Nhân vật minh họa P903",
+            "id": "P903"
+          },
+          "marriageYear": 1985
+        }
+      ]
+    },
+    "removeParentOf": {
+      "purpose": "Xóa cạnh cha mẹ–con theo hướng được chỉ định.",
+      "params": {
+        "parentId": "P901",
+        "childId": "P902"
+      },
+      "columns": [],
+      "rows": [],
+      "rowCount": 0,
+      "transaction": "rolled back",
+      "postcheck": [
+        {
+          "exists": false
+        }
+      ]
+    },
+    "removeSpouseOf": {
+      "purpose": "Xóa cạnh hôn nhân theo cả hai hướng lưu.",
+      "params": {
+        "a": "P903",
+        "b": "P901"
+      },
+      "columns": [],
+      "rows": [],
+      "rowCount": 0,
+      "transaction": "rolled back",
+      "postcheck": [
+        {
+          "exists": false
+        }
+      ]
+    }
+  }
+}
