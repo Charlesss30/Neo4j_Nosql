@@ -1,0 +1,381 @@
+{
+  "verifiedAt": "2026-11-03T08:44:01.740606+00:00",
+  "url": "http://127.0.0.1:8001",
+  "environment": "local",
+  "server": [
+    {
+      "versions": [
+        "5.26.31"
+      ],
+      "edition": "community"
+    }
+  ],
+  "counts": {
+    "persons": 30,
+    "PARENT_OF": 36,
+    "SPOUSE_OF": 11
+  },
+  "checks": [
+    "Console example 1",
+    "Console example 2",
+    "Console example 3",
+    "Console example 4",
+    "Console example 5",
+    "Console example 6",
+    "Console example 7",
+    "Literal keywords and createdAt property accepted over HTTP",
+    "Writes, multiple statements and non-allowlisted CALL blocked over HTTP",
+    "501 rows returned, 500 displayed",
+    "Admin constraints, indexes and graph statistics",
+    "All four catalog PROFILE samples returned real metrics",
+    "Equality index comparison: label scan vs index seek; index restored ONLINE",
+    "Confirmed local reset reloaded the complete seed; all 30 people and 47 edges retained"
+  ],
+  "profileSamples": [
+    {
+      "sample": "person",
+      "rows": 1,
+      "dbHits": 8,
+      "operators": [
+        [
+          "ProduceResults@neo4j",
+          "1",
+          "0",
+          "1",
+          "person"
+        ],
+        [
+          "Projection@neo4j",
+          "1",
+          "6",
+          "1",
+          "p{.*} AS person"
+        ],
+        [
+          "NodeUniqueIndexSeek@neo4j",
+          "1",
+          "2",
+          "1",
+          "UNIQUE p:Person(id) WHERE id = $id"
+        ]
+      ]
+    },
+    {
+      "sample": "ancestors",
+      "rows": 8,
+      "dbHits": 107,
+      "operators": [
+        [
+          "ProduceResults@neo4j",
+          "8",
+          "0",
+          "120.27598056818",
+          "person"
+        ],
+        [
+          "Sort@neo4j",
+          "8",
+          "0",
+          "120.27598056818",
+          "`person.id` ASC"
+        ],
+        [
+          "Projection@neo4j",
+          "8",
+          "0",
+          "120.27598056818",
+          "person.id AS `person.id`"
+        ],
+        [
+          "Projection@neo4j",
+          "8",
+          "54",
+          "120.27598056818",
+          "ancestor{.*} AS person"
+        ],
+        [
+          "Filter@neo4j",
+          "8",
+          "8",
+          "126.60629533493",
+          "ancestor:Person"
+        ],
+        [
+          "VarLengthExpand(Pruning,BFS,All)@neo4j",
+          "8",
+          "43",
+          "126.60629533493",
+          "(anon_1)<-[:PARENT_OF*..2147483647]-(ancestor)"
+        ],
+        [
+          "NodeUniqueIndexSeek@neo4j",
+          "1",
+          "2",
+          "1",
+          "UNIQUE anon_1:Person(id) WHERE id = $id"
+        ]
+      ]
+    },
+    {
+      "sample": "cousins",
+      "rows": 5,
+      "dbHits": 324,
+      "operators": [
+        [
+          "ProduceResults@neo4j",
+          "5",
+          "0",
+          "1.4063523383243",
+          "person"
+        ],
+        [
+          "Sort@neo4j",
+          "5",
+          "0",
+          "1.4063523383243",
+          "`person.id` ASC"
+        ],
+        [
+          "Projection@neo4j",
+          "5",
+          "0",
+          "1.4063523383243",
+          "person.id AS `person.id`"
+        ],
+        [
+          "Distinct@neo4j",
+          "5",
+          "62",
+          "1.4063523383243",
+          "cousin{.*} AS person"
+        ],
+        [
+          "AntiSemiApply@neo4j",
+          "10",
+          "0",
+          "1.4803708824467",
+          ""
+        ],
+        [
+          "Filter@neo4j",
+          "10",
+          "10",
+          "1.5813251226163",
+          "NOT anon_4 = anon_1 AND NOT anon_4 = anon_0 AND NOT cousin = p AND NOT anon_4 = anon_3 AND cousin:Person"
+        ],
+        [
+          "Expand(All)@neo4j",
+          "10",
+          "28",
+          "1.81081080576",
+          "(uncle)-[anon_4:PARENT_OF]->(cousin)"
+        ],
+        [
+          "Filter@neo4j",
+          "4",
+          "4",
+          "1.5090090048",
+          "NOT anon_3 = anon_1 AND NOT anon_3 = anon_0 AND NOT uncle = parent AND uncle:Person"
+        ],
+        [
+          "Expand(All)@neo4j",
+          "6",
+          "10",
+          "1.71072",
+          "(anon_2)-[anon_3:PARENT_OF]->(uncle)"
+        ],
+        [
+          "Filter@neo4j",
+          "2",
+          "2",
+          "1.4256",
+          "NOT anon_1 = anon_0 AND anon_2:Person"
+        ],
+        [
+          "Expand(All)@neo4j",
+          "2",
+          "10",
+          "1.44",
+          "(parent)<-[anon_1:PARENT_OF]-(anon_2)"
+        ],
+        [
+          "Filter@neo4j",
+          "2",
+          "2",
+          "1.2",
+          "parent:Person"
+        ],
+        [
+          "Expand(All)@neo4j",
+          "2",
+          "6",
+          "1.2",
+          "(p)<-[anon_0:PARENT_OF]-(parent)"
+        ],
+        [
+          "NodeUniqueIndexSeek@neo4j",
+          "1",
+          "2",
+          "1",
+          "UNIQUE p:Person(id) WHERE id = $id"
+        ],
+        [
+          "Filter@neo4j",
+          "0",
+          "0",
+          "0.075144569826727",
+          "NOT anon_7 = anon_5"
+        ],
+        [
+          "Expand(Into)@neo4j",
+          "0",
+          "130",
+          "0.075903605885583",
+          "(p)<-[anon_5:PARENT_OF]-(anon_6)"
+        ],
+        [
+          "Filter@neo4j",
+          "20",
+          "20",
+          "1.8975901471396",
+          "anon_6:Person"
+        ],
+        [
+          "Expand(All)@neo4j",
+          "20",
+          "38",
+          "1.8975901471396",
+          "(cousin)<-[anon_7:PARENT_OF]-(anon_6)"
+        ],
+        [
+          "Argument@neo4j",
+          "10",
+          "0",
+          "1.5813251226163",
+          "cousin, p"
+        ]
+      ]
+    },
+    {
+      "sample": "topParents",
+      "rows": 5,
+      "dbHits": 263,
+      "operators": [
+        [
+          "ProduceResults@neo4j",
+          "5",
+          "0",
+          "5",
+          "id, name, childCount"
+        ],
+        [
+          "Top@neo4j",
+          "5",
+          "0",
+          "5",
+          "childCount DESC, id ASC LIMIT 5"
+        ],
+        [
+          "EagerAggregation@neo4j",
+          "21",
+          "0",
+          "6",
+          "cache[p.id] AS id, cache[p.name] AS name, count(DISTINCT child) ASC AS childCount"
+        ],
+        [
+          "CacheProperties@neo4j",
+          "36",
+          "72",
+          "36",
+          "cache[p.id], cache[p.name]"
+        ],
+        [
+          "Filter@neo4j",
+          "36",
+          "36",
+          "36",
+          "p:Person"
+        ],
+        [
+          "Expand(All)@neo4j",
+          "36",
+          "124",
+          "36",
+          "(child)<-[anon_0:PARENT_OF]-(p)"
+        ],
+        [
+          "NodeByLabelScan@neo4j",
+          "30",
+          "31",
+          "30",
+          "child:Person"
+        ]
+      ]
+    }
+  ],
+  "equalityIndexComparison": {
+    "query": "MATCH (p:Person) WHERE p.name = $name RETURN p {.*} AS person",
+    "params": {
+      "name": "Nguyễn Minh Khang"
+    },
+    "withoutIndex": {
+      "dbHits": 67,
+      "operators": [
+        [
+          "ProduceResults@neo4j",
+          "1",
+          "0",
+          "1.5",
+          "person"
+        ],
+        [
+          "Projection@neo4j",
+          "1",
+          "6",
+          "1.5",
+          "p{.*} AS person"
+        ],
+        [
+          "Filter@neo4j",
+          "1",
+          "30",
+          "1.5",
+          "p.name = $name"
+        ],
+        [
+          "NodeByLabelScan@neo4j",
+          "30",
+          "31",
+          "30",
+          "p:Person"
+        ]
+      ]
+    },
+    "withIndex": {
+      "dbHits": 8,
+      "operators": [
+        [
+          "ProduceResults@neo4j",
+          "1",
+          "0",
+          "1",
+          "person"
+        ],
+        [
+          "Projection@neo4j",
+          "1",
+          "6",
+          "1",
+          "p{.*} AS person"
+        ],
+        [
+          "NodeIndexSeek@neo4j",
+          "1",
+          "2",
+          "1",
+          "RANGE INDEX p:Person(name) WHERE name = $name"
+        ]
+      ]
+    }
+  }
+}
