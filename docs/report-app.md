@@ -5,7 +5,7 @@
 Ứng dụng tiếp nối khung Laravel và catalog 34 truy vấn đã có trên main.
 Nhánh app thay route placeholder bằng CRUD thành viên, quản lý quan hệ,
 cây gia phả, tra cứu đường đi, biểu đồ Dashboard và tests với Neo4j thật.
-Console/Admin và toàn bộ `neo4j/` được giữ nguyên.
+Toàn bộ `neo4j/` được giữ nguyên. Cypher Console đã được gỡ theo yêu cầu; Admin vẫn có schema, PROFILE và reset local, dùng parser CypherStatements để tách câu lệnh.
 
 ```mermaid
 flowchart LR
@@ -34,6 +34,8 @@ flowchart LR
 | `TreeController`, `RelationController` | Gốc/hai người và lỗi không tìm thấy |
 | `FamilyService` | Quy tắc nghiệp vụ, khóa và transaction ghi |
 | `FamilyGraphService` | Node/cạnh cho vis-network, tầng, câu diễn giải |
+| `FamilyTreeLayout` | Khối gia đình, thứ tự nhánh/năm sinh, tọa độ cố định |
+| `CypherStatements` | Parser tách câu schema/seed dùng riêng cho Admin |
 | `FamilyRepository` | 34 query và tham số theo catalog |
 | `Neo4jService` | `run`, `client`, `transaction`, `ping`, `lastError`; chuyển đệ quy về mảng/scalar PHP |
 | `bootstrap/app.php`, `resources/views/errors/neo4j.blade.php` | Lỗi DB thân thiện, HTML/JSON 503 |
@@ -102,14 +104,21 @@ Tên phương thức chính là tên trong `neo4j/queries.cypher`.
 | `/relation` | getPerson, relationPath; getPerson bổ sung giới tính từng node |
 
 Không sửa Cypher nghiệp vụ. Input truyền qua mảng tham số riêng, không nối vào câu truy vấn.
-Ngoài catalog chỉ có ping hạ tầng có sẵn và câu dọn fixture T_ mà prompt kiểm thử yêu cầu.
+CRUD/cây/tra cứu dùng repository; Admin có các câu SHOW, thống kê schema, PROFILE và nạp schema/seed riêng như phần demo DB. Ping hạ tầng và câu dọn fixture T_ cũng nằm ngoài catalog.
 
 ## Đồ thị và diễn giải
 
 Gốc mặc định P001 nếu có, nếu không lấy người đầu từ roots; DB rỗng trả đồ thị rỗng.
 subtree lấy nhánh và phối ngẫu; “Hiện toàn bộ” gọi graphAll.
-Tầng lấy từ generations(root); nhóm nối bằng SPOUSE_OF được đặt cùng tầng.
+Tầng tham khảo generations(root), sau đó bố trí các nhóm cha mẹ/vợ chồng thành từng khối.
+Mỗi nhánh dành sẵn đủ bề rộng cho hậu duệ; anh chị em xếp theo năm sinh rồi ID.
+Các con có **đúng cùng tập cha mẹ** mới chung một thanh nhánh; P005/P008 có P014, P015, còn P005/P009 có P016.
+Điểm nối và đường gấp khúc chỉ thuộc phần vẽ, không tạo node/cạnh mới trong Neo4j.
+Tọa độ cố định và tắt physics cho cây nên đổi kích thước cửa sổ không xáo trộn thứ tự.
+Với hôn nhân nối hai nhánh, chọn một nhánh chính để dành chỗ nhưng vẫn vẽ đủ mọi quan hệ cha mẹ thật.
 Cha mẹ có mũi tên; vợ chồng nét đứt, không mũi tên, smooth=false.
+Có nhãn ĐỜI, nút vừa khung/cỡ chữ rõ/zoom; mobile mở vào gia đình gốc để giữ tên dễ đọc.
+Tọa độ hiển thị tính lại từ các quan hệ hiện có, không lưu ngược vào dữ liệu Person.
 Nam xanh, nữ hồng, người mất xám và †. Bấm node mở hồ sơ; có danh sách link thay thế canvas.
 
 relationPath chỉ trả ID/tên nên app tải giới tính bằng getPerson.
@@ -125,7 +134,11 @@ Path bằng độ dài có thể khác nhau; test không giả định cách ph�
 
 ## Kiểm chứng thực tế
 
-Lần kiểm tra ngày **03/11/2026 (Asia/Saigon)**: `php artisan test --compact` đạt **95 tests / 650 assertions**.
+Lần kiểm tra ngày **03/11/2026 (Asia/Saigon)**: `php artisan test --compact` đạt **49 tests / 752 assertions**.
+Pint toàn dự án, Composer validate/platform requirements đều đạt; routes không còn placeholder.
+Sau test, đối chiếu toàn bộ seed với CSV: **30 người / 36 PARENT_OF / 11 SPOUSE_OF**,
+đúng mọi thuộc tính và cạnh, **0 người T_ còn lại**.
+Chi tiết máy đọc được: [app-verification.json](app-verification.json).
 Pint toàn dự án, Composer validate/platform requirements đều đạt; routes không còn placeholder.
 Sau test, đối chiếu toàn bộ seed với CSV: **30 người / 36 PARENT_OF / 11 SPOUSE_OF**,
 đúng mọi thuộc tính và cạnh, **0 người T_ còn lại**.
@@ -139,7 +152,7 @@ node/property/cạnh gốc. Test HTTP cấp P031 dùng mock để tránh ghi mã
 Đã thử CRUD, integer/null, XSS tên, tự nhận cha mẹ, cha mẹ thứ ba, vòng lặp, năm sinh sai,
 trùng cha mẹ, trùng vợ chồng chiều ngược, năm kết hôn sai, xóa cạnh không tồn tại,
 rollback, cây rỗng/thiếu P001, ID không tồn tại, same-person/no-path, hướng câu diễn giải,
-lỗi Neo4j và bộ test Console/Admin đã có.
+lỗi Neo4j, Admin và việc các endpoint Console đã được gỡ.
 
 Mẫu: anh chị em P014 = **P015, P016**; anh chị em họ P010 = **P012–P016**.
 Toàn bộ **30 node, 47 cạnh**; nhánh P010 **7 node, 10 cạnh**.
@@ -154,11 +167,16 @@ Thế hệ từ P001 **2, 7, 11, 7, 3**; nam/nữ **14/16**; còn sống/đã m�
 | [Dashboard](screenshots/app-dashboard.png) | 30 người; biểu đồ thế hệ và giới tính |
 | [P014](screenshots/app-person-p014.png) | Anh chị em P015, P016 và nhóm họ hàng |
 | [Cây](screenshots/app-tree.png) | 30 node, 47 cạnh, màu/nét đứt |
+| [Cây trên tablet](screenshots/app-tree-tablet.png) | Viewport 820px, thẻ không chồng nhau, menu thu gọn |
+| [Cây trên điện thoại](screenshots/app-tree-phone.png) | Viewport 390px, kéo/zoom xem các nhánh, không tràn ngang trang |
+| [Hai hôn nhân P005](screenshots/app-tree-two-marriages.png) | P014/P015 nối P005–P008; P016 nối P005–P009 |
 | [P010 → P012](screenshots/app-relation-p010-p012.png) | Diễn giải đúng từng liên kết |
 | [Quan hệ](screenshots/app-relationships.png) | Bốn form thêm/xóa |
 | [Tự nhận cha mẹ](screenshots/app-invalid-self-parent.png) | Lỗi tiếng Việt sau form có CSRF thật |
 
 ![Dashboard thực tế](screenshots/app-dashboard.png)
+
+![Phả đồ chia nhánh theo từng gia đình](screenshots/app-tree-two-marriages.png)
 
 ![Đường đi P010 và P012 thực tế](screenshots/app-relation-p010-p012.png)
 
@@ -168,15 +186,16 @@ và kết quả test terminal. Không dùng dữ liệu cá nhân thật.
 ## Hạn chế
 
 - Tìm tên chưa bỏ dấu, có gợi ý “gõ có dấu”.
-- Chưa có đăng nhập/phân quyền app. Community không có RBAC; Console chỉ lọc từ khóa.
+- Chưa có đăng nhập/phân quyền app. Community không có RBAC. Không còn trang nhập Cypher tùy ý trong ứng dụng.
 - Client trực tiếp/Browser/Admin reset có thể bỏ qua quy tắc app.
 - Khóa tệp chỉ dùng chung trên một máy; ID max+1 có thể dùng lại mã cao nhất đã xóa.
-- Người ngoài nhánh thế hệ đã chọn có thể ở tầng gốc trong cây toàn bộ;
-  đây là bố cục hiển thị, không tạo thêm huyết thống vào DB.
+- Các cây rời được đặt thành từng cụm. Hôn nhân nối hai nhánh có thể cần đường nối dài; mọi quan hệ thật vẫn được giữ.
+  Bố cục không tạo thêm huyết thống hoặc suy diễn hôn nhân khi hai người chỉ cùng làm cha mẹ.
 - CDN cần Internet; mất thư viện vẫn có bảng/danh sách link và thông báo.
 - Chỉ kiểm chứng seed 30 người; chưa chứng minh hiệu năng gia phả lớn.
 - **Docker chưa được kiểm thử trên máy này**; các số liệu dùng Neo4j native 5.26.31.
 - Không khẳng định đã chạy backup/dump hoặc clean-clone Docker.
 
+Cách bố trí gia đình tham khảo mô hình [family nodes của yWorks](https://kb.yworks.com/article/703/index.html), tự triển khai phần bố trí, không cài thêm thư viện.
 API hiển thị: [vis-network](https://visjs.github.io/vis-network/docs/network/),
 [Chart.js integration](https://www.chartjs.org/docs/latest/getting-started/integration.html).

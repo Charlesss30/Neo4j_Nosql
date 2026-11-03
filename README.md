@@ -8,7 +8,7 @@ Không dùng Eloquent, SQL hay migrations cho dữ liệu nghiệp vụ.
 
 CRUD thành viên; tìm tên và phân trang 10 người; hồ sơ với các nhóm họ hàng;
 quản lý cha mẹ–con/vợ chồng có validation và transaction; cây gia phả vis-network;
-đường đi quan hệ có diễn giải; Dashboard có biểu đồ; Cypher Console và Admin.
+đường đi quan hệ có diễn giải; Dashboard có biểu đồ và trang Admin.
 
 ## Yêu cầu
 
@@ -76,12 +76,11 @@ Gốc minh họa: <http://127.0.0.1:8000>.
 | `/tree?all=1` | Toàn bộ đồ thị |
 | `/api/tree?root=P010` | JSON nodes/edges của nhánh P010 |
 | `/relation?a=P010&b=P012` | Đường đi ngắn nhất và diễn giải |
-| `/console` | Cypher Console |
 | `/admin` | Schema, PROFILE, reset demo local |
 
 Bấm tên/node để mở hồ sơ. Tìm kiếm không phân biệt hoa/thường nhưng **không bỏ dấu tiếng Việt**: hãy gõ có dấu.
 Nam xanh, nữ hồng, người đã mất có † và màu xám. Vợ/chồng nét đứt cùng tầng;
-cha mẹ → con có mũi tên. Có thể tồn tại nhiều đường đi ngắn nhất cùng độ dài.
+cha mẹ → con nối bằng nhánh gấp khúc. Anh chị em xếp theo năm sinh, tách đúng các nhóm con khi có nhiều cuộc hôn nhân. Dùng “Vừa khung”, “Cỡ chữ rõ” hoặc ＋/− để xem; trên điện thoại có thể kéo/chụm hai ngón tay. Có thể tồn tại nhiều đường đi ngắn nhất cùng độ dài.
 
 ## Kiểm thử
 
@@ -119,19 +118,20 @@ Kết quả seed chuẩn **30 / 36 / 11**. Kết quả chạy thực tế và �
 | `app/Services/FamilyRepository.php` | 34 phương thức Cypher theo catalog |
 | `app/Services/FamilyService.php` | Quy tắc và thao tác ghi có khóa/transaction |
 | `app/Services/FamilyGraphService.php` | Dữ liệu vis-network, tầng, diễn giải |
+| `app/Services/FamilyTreeLayout.php` | Bố trí cố định từng gia đình/nhánh và sắp theo năm sinh |
 | `app/Http/Requests/` | Validation và ép kiểu input |
 | `app/Http/Controllers/`, `resources/views/` | HTTP và Blade |
-| `routes/web.php` | Routes app, nạp route Console/Admin |
+| `routes/web.php` | Routes app, nạp `routes/admin.php` |
 | `neo4j/` | Schema, seed, catalog và tài liệu DB |
 | `docs/report-app.md`, `docs/qa-app.md` | Báo cáo và 10 câu hỏi bảo vệ app |
 
 ## Giới hạn và khắc phục lỗi
 
-- Chưa có đăng nhập/phân quyền app. Community không có RBAC; Console lọc từ khóa không phải phân quyền thật.
+- Chưa có đăng nhập/phân quyền app. Community không có RBAC.
 - Quy tắc FamilyService chỉ bảo vệ thao tác qua app. Không reset Admin hoặc ghi trực tiếp bằng Browser trong lúc nhập liệu.
 - Khóa tệp chỉ tuần tự hóa ghi app trên một máy; nhiều máy chủ/client trực tiếp cần giải pháp khác.
 - Cấp ID bằng max+1 có thể dùng lại mã cao nhất đã xóa; constraint ID vẫn do Neo4j thực thi.
-- Người ngoài nhánh thế hệ đã chọn trong cây toàn bộ có thể nằm ở tầng gốc; tầng là bố cục, không tạo quan hệ mới.
+- Cây xếp theo từng nhánh và năm sinh; các gia đình rời được đặt riêng. Với hôn nhân nối hai nhánh, vẫn hiển thị đủ cha mẹ dù có thể có đường nối dài.
 - CDN cần Internet; mất thư viện vẫn có bảng/danh sách link và thông báo.
 - Neo4j lỗi: Dashboard báo tiếng Việt; trang cần dữ liệu trả 503 thân thiện. Kiểm tra cổng/tài khoản rồi `php artisan config:clear`.
 - PHP/Composer chưa trong PATH: thêm `<PHP_HOME>`, `<COMPOSER_HOME>`, kiểm tra `php -v`, `composer -V`.

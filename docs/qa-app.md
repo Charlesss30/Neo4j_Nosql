@@ -53,5 +53,5 @@ Không chạy integration song song chung DB.
 ## 10. Những giới hạn phải nói rõ khi demo?
 
 Tìm tên chưa bỏ dấu; CDN cần Internet; chưa có đăng nhập/phân quyền app; Community không có RBAC.
-Console lọc từ khóa không phải phân quyền. Khóa ghi chỉ trên một máy, client trực tiếp có thể bỏ qua quy tắc.
+Cypher Console đã được gỡ. Khóa ghi chỉ trên một máy, client trực tiếp có thể bỏ qua quy tắc.
 Docker chưa chạy thử trên máy kiểm chứng; số liệu từ Neo4j native và seed 30 người.
