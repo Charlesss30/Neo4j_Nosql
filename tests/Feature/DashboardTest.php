@@ -55,12 +55,11 @@ class DashboardTest extends TestCase
 
     public function test_future_routes_explain_their_status_and_never_pretend_to_write(): void
     {
-        foreach (['/persons', '/persons/create', '/persons/P001', '/persons/P001/edit', '/persons/P001/delete', '/relationships', '/tree', '/relation'] as $path) {
+        foreach (['/relationships', '/tree', '/relation'] as $path) {
             $this->get($path)->assertOk()->assertSee('Milestone 2');
         }
 
         $this->getJson('/api/tree')->assertStatus(501)->assertJsonStructure(['message']);
-        $this->post('/persons')->assertStatus(501);
         $this->delete('/relationships/spouse')->assertStatus(501);
     }
 
