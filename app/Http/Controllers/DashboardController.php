@@ -15,6 +15,7 @@ class DashboardController extends Controller
         $error = $neo4j->lastError();
         $statisticsAvailable = false;
         $gender = [];
+        $generations = [];
         $life = ['living' => 0, 'deceased' => 0];
         $topParents = [];
         $oldest = null;
@@ -22,6 +23,7 @@ class DashboardController extends Controller
         if ($connected) {
             try {
                 $gender = $family->statsByGender();
+                $generations = $family->statsByGeneration('P001');
                 $life = $family->livingVsDeceased()[0] ?? $life;
                 $topParents = $family->topParents();
                 $oldest = $family->oldestPerson()[0]['person'] ?? null;
@@ -32,7 +34,7 @@ class DashboardController extends Controller
         }
 
         return view('dashboard', compact(
-            'connected', 'error', 'statisticsAvailable', 'gender', 'life', 'topParents', 'oldest',
+            'connected', 'error', 'statisticsAvailable', 'gender', 'generations', 'life', 'topParents', 'oldest',
         ));
     }
 }
