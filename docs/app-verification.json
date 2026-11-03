@@ -1,0 +1,146 @@
+{
+  "verifiedAt": "2026-11-03T22:03:13.245219+07:00",
+  "codeCommit": "03b79235c49f3bf3fe60e7fce7e2f5b524a8a9d9",
+  "environment": {
+    "php": "8.3.30",
+    "laravel": "13.39.0",
+    "laudis": "3.7.1",
+    "neo4j": "5.26.31",
+    "runtime": "native Windows demo store",
+    "dockerTested": false
+  },
+  "phpunit": {
+    "tests": 95,
+    "passed": 95,
+    "assertions": 650,
+    "durationMs": 83726
+  },
+  "pint": "passed",
+  "composerValidate": "passed",
+  "composerPlatformRequirements": "passed",
+  "queryComparison": {
+    "queries": 34,
+    "mismatches": 0,
+    "scriptLocation": "temporary directory outside repository"
+  },
+  "seedCountsAfterTests": {
+    "persons": 30,
+    "parentOf": 36,
+    "spouseOf": 11
+  },
+  "allSeedPropertiesAndEdgesMatchCsv": true,
+  "temporaryPeopleRemaining": 0,
+  "samples": {
+    "siblingsP014": [
+      "P015",
+      "P016"
+    ],
+    "cousinsP010": [
+      "P012",
+      "P013",
+      "P014",
+      "P015",
+      "P016"
+    ],
+    "relationP010P012": {
+      "nodes": [
+        {
+          "name": "Nguyễn Minh Khang",
+          "id": "P010"
+        },
+        {
+          "name": "Nguyễn Văn Cường",
+          "id": "P003"
+        },
+        {
+          "name": "Trần Thị Bình",
+          "id": "P002"
+        },
+        {
+          "name": "Nguyễn Thị Đào",
+          "id": "P004"
+        },
+        {
+          "name": "Phạm Minh Nam",
+          "id": "P012"
+        }
+      ],
+      "relTypes": [
+        "PARENT_OF",
+        "PARENT_OF",
+        "PARENT_OF",
+        "PARENT_OF"
+      ],
+      "relFrom": [
+        "P003",
+        "P002",
+        "P002",
+        "P004"
+      ]
+    }
+  },
+  "liveBrowser": {
+    "charts": {
+      "generations": [
+        2,
+        7,
+        11,
+        7,
+        3
+      ],
+      "gender": {
+        "M": 14,
+        "F": 16
+      }
+    },
+    "treeNodes": 30,
+    "treeEdges": 47,
+    "relationNodes": 5,
+    "relationEdges": 4,
+    "realCsrfSelfParentRejected": true,
+    "screenshots": [
+      {
+        "path": "docs/screenshots/app-dashboard.png",
+        "width": 1320,
+        "height": 1267,
+        "sha256": "76ab994c8a85ed915c84c15de1f4fb13519449c08716304cb27a49017e4c5894",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-invalid-self-parent.png",
+        "width": 1576,
+        "height": 1074,
+        "sha256": "43eacd15060de9e86e16d74ee1b5e90f8f0eda35a2732843f6cbe6ea54653902",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-person-p014.png",
+        "width": 1320,
+        "height": 929,
+        "sha256": "d0e37c29a2e111c2b466c4d578cf1c89d34a499d42c432a5b65424e0a54fad70",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-relation-p010-p012.png",
+        "width": 1320,
+        "height": 1244,
+        "sha256": "8693aa1e6b7e38c036e4249164efb88cb0fd00b7ca1016bc35462a9c2d3a5141",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-relationships.png",
+        "width": 1576,
+        "height": 1074,
+        "sha256": "861525e6fec3f6cb0e5f4de4d13a564dc398fcdc8a0f8e6d04b1d794edb3b929",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      },
+      {
+        "path": "docs/screenshots/app-tree.png",
+        "width": 1320,
+        "height": 1139,
+        "sha256": "b59cd66792c9ffa3ed4c0c53f59418225fc13b7024fb3ae4005b468729457da5",
+        "source": "Actual local Edge test session, connected to native Neo4j"
+      }
+    ]
+  }
+}
