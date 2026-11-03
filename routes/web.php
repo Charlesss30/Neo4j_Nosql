@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PendingFeatureController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\RelationController;
 use App\Http\Controllers\RelationshipController;
+use App\Http\Controllers\TreeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', DashboardController::class)->name('dashboard');
@@ -23,9 +24,9 @@ Route::delete('/relationships/parent', [RelationshipController::class, 'destroyP
 Route::post('/relationships/spouse', [RelationshipController::class, 'storeSpouse'])->name('relationships.spouse.store');
 Route::delete('/relationships/spouse', [RelationshipController::class, 'destroySpouse'])->name('relationships.spouse.destroy');
 
-Route::get('/tree', PendingFeatureController::class)->name('tree.index');
-Route::get('/api/tree', PendingFeatureController::class)->name('tree.data');
-Route::get('/relation', PendingFeatureController::class)->name('relation.index');
+Route::get('/tree', [TreeController::class, 'index'])->name('tree.index');
+Route::get('/api/tree', [TreeController::class, 'data'])->name('tree.data');
+Route::get('/relation', RelationController::class)->name('relation.index');
 
 if (file_exists(__DIR__.'/admin_console.php')) {
     require __DIR__.'/admin_console.php';

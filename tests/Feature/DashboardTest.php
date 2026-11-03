@@ -53,15 +53,6 @@ class DashboardTest extends TestCase
             ->assertSee('Thống kê chưa sẵn sàng.');
     }
 
-    public function test_future_routes_explain_their_status_and_never_pretend_to_write(): void
-    {
-        foreach (['/tree', '/relation'] as $path) {
-            $this->get($path)->assertOk()->assertSee('Milestone 2');
-        }
-
-        $this->getJson('/api/tree')->assertStatus(501)->assertJsonStructure(['message']);
-    }
-
     public function test_connection_service_is_a_singleton_and_infrastructure_uses_no_sql_database(): void
     {
         $this->assertSame($this->app->make(Neo4jService::class), $this->app->make(Neo4jService::class));
