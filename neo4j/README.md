@@ -16,15 +16,13 @@ Milestone 1 contains no Laravel Console/Admin implementation.
 | `verify.md`, `verification-results.json` | Expected results and real execution evidence |
 | `verify.py` | Repeatable real-database integration checks, Python standard library |
 | `build_seed.py` | Regenerate seed and CSV from one fixture definition |
-| `local_runtime.py` | Optional isolated native Windows runtime using existing binaries |
+| `dev-tools/local_runtime.py` | Optional isolated native Windows runtime using existing binaries |
 
 ## Start with Docker
 
 Run from the repository root with Docker Desktop running:
 
 ```powershell
-# This is the public classroom demo credential, not a production secret.
-$env:NEO4J_PASSWORD = 'familytree123'
 docker compose up -d
 docker compose ps
 docker exec familytree-neo4j cypher-shell -u neo4j -p familytree123 -d neo4j -f /scripts/schema.cypher
@@ -36,9 +34,12 @@ Open <http://localhost:7474> and connect to `bolt://localhost:7687`, database `n
 The graph is fictional. Both host ports bind only to loopback. Data is persisted in
 the Compose volume `neo4j_data`; Cypher and CSV files are mounted read-only.
 
-Compose requires `NEO4J_PASSWORD` explicitly, so no private password is stored in
-the repository. The documented value is the shared, public demo fixture credential.
-On Bash, use `export NEO4J_PASSWORD=familytree123` in place of the PowerShell assignment.
+Compose defaults to the shared, public classroom credential `neo4j/familytree123`,
+so `docker compose up -d` works without setting an environment variable. To override
+the password for a new store, set `NEO4J_PASSWORD` before starting Compose, for example
+`$env:NEO4J_PASSWORD = '<YOUR_PASSWORD>'` in PowerShell or
+`export NEO4J_PASSWORD='<YOUR_PASSWORD>'` in Bash. Use the same password in Cypher Shell
+and application configuration. Existing stores retain their previously initialized password.
 
 The application environment contract is:
 
@@ -78,24 +79,26 @@ Reset deletes all nodes and relationships in the targeted database; constraints 
 indexes remain. To reset and seed instead, use `seed.cypher` for the last command.
 `docker compose down` stops containers while retaining the named data volume.
 
-## Native Windows — tested on this machine
+## Native Windows development helper
 
-Java **17 or 21** is required for Neo4j 5.26; the machine's default Java 26 should
-not be used. The helper selects Java explicitly and uses the supplied Neo4j binaries,
+Java **17 or 21** is required for Neo4j 5.26. The helper selects Java explicitly
+and uses your existing Neo4j binaries,
 with a separate data/log/config store under ignored `neo4j/.runtime/`. It does not
 modify the existing Neo4j installation's `conf`, `data`, `import`, or password.
 It refuses to start when ports 7474 or 7687 are already occupied.
 
-Run these commands from the repository root:
+Replace `<PYTHON>` with the path to `python.exe`, `<NEO4J_HOME>` with your Neo4j
+installation directory, and `<JAVA_HOME>` with your Java 17 or 21 installation directory
+(the directory containing `bin`). Run these commands from the repository root:
 
 ```powershell
-$python = 'D:\hoc-tap\LocalWP\laragon\bin\python\python-3.13\python.exe'
-$neo4jHome = 'D:\hoc-tap\NoSQL\neo4j-community-5.26.31-windows\neo4j-community-5.26.31'
-$javaHome = 'C:\Program Files\Java\jdk-17'
+$python = '<PYTHON>'
+$neo4jHome = '<NEO4J_HOME>'
+$javaHome = '<JAVA_HOME>'
 $env:NEO4J_PASSWORD = 'familytree123'
-& $python neo4j/local_runtime.py start --neo4j-home $neo4jHome --java-home $javaHome
-& $python neo4j/local_runtime.py shell --neo4j-home $neo4jHome --java-home $javaHome --file neo4j/schema.cypher
-& $python neo4j/local_runtime.py shell --neo4j-home $neo4jHome --java-home $javaHome --file neo4j/seed.cypher
+& $python neo4j/dev-tools/local_runtime.py start --neo4j-home $neo4jHome --java-home $javaHome
+& $python neo4j/dev-tools/local_runtime.py shell --neo4j-home $neo4jHome --java-home $javaHome --file neo4j/schema.cypher
+& $python neo4j/dev-tools/local_runtime.py shell --neo4j-home $neo4jHome --java-home $javaHome --file neo4j/seed.cypher
 & $python neo4j/verify.py
 ```
 
@@ -106,7 +109,7 @@ CSV loading, pass `--file neo4j/load_csv.cypher` to the same shell command.
 To stop only the process tree started by this helper:
 
 ```powershell
-& $python neo4j/local_runtime.py stop --neo4j-home $neo4jHome --java-home $javaHome
+& $python neo4j/dev-tools/local_runtime.py stop --neo4j-home $neo4jHome --java-home $javaHome
 ```
 
 The helper checks both the recorded PID and process creation time before stopping it.
@@ -120,7 +123,7 @@ $env:NEO4J_PASSWORD = 'familytree123'
 python neo4j/verify.py
 ```
 
-Use the full Python path above if Python is not in PATH. To initialize a fresh
+Use your `<PYTHON>` path if Python is not in PATH. To initialize a fresh
 dedicated database, use `python neo4j/verify.py --prepare-demo`. This option refuses
 unrelated node IDs, labels or relationship types. The runner contacts the real Neo4j
 transactional endpoint at `http://127.0.0.1:7474`; pass `--url` to change the server.
@@ -162,6 +165,28 @@ python neo4j/build_seed.py
   low-level catalog writes retain exactly the agreed interfaces. Coordinate validation
   and writes transactionally; do not interpolate user input into query strings.
 
+## Milestone 2 PROFILE demo requirement
+
+Compare the same **equality** lookup with and without the `person_name` index.
+Supply `$name` as a parameter, for example `Nguyễn Minh Khang`:
+
+```cypher
+PROFILE
+MATCH (p:Person)
+WHERE p.name = $name
+RETURN p {.*} AS person;
+```
+
+On a dedicated demo database, run the lookup after `DROP INDEX person_name IF EXISTS`,
+then recreate the index using the declaration in `schema.cypher`, wait for it to become
+`ONLINE` with `CALL db.awaitIndexes(30)`, and run the identical lookup again. Record
+operator names, actual rows and db hits from each profile. Restore the index in a
+`finally` block even if the comparison fails. Both runs must return the same person.
+This is the implementation requirement for the future Admin PROFILE viewer.
+
+Do not use `toLower(p.name) CONTAINS $name` for this index comparison. The catalog's
+case-insensitive search remains a separate use case.
+
 ## Troubleshooting
 
 | Symptom | Action |
@@ -178,4 +203,5 @@ python neo4j/build_seed.py
 
 Primary references: [Neo4j CSV import](https://neo4j.com/docs/getting-started/data-import/csv-import/),
 [CSV file paths](https://neo4j.com/docs/data-ingestion-guide/ingestion-methods/load-csv/),
-[Neo4j Java requirements](https://neo4j.com/docs/operations-manual/current/installation/requirements/).
+[Neo4j Java requirements](https://neo4j.com/docs/operations-manual/current/installation/requirements/),
+[PROFILE execution plans](https://neo4j.com/docs/cypher-manual/current/planning-and-tuning/execution-plans/).
