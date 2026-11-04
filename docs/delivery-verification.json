@@ -1,7 +1,7 @@
-﻿{
-    "sourceCommit":  "8a3ca1f52ccdb05d7a950528fc3e899c81692378",
+{
+    "sourceCommit":  "d448211877788f900508c671ce15d9f961fdf112",
     "sourceBranch":  "feature/app-workflow-evidence",
-    "project":  "familytree-verify-05ac8113f9",
+    "project":  "familytree-verify-e16a0b7def",
     "image":  "neo4j:5.26.31-community",
     "cleanClone":  {
                        "noEnv":  true,
@@ -9,9 +9,11 @@
                        "method":  "git clone --no-local of committed feature branch"
                    },
     "passed":  true,
-    "appUrl":  "http://127.0.0.1:52989",
-    "neo4jUrl":  "http://127.0.0.1:50167",
-    "testsOutput":  "\r\n  ..........................................................\r\n\r\n  Tests:    58 passed (820 assertions)\r\n  Duration: 6.96s\r\n\r\n",
+    "appUrl":  "http://127.0.0.1:55133",
+    "neo4jUrl":  "http://127.0.0.1:54215",
+    "composerValidation":  "./composer.json is valid",
+    "platformRequirements":  "composer-plugin-api  2.9.0      success                                       \ncomposer-runtime-api 2.2.2      success                                       \next-ctype            *          success provided by symfony/polyfill-ctype    \next-curl             8.3.36     success                                       \next-dom              20031129   success                                       \next-fileinfo         8.3.36     success                                       \next-filter           8.3.36     success                                       \next-hash             8.3.36     success                                       \next-iconv            8.3.36     success                                       \next-json             8.3.36     success                                       \next-libxml           8.3.36     success                                       \next-mbstring         *          success provided by symfony/polyfill-mbstring \next-openssl          8.3.36     success                                       \next-pcre             8.3.36     success                                       \next-phar             8.3.36     success                                       \next-session          8.3.36     success                                       \next-tokenizer        8.3.36     success                                       \next-xml              8.3.36     success                                       \next-xmlwriter        8.3.36     success                                       \nphp                  8.3.36     success",
+    "testsOutput":  "..........................................................\n\n  Tests:    58 passed (820 assertions)\n  Duration: 7.24s",
     "backupRestore":  {
                           "before":  {
                                          "persons":  31,
@@ -25,8 +27,8 @@
                                     },
                           "equal":  true,
                           "restartPreserved":  true,
-                          "dumpBytes":  27662,
-                          "dumpSha256":  "05265c8d4210d734dc3c6368ddc622ef2c4b539d6c4f180dd9ba03e0d2af7bf0",
+                          "dumpBytes":  27407,
+                          "dumpSha256":  "8db2e72fbbfef494ef2ef8831c3305405fc8d61a96af9c67d56ff998e3e9f484",
                           "witness":  "T_BACKUP and its PARENT_OF edge were added after seeding and recovered from the dump.",
                           "authNote":  "The graph dump does not include system users/roles; the fresh server initializes its own demo credentials."
                       },
@@ -82,13 +84,13 @@
                                                        ],
                                          "dbHits":  40006,
                                          "httpProfileMs":  [
-                                                               163.725,
-                                                               28.512,
-                                                               21.901,
-                                                               23.444,
-                                                               31.361
+                                                               185.408,
+                                                               32.474,
+                                                               45.696,
+                                                               27.721,
+                                                               32.81
                                                            ],
-                                         "medianHttpProfileMs":  28.512,
+                                         "medianHttpProfileMs":  32.81,
                                          "plan":  {
                                                       "operatorType":  "ProduceResults@neo4j",
                                                       "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+------------------+----+-----------------+----------------+-------+---------+----------------+------------------------+\n| Operator         | Id | Details         | Estimated Rows | Rows  | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+------------------+----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +ProduceResults  |  0 | person          |           1000 |     1 |       0 |              0 |                    0/0 |\n| |                +----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +Projection      |  1 | p{.*} AS person |           1000 |     1 |       5 |                |                    0/0 |\n| |                +----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +Filter          |  2 | p.name = $name  |           1000 |     1 |   20000 |                |                    0/0 |\n| |                +----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +NodeByLabelScan |  3 | p:Person        |          20000 | 20000 |   20001 |                |                    0/0 |\n+------------------+----+-----------------+----------------+-------+---------+----------------+------------------------+\n\nTotal database accesses: 40006, total allocated memory: 64\n",
@@ -200,13 +202,13 @@
                                                     ],
                                       "dbHits":  7,
                                       "httpProfileMs":  [
-                                                            21.022,
-                                                            14.568,
-                                                            14.21,
-                                                            14.744,
-                                                            14.888
+                                                            22.192,
+                                                            15.527,
+                                                            16.031,
+                                                            14.766,
+                                                            16.462
                                                         ],
-                                      "medianHttpProfileMs":  14.744,
+                                      "medianHttpProfileMs":  16.031,
                                       "plan":  {
                                                    "operatorType":  "ProduceResults@neo4j",
                                                    "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+-----------------+----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| Operator        | Id | Details                                       | Estimated Rows | Rows | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+-----------------+----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +ProduceResults |  0 | person                                        |              1 |    1 |       0 |              0 |                    0/0 |\n| |               +----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +Projection     |  1 | p{.*} AS person                               |              1 |    1 |       5 |                |                    0/0 |\n| |               +----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +NodeIndexSeek  |  2 | RANGE INDEX p:Person(name) WHERE name = $name |              1 |    1 |       2 |                |                    0/0 |\n+-----------------+----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n\nTotal database accesses: 7, total allocated memory: 64\n",
@@ -304,13 +306,13 @@
                                                             ],
                                               "dbHits":  40001,
                                               "httpProfileMs":  [
-                                                                    41.511,
-                                                                    27.006,
-                                                                    22.421,
-                                                                    24.221,
-                                                                    27.81
+                                                                    45.261,
+                                                                    29.085,
+                                                                    33.762,
+                                                                    23.961,
+                                                                    23.803
                                                                 ],
-                                              "medianHttpProfileMs":  27.006,
+                                              "medianHttpProfileMs":  29.085,
                                               "plan":  {
                                                            "operatorType":  "ProduceResults@neo4j",
                                                            "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+-------------------+----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| Operator          | Id | Details                                 | Estimated Rows | Rows  | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+-------------------+----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +ProduceResults   |  0 | total                                   |              1 |     1 |       0 |              0 |                    0/0 |\n| |                 +----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +EagerAggregation |  1 | count(p) AS total                       |              1 |     1 |       0 |             24 |                    0/0 |\n| |                 +----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +Filter           |  2 | toLower(p.name) CONTAINS toLower($name) |          15000 |     1 |   20000 |                |                    0/0 |\n| |                 +----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +NodeByLabelScan  |  3 | p:Person                                |          20000 | 20000 |   20001 |                |                    0/0 |\n+-------------------+----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n\nTotal database accesses: 40001, total allocated memory: 88\n",
@@ -428,13 +430,13 @@
                                                       ],
                                         "dbHits":  59998,
                                         "httpProfileMs":  [
-                                                              54.31,
-                                                              30.638,
-                                                              43.314,
-                                                              20.84,
-                                                              38.677
+                                                              52.886,
+                                                              22.29,
+                                                              19.048,
+                                                              21.269,
+                                                              19.973
                                                           ],
-                                        "medianHttpProfileMs":  38.677,
+                                        "medianHttpProfileMs":  21.269,
                                         "plan":  {
                                                      "operatorType":  "ProduceResults@neo4j",
                                                      "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+-----------------------------------+----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| Operator                          | Id | Details                                   | Estimated Rows | Rows | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+-----------------------------------+----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +ProduceResults                   |  0 | total                                     |              1 |    1 |       0 |              0 |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +EagerAggregation                 |  1 | count(p) AS total                         |              1 |    1 |       0 |             24 |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +Filter                           |  2 | p:Person                                  |             12 | 9999 |    9999 |                |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +VarLengthExpand(Pruning,BFS,All) |  3 | (anon_0)-[:PARENT_OF*..2147483647]-\u003e(p)   |             12 | 9999 |   49997 |         410312 |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +NodeUniqueIndexSeek              |  4 | UNIQUE anon_0:Person(id) WHERE id = $root |              1 |    1 |       2 |                |                    0/0 |\n+-----------------------------------+----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n\nTotal database accesses: 59998, total allocated memory: 410400\n",
@@ -541,8 +543,8 @@
                         "failed":  0
                     },
     "browser":  {
-                    "project":  "familytree-verify-05ac8113f9",
-                    "sourceCommit":  "8a3ca1f52ccdb05d7a950528fc3e899c81692378",
+                    "project":  "familytree-verify-e16a0b7def",
+                    "sourceCommit":  "d448211877788f900508c671ce15d9f961fdf112",
                     "passed":  true,
                     "profileCreateFlow":  true,
                     "png":  {
@@ -561,5 +563,10 @@
                     "pageErrors":  [
 
                                    ]
-                }
+                },
+    "exportedPdfPages":  1,
+    "javascriptTests":  {
+                            "passed":  3,
+                            "tests":  3
+                        }
 }
