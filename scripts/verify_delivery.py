@@ -207,7 +207,7 @@ def main():
         report["appUrl"] = "http://" + dc("port", "app", "8000").splitlines()[0]
         report["neo4jUrl"] = "http://" + address
         print("Running Laravel integration tests against Docker Neo4j...", flush=True)
-        tests = dc("exec", "-T", "app", "php", "artisan", "test", "--compact")
+        tests = dc("exec", "-T", "-e", "APP_ENV=testing", "-e", "SESSION_DRIVER=array", "-e", "CACHE_STORE=array", "app", "php", "artisan", "test", "--compact")
         (output / "tests.log").write_text(tests, encoding="utf-8")
         report["testsOutput"] = tests
         assert graph.snapshot() == initial, "Integration tests changed the seed"
