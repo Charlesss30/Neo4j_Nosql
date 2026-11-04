@@ -53,9 +53,13 @@ try {
 
     await page.goto(url + '/tree?all=1');
     await page.waitForFunction(() => Boolean(window.familyNetwork), {timeout: 30000});
+    await page.locator('#network').scrollIntoViewIfNeeded();
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     const point = await page.evaluate(() => window.familyNetwork.canvasToDOM(window.familyNetwork.getPositions(['P010']).P010));
+    assert.equal(await page.evaluate(point => window.familyNetwork.getNodeAt(point), point), 'P010');
     const frame = await page.locator('#network').boundingBox();
     await page.mouse.click(frame.x + point.x, frame.y + point.y);
+    await page.waitForFunction(() => document.getElementById('tree-relative').value === 'P010');
     assert.equal(await page.inputValue('#tree-relative'), 'P010');
     assert.ok(new URL(page.url()).pathname === '/tree');
     await page.screenshot({path: join(output, 'tree-actions.png'), fullPage: true});

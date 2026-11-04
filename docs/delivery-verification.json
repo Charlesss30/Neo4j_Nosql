@@ -1,0 +1,565 @@
+﻿{
+    "sourceCommit":  "8a3ca1f52ccdb05d7a950528fc3e899c81692378",
+    "sourceBranch":  "feature/app-workflow-evidence",
+    "project":  "familytree-verify-05ac8113f9",
+    "image":  "neo4j:5.26.31-community",
+    "cleanClone":  {
+                       "noEnv":  true,
+                       "noVendor":  true,
+                       "method":  "git clone --no-local of committed feature branch"
+                   },
+    "passed":  true,
+    "appUrl":  "http://127.0.0.1:52989",
+    "neo4jUrl":  "http://127.0.0.1:50167",
+    "testsOutput":  "\r\n  ..........................................................\r\n\r\n  Tests:    58 passed (820 assertions)\r\n  Duration: 6.96s\r\n\r\n",
+    "backupRestore":  {
+                          "before":  {
+                                         "persons":  31,
+                                         "relationships":  48,
+                                         "sha256":  "6158ada8e8333c2293ad8e240a35824389ff4a68ef1d7af63726e487a643564c"
+                                     },
+                          "after":  {
+                                        "persons":  31,
+                                        "relationships":  48,
+                                        "sha256":  "6158ada8e8333c2293ad8e240a35824389ff4a68ef1d7af63726e487a643564c"
+                                    },
+                          "equal":  true,
+                          "restartPreserved":  true,
+                          "dumpBytes":  27662,
+                          "dumpSha256":  "05265c8d4210d734dc3c6368ddc622ef2c4b539d6c4f180dd9ba03e0d2af7bf0",
+                          "witness":  "T_BACKUP and its PARENT_OF edge were added after seeding and recovered from the dump.",
+                          "authNote":  "The graph dump does not include system users/roles; the fresh server initializes its own demo credentials."
+                      },
+    "profile":  {
+                    "dataset":  {
+                                    "persons":  20000,
+                                    "relationships":  29998,
+                                    "sha256":  "308353a7c488657fb9c36f6bb1a2de48c28b6d439f10f8558f8bcd0d4466b6d3"
+                                },
+                    "seedUnchanged":  true,
+                    "warmups":  2,
+                    "repetitions":  5,
+                    "withoutIndex":  {
+                                         "statement":  "MATCH (p:Person) WHERE p.name = $name RETURN p {.*} AS person",
+                                         "parameters":  {
+                                                            "name":  "Benchmark B019999"
+                                                        },
+                                         "result":  [
+                                                        {
+                                                            "person":  {
+                                                                           "gender":  "M",
+                                                                           "birthYear":  1925,
+                                                                           "name":  "Benchmark B019999",
+                                                                           "id":  "B019999"
+                                                                       }
+                                                        }
+                                                    ],
+                                         "operators":  [
+                                                           {
+                                                               "operator":  "ProduceResults@neo4j",
+                                                               "rows":  1,
+                                                               "dbHits":  0,
+                                                               "estimatedRows":  1000.0
+                                                           },
+                                                           {
+                                                               "operator":  "Projection@neo4j",
+                                                               "rows":  1,
+                                                               "dbHits":  5,
+                                                               "estimatedRows":  1000.0
+                                                           },
+                                                           {
+                                                               "operator":  "Filter@neo4j",
+                                                               "rows":  1,
+                                                               "dbHits":  20000,
+                                                               "estimatedRows":  1000.0
+                                                           },
+                                                           {
+                                                               "operator":  "NodeByLabelScan@neo4j",
+                                                               "rows":  20000,
+                                                               "dbHits":  20001,
+                                                               "estimatedRows":  20000.0
+                                                           }
+                                                       ],
+                                         "dbHits":  40006,
+                                         "httpProfileMs":  [
+                                                               163.725,
+                                                               28.512,
+                                                               21.901,
+                                                               23.444,
+                                                               31.361
+                                                           ],
+                                         "medianHttpProfileMs":  28.512,
+                                         "plan":  {
+                                                      "operatorType":  "ProduceResults@neo4j",
+                                                      "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+------------------+----+-----------------+----------------+-------+---------+----------------+------------------------+\n| Operator         | Id | Details         | Estimated Rows | Rows  | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+------------------+----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +ProduceResults  |  0 | person          |           1000 |     1 |       0 |              0 |                    0/0 |\n| |                +----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +Projection      |  1 | p{.*} AS person |           1000 |     1 |       5 |                |                    0/0 |\n| |                +----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +Filter          |  2 | p.name = $name  |           1000 |     1 |   20000 |                |                    0/0 |\n| |                +----+-----------------+----------------+-------+---------+----------------+------------------------+\n| +NodeByLabelScan |  3 | p:Person        |          20000 | 20000 |   20001 |                |                    0/0 |\n+------------------+----+-----------------+----------------+-------+---------+----------------+------------------------+\n\nTotal database accesses: 40006, total allocated memory: 64\n",
+                                                      "Id":  0,
+                                                      "runtime-impl":  "SLOTTED",
+                                                      "planner-impl":  "IDP",
+                                                      "DbHits":  0,
+                                                      "runtime-version":  "5.26.31",
+                                                      "planner-version":  "5.26.31",
+                                                      "EstimatedRows":  1000.0,
+                                                      "planner":  "COST",
+                                                      "GlobalMemory":  64,
+                                                      "runtime":  "SLOTTED",
+                                                      "Memory":  0,
+                                                      "PageCacheMisses":  0,
+                                                      "Rows":  1,
+                                                      "PageCacheHits":  0,
+                                                      "Details":  "person",
+                                                      "version":  "5",
+                                                      "identifiers":  [
+                                                                          "p",
+                                                                          "person"
+                                                                      ],
+                                                      "children":  [
+                                                                       {
+                                                                           "operatorType":  "Projection@neo4j",
+                                                                           "Id":  1,
+                                                                           "PageCacheMisses":  0,
+                                                                           "DbHits":  5,
+                                                                           "Details":  "p{.*} AS person",
+                                                                           "EstimatedRows":  1000.0,
+                                                                           "Rows":  1,
+                                                                           "PageCacheHits":  0,
+                                                                           "identifiers":  [
+                                                                                               "p",
+                                                                                               "person"
+                                                                                           ],
+                                                                           "children":  [
+                                                                                            {
+                                                                                                "operatorType":  "Filter@neo4j",
+                                                                                                "Id":  2,
+                                                                                                "PageCacheMisses":  0,
+                                                                                                "DbHits":  20000,
+                                                                                                "Details":  "p.name = $name",
+                                                                                                "EstimatedRows":  1000.0,
+                                                                                                "Rows":  1,
+                                                                                                "PageCacheHits":  0,
+                                                                                                "identifiers":  [
+                                                                                                                    "p"
+                                                                                                                ],
+                                                                                                "children":  [
+                                                                                                                 {
+                                                                                                                     "operatorType":  "NodeByLabelScan@neo4j",
+                                                                                                                     "Id":  3,
+                                                                                                                     "PageCacheMisses":  0,
+                                                                                                                     "DbHits":  20001,
+                                                                                                                     "Details":  "p:Person",
+                                                                                                                     "EstimatedRows":  20000.0,
+                                                                                                                     "Rows":  20000,
+                                                                                                                     "PageCacheHits":  0,
+                                                                                                                     "identifiers":  [
+                                                                                                                                         "p"
+                                                                                                                                     ],
+                                                                                                                     "children":  [
+
+                                                                                                                                  ]
+                                                                                                                 }
+                                                                                                             ]
+                                                                                            }
+                                                                                        ]
+                                                                       }
+                                                                   ]
+                                                  }
+                                     },
+                    "withIndex":  {
+                                      "statement":  "MATCH (p:Person) WHERE p.name = $name RETURN p {.*} AS person",
+                                      "parameters":  {
+                                                         "name":  "Benchmark B019999"
+                                                     },
+                                      "result":  [
+                                                     {
+                                                         "person":  {
+                                                                        "gender":  "M",
+                                                                        "birthYear":  1925,
+                                                                        "name":  "Benchmark B019999",
+                                                                        "id":  "B019999"
+                                                                    }
+                                                     }
+                                                 ],
+                                      "operators":  [
+                                                        {
+                                                            "operator":  "ProduceResults@neo4j",
+                                                            "rows":  1,
+                                                            "dbHits":  0,
+                                                            "estimatedRows":  1.0
+                                                        },
+                                                        {
+                                                            "operator":  "Projection@neo4j",
+                                                            "rows":  1,
+                                                            "dbHits":  5,
+                                                            "estimatedRows":  1.0
+                                                        },
+                                                        {
+                                                            "operator":  "NodeIndexSeek@neo4j",
+                                                            "rows":  1,
+                                                            "dbHits":  2,
+                                                            "estimatedRows":  1.0
+                                                        }
+                                                    ],
+                                      "dbHits":  7,
+                                      "httpProfileMs":  [
+                                                            21.022,
+                                                            14.568,
+                                                            14.21,
+                                                            14.744,
+                                                            14.888
+                                                        ],
+                                      "medianHttpProfileMs":  14.744,
+                                      "plan":  {
+                                                   "operatorType":  "ProduceResults@neo4j",
+                                                   "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+-----------------+----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| Operator        | Id | Details                                       | Estimated Rows | Rows | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+-----------------+----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +ProduceResults |  0 | person                                        |              1 |    1 |       0 |              0 |                    0/0 |\n| |               +----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +Projection     |  1 | p{.*} AS person                               |              1 |    1 |       5 |                |                    0/0 |\n| |               +----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +NodeIndexSeek  |  2 | RANGE INDEX p:Person(name) WHERE name = $name |              1 |    1 |       2 |                |                    0/0 |\n+-----------------+----+-----------------------------------------------+----------------+------+---------+----------------+------------------------+\n\nTotal database accesses: 7, total allocated memory: 64\n",
+                                                   "Id":  0,
+                                                   "runtime-impl":  "SLOTTED",
+                                                   "planner-impl":  "IDP",
+                                                   "DbHits":  0,
+                                                   "runtime-version":  "5.26.31",
+                                                   "planner-version":  "5.26.31",
+                                                   "EstimatedRows":  1.0,
+                                                   "planner":  "COST",
+                                                   "GlobalMemory":  64,
+                                                   "runtime":  "SLOTTED",
+                                                   "Memory":  0,
+                                                   "PageCacheMisses":  0,
+                                                   "Rows":  1,
+                                                   "PageCacheHits":  0,
+                                                   "Details":  "person",
+                                                   "version":  "5",
+                                                   "identifiers":  [
+                                                                       "p",
+                                                                       "person"
+                                                                   ],
+                                                   "children":  [
+                                                                    {
+                                                                        "operatorType":  "Projection@neo4j",
+                                                                        "Id":  1,
+                                                                        "PageCacheMisses":  0,
+                                                                        "DbHits":  5,
+                                                                        "Details":  "p{.*} AS person",
+                                                                        "EstimatedRows":  1.0,
+                                                                        "Rows":  1,
+                                                                        "PageCacheHits":  0,
+                                                                        "identifiers":  [
+                                                                                            "p",
+                                                                                            "person"
+                                                                                        ],
+                                                                        "children":  [
+                                                                                         {
+                                                                                             "operatorType":  "NodeIndexSeek@neo4j",
+                                                                                             "Id":  2,
+                                                                                             "PageCacheMisses":  0,
+                                                                                             "DbHits":  2,
+                                                                                             "Details":  "RANGE INDEX p:Person(name) WHERE name = $name",
+                                                                                             "EstimatedRows":  1.0,
+                                                                                             "Rows":  1,
+                                                                                             "PageCacheHits":  0,
+                                                                                             "identifiers":  [
+                                                                                                                 "p"
+                                                                                                             ],
+                                                                                             "children":  [
+
+                                                                                                          ]
+                                                                                         }
+                                                                                     ]
+                                                                    }
+                                                                ]
+                                               }
+                                  },
+                    "containsWithIndex":  {
+                                              "statement":  "MATCH (p:Person) WHERE toLower(p.name) CONTAINS toLower($name) RETURN count(p) AS total",
+                                              "parameters":  {
+                                                                 "name":  "Benchmark B019999"
+                                                             },
+                                              "result":  [
+                                                             {
+                                                                 "total":  1
+                                                             }
+                                                         ],
+                                              "operators":  [
+                                                                {
+                                                                    "operator":  "ProduceResults@neo4j",
+                                                                    "rows":  1,
+                                                                    "dbHits":  0,
+                                                                    "estimatedRows":  1.0
+                                                                },
+                                                                {
+                                                                    "operator":  "EagerAggregation@neo4j",
+                                                                    "rows":  1,
+                                                                    "dbHits":  0,
+                                                                    "estimatedRows":  1.0
+                                                                },
+                                                                {
+                                                                    "operator":  "Filter@neo4j",
+                                                                    "rows":  1,
+                                                                    "dbHits":  20000,
+                                                                    "estimatedRows":  15000.0
+                                                                },
+                                                                {
+                                                                    "operator":  "NodeByLabelScan@neo4j",
+                                                                    "rows":  20000,
+                                                                    "dbHits":  20001,
+                                                                    "estimatedRows":  20000.0
+                                                                }
+                                                            ],
+                                              "dbHits":  40001,
+                                              "httpProfileMs":  [
+                                                                    41.511,
+                                                                    27.006,
+                                                                    22.421,
+                                                                    24.221,
+                                                                    27.81
+                                                                ],
+                                              "medianHttpProfileMs":  27.006,
+                                              "plan":  {
+                                                           "operatorType":  "ProduceResults@neo4j",
+                                                           "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+-------------------+----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| Operator          | Id | Details                                 | Estimated Rows | Rows  | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+-------------------+----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +ProduceResults   |  0 | total                                   |              1 |     1 |       0 |              0 |                    0/0 |\n| |                 +----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +EagerAggregation |  1 | count(p) AS total                       |              1 |     1 |       0 |             24 |                    0/0 |\n| |                 +----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +Filter           |  2 | toLower(p.name) CONTAINS toLower($name) |          15000 |     1 |   20000 |                |                    0/0 |\n| |                 +----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n| +NodeByLabelScan  |  3 | p:Person                                |          20000 | 20000 |   20001 |                |                    0/0 |\n+-------------------+----+-----------------------------------------+----------------+-------+---------+----------------+------------------------+\n\nTotal database accesses: 40001, total allocated memory: 88\n",
+                                                           "Id":  0,
+                                                           "runtime-impl":  "SLOTTED",
+                                                           "planner-impl":  "IDP",
+                                                           "DbHits":  0,
+                                                           "runtime-version":  "5.26.31",
+                                                           "planner-version":  "5.26.31",
+                                                           "EstimatedRows":  1.0,
+                                                           "planner":  "COST",
+                                                           "GlobalMemory":  88,
+                                                           "runtime":  "SLOTTED",
+                                                           "Memory":  0,
+                                                           "PageCacheMisses":  0,
+                                                           "Rows":  1,
+                                                           "PageCacheHits":  0,
+                                                           "Details":  "total",
+                                                           "version":  "5",
+                                                           "identifiers":  [
+                                                                               "total"
+                                                                           ],
+                                                           "children":  [
+                                                                            {
+                                                                                "operatorType":  "EagerAggregation@neo4j",
+                                                                                "Id":  1,
+                                                                                "DbHits":  0,
+                                                                                "Details":  "count(p) AS total",
+                                                                                "EstimatedRows":  1.0,
+                                                                                "Memory":  24,
+                                                                                "PageCacheMisses":  0,
+                                                                                "Rows":  1,
+                                                                                "PageCacheHits":  0,
+                                                                                "identifiers":  [
+                                                                                                    "total"
+                                                                                                ],
+                                                                                "children":  [
+                                                                                                 {
+                                                                                                     "operatorType":  "Filter@neo4j",
+                                                                                                     "Id":  2,
+                                                                                                     "PageCacheMisses":  0,
+                                                                                                     "DbHits":  20000,
+                                                                                                     "Details":  "toLower(p.name) CONTAINS toLower($name)",
+                                                                                                     "EstimatedRows":  15000.0,
+                                                                                                     "Rows":  1,
+                                                                                                     "PageCacheHits":  0,
+                                                                                                     "identifiers":  [
+                                                                                                                         "p"
+                                                                                                                     ],
+                                                                                                     "children":  [
+                                                                                                                      {
+                                                                                                                          "operatorType":  "NodeByLabelScan@neo4j",
+                                                                                                                          "Id":  3,
+                                                                                                                          "PageCacheMisses":  0,
+                                                                                                                          "DbHits":  20001,
+                                                                                                                          "Details":  "p:Person",
+                                                                                                                          "EstimatedRows":  20000.0,
+                                                                                                                          "Rows":  20000,
+                                                                                                                          "PageCacheHits":  0,
+                                                                                                                          "identifiers":  [
+                                                                                                                                              "p"
+                                                                                                                                          ],
+                                                                                                                          "children":  [
+
+                                                                                                                                       ]
+                                                                                                                      }
+                                                                                                                  ]
+                                                                                                 }
+                                                                                             ]
+                                                                            }
+                                                                        ]
+                                                       }
+                                          },
+                    "descendants":  {
+                                        "statement":  "MATCH (:Person {id:$root})-[:PARENT_OF*1..]-\u003e(p:Person) RETURN count(DISTINCT p) AS total",
+                                        "parameters":  {
+                                                           "root":  "B000001"
+                                                       },
+                                        "result":  [
+                                                       {
+                                                           "total":  9999
+                                                       }
+                                                   ],
+                                        "operators":  [
+                                                          {
+                                                              "operator":  "ProduceResults@neo4j",
+                                                              "rows":  1,
+                                                              "dbHits":  0,
+                                                              "estimatedRows":  1.0
+                                                          },
+                                                          {
+                                                              "operator":  "EagerAggregation@neo4j",
+                                                              "rows":  1,
+                                                              "dbHits":  0,
+                                                              "estimatedRows":  1.0
+                                                          },
+                                                          {
+                                                              "operator":  "Filter@neo4j",
+                                                              "rows":  9999,
+                                                              "dbHits":  9999,
+                                                              "estimatedRows":  12.49025410554967
+                                                          },
+                                                          {
+                                                              "operator":  "VarLengthExpand(Pruning,BFS,All)@neo4j",
+                                                              "rows":  9999,
+                                                              "dbHits":  49997,
+                                                              "estimatedRows":  12.49025410554967
+                                                          },
+                                                          {
+                                                              "operator":  "NodeUniqueIndexSeek@neo4j",
+                                                              "rows":  1,
+                                                              "dbHits":  2,
+                                                              "estimatedRows":  1.0
+                                                          }
+                                                      ],
+                                        "dbHits":  59998,
+                                        "httpProfileMs":  [
+                                                              54.31,
+                                                              30.638,
+                                                              43.314,
+                                                              20.84,
+                                                              38.677
+                                                          ],
+                                        "medianHttpProfileMs":  38.677,
+                                        "plan":  {
+                                                     "operatorType":  "ProduceResults@neo4j",
+                                                     "string-representation":  "Cypher 5\n\nPlanner COST\n\nRuntime SLOTTED\n\nRuntime version 5.26.31\n\n+-----------------------------------+----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| Operator                          | Id | Details                                   | Estimated Rows | Rows | DB Hits | Memory (Bytes) | Page Cache Hits/Misses |\n+-----------------------------------+----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +ProduceResults                   |  0 | total                                     |              1 |    1 |       0 |              0 |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +EagerAggregation                 |  1 | count(p) AS total                         |              1 |    1 |       0 |             24 |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +Filter                           |  2 | p:Person                                  |             12 | 9999 |    9999 |                |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +VarLengthExpand(Pruning,BFS,All) |  3 | (anon_0)-[:PARENT_OF*..2147483647]-\u003e(p)   |             12 | 9999 |   49997 |         410312 |                    0/0 |\n| |                                 +----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n| +NodeUniqueIndexSeek              |  4 | UNIQUE anon_0:Person(id) WHERE id = $root |              1 |    1 |       2 |                |                    0/0 |\n+-----------------------------------+----+-------------------------------------------+----------------+------+---------+----------------+------------------------+\n\nTotal database accesses: 59998, total allocated memory: 410400\n",
+                                                     "Id":  0,
+                                                     "runtime-impl":  "SLOTTED",
+                                                     "planner-impl":  "IDP",
+                                                     "DbHits":  0,
+                                                     "runtime-version":  "5.26.31",
+                                                     "planner-version":  "5.26.31",
+                                                     "EstimatedRows":  1.0,
+                                                     "planner":  "COST",
+                                                     "GlobalMemory":  410400,
+                                                     "runtime":  "SLOTTED",
+                                                     "Memory":  0,
+                                                     "PageCacheMisses":  0,
+                                                     "Rows":  1,
+                                                     "PageCacheHits":  0,
+                                                     "Details":  "total",
+                                                     "version":  "5",
+                                                     "identifiers":  [
+                                                                         "total"
+                                                                     ],
+                                                     "children":  [
+                                                                      {
+                                                                          "operatorType":  "EagerAggregation@neo4j",
+                                                                          "Id":  1,
+                                                                          "DbHits":  0,
+                                                                          "Details":  "count(p) AS total",
+                                                                          "EstimatedRows":  1.0,
+                                                                          "Memory":  24,
+                                                                          "PageCacheMisses":  0,
+                                                                          "Rows":  1,
+                                                                          "PageCacheHits":  0,
+                                                                          "identifiers":  [
+                                                                                              "total"
+                                                                                          ],
+                                                                          "children":  [
+                                                                                           {
+                                                                                               "operatorType":  "Filter@neo4j",
+                                                                                               "Id":  2,
+                                                                                               "PageCacheMisses":  0,
+                                                                                               "DbHits":  9999,
+                                                                                               "Details":  "p:Person",
+                                                                                               "EstimatedRows":  12.49025410554967,
+                                                                                               "Rows":  9999,
+                                                                                               "PageCacheHits":  0,
+                                                                                               "identifiers":  [
+                                                                                                                   "anon_0",
+                                                                                                                   "p"
+                                                                                                               ],
+                                                                                               "children":  [
+                                                                                                                {
+                                                                                                                    "operatorType":  "VarLengthExpand(Pruning,BFS,All)@neo4j",
+                                                                                                                    "Id":  3,
+                                                                                                                    "DbHits":  49997,
+                                                                                                                    "Details":  "(anon_0)-[:PARENT_OF*..2147483647]-\u003e(p) ",
+                                                                                                                    "EstimatedRows":  12.49025410554967,
+                                                                                                                    "Memory":  410312,
+                                                                                                                    "PageCacheMisses":  0,
+                                                                                                                    "Rows":  9999,
+                                                                                                                    "PageCacheHits":  0,
+                                                                                                                    "identifiers":  [
+                                                                                                                                        "anon_0",
+                                                                                                                                        "p"
+                                                                                                                                    ],
+                                                                                                                    "children":  [
+                                                                                                                                     {
+                                                                                                                                         "operatorType":  "NodeUniqueIndexSeek@neo4j",
+                                                                                                                                         "Id":  4,
+                                                                                                                                         "PageCacheMisses":  0,
+                                                                                                                                         "DbHits":  2,
+                                                                                                                                         "Details":  "UNIQUE anon_0:Person(id) WHERE id = $root",
+                                                                                                                                         "EstimatedRows":  1.0,
+                                                                                                                                         "Rows":  1,
+                                                                                                                                         "PageCacheHits":  0,
+                                                                                                                                         "identifiers":  [
+                                                                                                                                                             "anon_0"
+                                                                                                                                                         ],
+                                                                                                                                         "children":  [
+
+                                                                                                                                                      ]
+                                                                                                                                     }
+                                                                                                                                 ]
+                                                                                                                }
+                                                                                                            ]
+                                                                                           }
+                                                                                       ]
+                                                                      }
+                                                                  ]
+                                                 }
+                                    },
+                    "dbHitRatio":  5715.14,
+                    "timingNote":  "Client HTTP wall time includes PROFILE and serialization overhead; not a production latency benchmark."
+                },
+    "seedAfterAllChecks":  {
+                               "persons":  30,
+                               "relationships":  47,
+                               "sha256":  "73142ef6d15ba301e827027f8c782515ddda11b03387679cf474675dc46671fe"
+                           },
+    "strictTests":  {
+                        "assertions":  820,
+                        "warnings":  0,
+                        "tests":  58,
+                        "failed":  0
+                    },
+    "browser":  {
+                    "project":  "familytree-verify-05ac8113f9",
+                    "sourceCommit":  "8a3ca1f52ccdb05d7a950528fc3e899c81692378",
+                    "passed":  true,
+                    "profileCreateFlow":  true,
+                    "png":  {
+                                "width":  5960,
+                                "height":  2220,
+                                "bytes":  521331
+                            },
+                    "fullTreeExports":  [
+                                            "SVG",
+                                            "PNG",
+                                            "PDF"
+                                        ],
+                    "treeCreateFlow":  true,
+                    "mobileNoHorizontalOverflow":  true,
+                    "seedPreserved":  true,
+                    "pageErrors":  [
+
+                                   ]
+                }
+}
