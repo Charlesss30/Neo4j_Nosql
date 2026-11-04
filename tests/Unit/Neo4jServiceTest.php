@@ -5,21 +5,55 @@ namespace Tests\Unit;
 use App\Exceptions\Neo4jQueryException;
 use App\Services\Neo4jService;
 use Laudis\Neo4j\Contracts\ClientInterface;
-use Laudis\Neo4j\Contracts\TransactionInterface;
+use Laudis\Neo4j\Contracts\UnmanagedTransactionInterface;
 use Laudis\Neo4j\Databags\SummarizedResult;
 use Laudis\Neo4j\Types\CypherList;
 use Laudis\Neo4j\Types\CypherMap;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Neo4jServiceTest extends TestCase
 {
+    public function test_callback_failure_rolls_back_immediately_and_restores_the_runner(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+        $transaction = $this->createMock(UnmanagedTransactionInterface::class);
+        $client->expects($this->once())->method('beginTransaction')->willReturn($transaction);
+        $transaction->method('isFinished')->willReturn(false);
+        $transaction->expects($this->once())->method('rollback');
+        $transaction->expects($this->never())->method('commit');
+        $summary = null;
+        $client->expects($this->once())->method('run')->with('after rollback', [])->willReturn(new SummarizedResult($summary));
+        $service = new Neo4jService($client);
+        $failure = new NotFoundHttpException('missing');
+        try {
+            $service->transaction(fn () => throw $failure);
+            $this->fail('The original exception must be preserved.');
+        } catch (NotFoundHttpException $exception) {
+            $this->assertSame($failure, $exception);
+        }
+        $this->assertSame([], $service->run('after rollback'));
+    }
+
+    public function test_nested_transactions_share_one_commit_boundary(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+        $transaction = $this->createMock(UnmanagedTransactionInterface::class);
+        $client->expects($this->once())->method('beginTransaction')->willReturn($transaction);
+        $transaction->expects($this->once())->method('commit')->willReturn(new CypherList);
+        $transaction->expects($this->never())->method('rollback');
+        $service = new Neo4jService($client);
+        $this->assertSame(42, $service->transaction(fn () => $service->transaction(fn () => 42)));
+    }
+
     public function test_transaction_queries_share_the_driver_transaction_and_restore_normal_runs(): void
     {
         $client = $this->createMock(ClientInterface::class);
-        $transaction = $this->createMock(TransactionInterface::class);
+        $transaction = $this->createMock(UnmanagedTransactionInterface::class);
         $summary = null;
-        $client->expects($this->once())->method('writeTransaction')->willReturnCallback(fn (callable $callback): mixed => $callback($transaction));
+        $client->expects($this->once())->method('beginTransaction')->willReturn($transaction);
+        $transaction->expects($this->once())->method('commit')->willReturn(new CypherList);
         $transaction->expects($this->exactly(2))->method('run')->willReturn(new SummarizedResult($summary, [new CypherMap(['value' => 1])]));
         $client->expects($this->once())->method('run')->with('outside')->willReturn(new SummarizedResult($summary));
         $service = new Neo4jService($client);

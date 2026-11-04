@@ -1,6 +1,7 @@
 services:
   neo4j:
-    image: neo4j:5-community
+    image: neo4j:5.26.31-community
+    user: neo4j
     container_name: familytree-neo4j
     ports:
       - "127.0.0.1:7474:7474"

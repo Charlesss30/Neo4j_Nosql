@@ -64,15 +64,22 @@ class Neo4jService
         }
 
         try {
-            return $this->neo4j->writeTransaction(function (TransactionInterface $transaction) use ($callback): mixed {
-                $this->activeTransaction = $transaction;
+            $transaction = $this->neo4j->beginTransaction();
+            $this->activeTransaction = $transaction;
+            try {
+                $result = $callback();
+                $transaction->commit();
 
-                try {
-                    return $callback();
-                } finally {
-                    $this->activeTransaction = null;
+                return $result;
+            } catch (Throwable $exception) {
+                if (! $transaction->isFinished()) {
+                    $transaction->rollback();
                 }
-            });
+
+                throw $exception;
+            } finally {
+                $this->activeTransaction = null;
+            }
         } catch (ValidationException|HttpExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $exception) {

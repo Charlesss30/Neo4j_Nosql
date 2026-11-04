@@ -1,0 +1,32 @@
+services:
+  neo4j:
+    image: neo4j:5.26.31-community
+    container_name: ${VERIFY_PROJECT}-neo4j
+    ports: !override
+      - "127.0.0.1::7474"
+      - "127.0.0.1::7687"
+    labels:
+      familytree.verification: ${VERIFY_PROJECT}
+  app:
+    image: familytree-verification-app:local
+    build:
+      context: .
+      dockerfile: scripts/verification.Dockerfile
+    ports:
+      - "127.0.0.1::8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "false"
+      APP_KEY: "base64:MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA="
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: familytree123
+      NEO4J_DATABASE: neo4j
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    labels:
+      familytree.verification: ${VERIFY_PROJECT}

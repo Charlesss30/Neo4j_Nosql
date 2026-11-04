@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreatePersonRequest;
 use App\Http\Requests\PersonRequest;
 use App\Services\FamilyRepository;
 use App\Services\FamilyService;
@@ -30,16 +31,36 @@ class PersonController extends Controller
         return view('persons.index', compact('people', 'query'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('persons.form', ['person' => null]);
+        $context = $request->validate([
+            'relative_id' => ['nullable', 'string', 'max:64'],
+            'relation_type' => ['nullable', 'required_with:relative_id', 'in:child,parent,spouse'],
+            'return_to' => ['nullable', 'in:person,tree'],
+            'tree_root' => ['nullable', 'string', 'max:64'],
+            'tree_all' => ['nullable', 'boolean'],
+        ]);
+        $relative = ! empty($context['relative_id']) ? $this->service->person($context['relative_id']) : null;
+
+        return view('persons.form', ['person' => null, 'context' => $context, 'relative' => $relative, 'people' => $this->service->choices()]);
     }
 
-    public function store(PersonRequest $request): RedirectResponse
+    public function store(CreatePersonRequest $request): RedirectResponse
     {
-        $person = $this->service->createPerson($request->personData());
+        $relationship = $request->relationshipData();
+        $person = $this->service->createPerson($request->personData(), $relationship);
 
-        return redirect()->route('persons.show', $person['id'])->with('success', 'Đã thêm thành viên.');
+        if ($request->validated('return_to') === 'tree') {
+            return redirect()->route('tree.index', array_filter([
+                'root' => $relationship === null || ($relationship['relation_type'] ?? '') === 'parent'
+                    ? $person['id']
+                    : ($request->validated('tree_root') ?: ($relationship['relative_id'] ?? $person['id'])),
+                'all' => $request->boolean('tree_all') ? 1 : null,
+                'selected' => $person['id'],
+            ]))->with('success', 'Đã thêm thành viên và lưu các quan hệ.');
+        }
+
+        return redirect()->route('persons.show', $person['id'])->with('success', $relationship ? 'Đã thêm thành viên và lưu các quan hệ.' : 'Đã thêm thành viên.');
     }
 
     public function show(string $id): View
