@@ -10,6 +10,10 @@ CRUD thành viên; tìm tên và phân trang 10 người; hồ sơ với các nh
 quản lý cha mẹ–con/vợ chồng có validation và transaction; cây gia phả vis-network;
 đường đi quan hệ có diễn giải; Dashboard có biểu đồ và trang Admin.
 
+Từ hồ sơ hoặc cây có thể thêm con, cha/mẹ, vợ/chồng và lưu ngay quan hệ trong cùng
+một transaction. Thêm con có thể chọn thêm cha/mẹ thứ hai. Phả đồ xuất được PNG,
+SVG và in/lưu PDF toàn cây, kể cả phần nằm ngoài khung nhìn.
+
 ## Yêu cầu
 
 - PHP **8.3+**, Composer 2 và extensions theo `composer check-platform-reqs`.
@@ -78,7 +82,9 @@ Gốc minh họa: <http://127.0.0.1:8000>.
 | `/relation?a=P010&b=P012` | Đường đi ngắn nhất và diễn giải |
 | `/admin` | Schema, PROFILE, reset demo local |
 
-Bấm tên/node để mở hồ sơ. Tìm kiếm không phân biệt hoa/thường nhưng **không bỏ dấu tiếng Việt**: hãy gõ có dấu.
+Bấm tên để mở hồ sơ. Trên cây, bấm node để chọn người trong biểu mẫu thêm người thân;
+bấm đúp node để mở hồ sơ. Đồ thị đường quan hệ vẫn mở hồ sơ khi bấm node.
+Tìm kiếm không phân biệt hoa/thường nhưng **không bỏ dấu tiếng Việt**: hãy gõ có dấu.
 Nam xanh, nữ hồng, người đã mất có † và màu xám. Vợ/chồng nét đứt cùng tầng;
 cha mẹ → con nối bằng nhánh gấp khúc. Anh chị em xếp theo năm sinh, tách đúng các nhóm con khi có nhiều cuộc hôn nhân. Dùng “Vừa khung”, “Cỡ chữ rõ” hoặc ＋/− để xem; trên điện thoại có thể kéo/chụm hai ngón tay. Có thể tồn tại nhiều đường đi ngắn nhất cùng độ dài.
 
@@ -137,6 +143,28 @@ Kết quả seed chuẩn **30 / 36 / 11**. Kết quả chạy thực tế và �
 - PHP/Composer chưa trong PATH: thêm `<PHP_HOME>`, `<COMPOSER_HOME>`, kiểm tra `php -v`, `composer -V`.
 - Thiếu extension: xem `php --ini`, chạy `composer check-platform-reqs`.
 - Cổng 8000 bận: `php artisan serve --port=8001`.
-- **Docker chưa được kiểm thử trên máy kiểm chứng bản app này**; tests thực tế dùng Neo4j native 5.26.31.
+- Docker đã được kiểm chứng bằng clone sạch, Composer trong container, restart và dump/load thật vào volume mới; xem [kiểm chứng bốn hạng mục](docs/delivery-verification.md).
 
 Phát triển trên nhánh riêng, mở PR vào main để người còn lại review; không push trực tiếp main.
+
+## Kiểm chứng clone sạch, backup/restore và PROFILE lớn
+
+Cần Docker Desktop/Compose và Python 3.10+. Commit nhánh đang thử trước khi chạy;
+script clone nhánh cục bộ bằng Git, xác nhận không có `.env`/`vendor`, rồi cài Composer
+trong image PHP riêng. Không sử dụng `.env` hoặc volume dữ liệu của ứng dụng đang dùng.
+
+```powershell
+python scripts/verify_delivery.py --output workbench/run-01 --people 20000
+# Nếu máy có nhiều Docker context, thêm --docker-context desktop-linux.
+# Thêm --keep để giữ app/container riêng cho bước kiểm tra trình duyệt.
+```
+
+Đầu ra gồm `verification.json`, log tests, `neo4j.dump` thật và dataset PROFILE riêng.
+Mặc định script dọn container/volume thử sau khi xong, giữ các file bằng chứng.
+Nếu dùng `--keep`, dọn đúng môi trường đó bằng:
+
+```powershell
+python scripts/cleanup_verification.py workbench/run-01/verification.json
+```
+
+Thông tin backup, cách đo, kết quả và kiểm thử trình duyệt: [docs/delivery-verification.md](docs/delivery-verification.md).

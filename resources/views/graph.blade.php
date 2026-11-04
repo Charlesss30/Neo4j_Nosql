@@ -8,19 +8,33 @@
             <button type="button" id="network-reset" class="btn btn-sm btn-outline-success">Cỡ chữ rõ</button>
             <button type="button" id="network-zoom-in" class="btn btn-sm btn-outline-secondary" aria-label="Phóng to">＋</button>
             <button type="button" id="network-zoom-out" class="btn btn-sm btn-outline-secondary" aria-label="Thu nhỏ">−</button>
+            <button type="button" id="network-export-png" class="btn btn-sm btn-outline-success">Tải ảnh PNG</button>
+            <button type="button" id="network-export-svg" class="btn btn-sm btn-outline-success">Tải SVG</button>
+            <button type="button" id="network-print" class="btn btn-sm btn-outline-secondary">In / Lưu PDF</button>
             <span class="small text-secondary">Các đời từ trên xuống · Con lớn ở bên trái</span>
         </div>
     @endif
     <div id="network" class="border rounded" style="height: clamp(460px, 72vh, 820px); background: #fffdf8; min-width: 0;" role="img" aria-label="Đồ thị gia phả, bấm vào thành viên để xem chi tiết"></div>
-    <p id="network-message" class="small text-secondary mt-2">Kéo để xem các nhánh, dùng nút ＋/− hoặc chụm hai ngón tay để đổi độ phóng; bấm thành viên để mở hồ sơ.</p>
+    <p id="network-message" class="small text-secondary mt-2" role="status">Kéo để xem các nhánh, dùng nút ＋/− hoặc chụm hai ngón tay để đổi độ phóng; {{ $hierarchical ? 'bấm để chọn thành viên, bấm đúp để mở hồ sơ.' : 'bấm thành viên để mở hồ sơ.' }}</p>
     <p class="small">{{ count($graph['nodes']) }} thành viên · {{ count($graph['edges']) }} quan hệ</p>
     <details><summary>Danh sách thành viên trong đồ thị</summary><ul>@foreach($graph['nodes'] as $node)<li><a href="{{ route('persons.show', $node['id']) }}">{{ $node['name'] }} ({{ $node['id'] }})</a></li>@endforeach</ul></details>
     @push('scripts')
         <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
-        <script>
+        <script type="module">
+            import {downloadPedigree, printPedigree} from {{ Illuminate\Support\Js::from(asset('js/pedigree-export.js')) }};
             (() => {
                 const graph = {{ Illuminate\Support\Js::from($graph) }};
                 const hierarchical = {{ Illuminate\Support\Js::from($hierarchical) }};
+                if (hierarchical) {
+                    const status = document.getElementById('network-message');
+                    for (const format of ['png', 'svg']) document.getElementById('network-export-' + format).addEventListener('click', async () => {
+                        try { await downloadPedigree(graph, format); status.textContent = 'Đã xuất toàn bộ phả đồ, bao gồm các nhánh ngoài khung nhìn.'; }
+                        catch (error) { status.textContent = error.message; }
+                    });
+                    document.getElementById('network-print').addEventListener('click', () => {
+                        try { printPedigree(graph); } catch (error) { status.textContent = error.message; }
+                    });
+                }
                 if (typeof vis === 'undefined') {
                     document.getElementById('network-message').textContent = 'Chưa tải được thư viện vẽ đồ thị. Hãy kiểm tra Internet; danh sách thành viên vẫn có ở bên dưới.';
                     return;
@@ -119,6 +133,14 @@
                     network.redraw();
                 }
                 network.on('click', ({nodes}) => {
+                    if (!nodes.length) return;
+                    const relative = document.getElementById('tree-relative');
+                    if (hierarchical && relative) {
+                        relative.value = nodes[0];
+                        document.getElementById('network-message').textContent = 'Đã chọn ' + relative.options[relative.selectedIndex].text + '. Dùng biểu mẫu phía trên để thêm người thân; bấm đúp để mở hồ sơ.';
+                    } else window.location.href = {{ Illuminate\Support\Js::from(url('/persons')) }} + '/' + encodeURIComponent(nodes[0]);
+                });
+                network.on('doubleClick', ({nodes}) => {
                     if (nodes.length) window.location.href = {{ Illuminate\Support\Js::from(url('/persons')) }} + '/' + encodeURIComponent(nodes[0]);
                 });
                 window.familyNetwork = network;

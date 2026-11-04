@@ -1,0 +1,14 @@
+.git
+.env
+.env.*
+!.env.example
+vendor
+node_modules
+workbench
+Neo4j_Nosql-main
+*.zip
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+neo4j/.runtime

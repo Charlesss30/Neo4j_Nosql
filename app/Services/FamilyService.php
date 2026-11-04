@@ -37,14 +37,39 @@ class FamilyService
 
     /**
      * @param  array{name: string, gender: string, birthYear: int, deathYear: ?int, birthPlace: ?string, note: ?string}  $data
+     * @param  array{relative_id: string, relation_type: string, second_parent_id?: ?string, marriageYear?: ?int}|null  $relationship
      * @return array<string, mixed>
      */
-    public function createPerson(array $data): array
+    public function createPerson(array $data, ?array $relationship = null): array
     {
-        return $this->write(function () use ($data): array {
+        return $this->write(function () use ($data, $relationship): array {
+            if ($relationship !== null) {
+                $this->relationshipPeople($relationship['relative_id'], $relationship['relative_id']);
+            }
             $number = (int) ($this->family->maxPersonNumber()[0]['maxNum'] ?? 0) + 1;
+            $person = $this->family->createPerson(sprintf('P%03d', $number), ...$data)[0]['person'];
 
-            return $this->family->createPerson(sprintf('P%03d', $number), ...$data)[0]['person'];
+            if ($relationship !== null) {
+                $relative = $relationship['relative_id'];
+                switch ($relationship['relation_type']) {
+                    case 'child':
+                        $this->connectParent($relative, $person['id']);
+                        if (! empty($relationship['second_parent_id'])) {
+                            $this->connectParent($relationship['second_parent_id'], $person['id']);
+                        }
+                        break;
+                    case 'parent':
+                        $this->connectParent($person['id'], $relative);
+                        break;
+                    case 'spouse':
+                        $this->connectSpouse($relative, $person['id'], $relationship['marriageYear'] ?? null);
+                        break;
+                    default:
+                        $this->reject('Loại quan hệ không hợp lệ.');
+                }
+            }
+
+            return $person;
         });
     }
 
@@ -92,22 +117,27 @@ class FamilyService
     public function addParent(string $parentId, string $childId): void
     {
         $this->write(function () use ($parentId, $childId): void {
-            [$parent, $child] = $this->relationshipPeople($parentId, $childId);
-            if ($parentId === $childId) {
-                $this->reject('Một người không thể là cha mẹ của chính mình.');
-            }
-            if ($this->family->parentExists($parentId, $childId)[0]['exists']) {
-                $this->reject('Quan hệ cha mẹ – con đã tồn tại.');
-            }
-            if ($this->family->parentCount($childId)[0]['total'] >= 2) {
-                $this->reject('Một người chỉ được có tối đa hai cha mẹ.');
-            }
-            if ($this->family->wouldCreateCycle($parentId, $childId)[0]['exists']) {
-                $this->reject('Quan hệ này tạo vòng lặp trong gia phả.');
-            }
-            $this->validateBirthOrder($parent, $child);
-            $this->family->addParentOf($parentId, $childId);
+            $this->connectParent($parentId, $childId);
         });
+    }
+
+    private function connectParent(string $parentId, string $childId): void
+    {
+        [$parent, $child] = $this->relationshipPeople($parentId, $childId);
+        if ($parentId === $childId) {
+            $this->reject('Một người không thể là cha mẹ của chính mình.');
+        }
+        if ($this->family->parentExists($parentId, $childId)[0]['exists']) {
+            $this->reject('Quan hệ cha mẹ – con đã tồn tại.');
+        }
+        if ($this->family->parentCount($childId)[0]['total'] >= 2) {
+            $this->reject('Một người chỉ được có tối đa hai cha mẹ.');
+        }
+        if ($this->family->wouldCreateCycle($parentId, $childId)[0]['exists']) {
+            $this->reject('Quan hệ này tạo vòng lặp trong gia phả.');
+        }
+        $this->validateBirthOrder($parent, $child);
+        $this->family->addParentOf($parentId, $childId);
     }
 
     public function removeParent(string $parentId, string $childId): void
@@ -124,16 +154,21 @@ class FamilyService
     public function addSpouse(string $a, string $b, ?int $marriageYear): void
     {
         $this->write(function () use ($a, $b, $marriageYear): void {
-            [$first, $second] = $this->relationshipPeople($a, $b);
-            if ($a === $b) {
-                $this->reject('Một người không thể kết hôn với chính mình.');
-            }
-            if ($this->family->spouseExists($a, $b)[0]['exists']) {
-                $this->reject('Quan hệ vợ chồng đã tồn tại, kể cả theo chiều ngược lại.');
-            }
-            $this->validateMarriageYear($first, $second, $marriageYear);
-            $this->family->addSpouseOf($a, $b, $marriageYear);
+            $this->connectSpouse($a, $b, $marriageYear);
         });
+    }
+
+    private function connectSpouse(string $a, string $b, ?int $marriageYear): void
+    {
+        [$first, $second] = $this->relationshipPeople($a, $b);
+        if ($a === $b) {
+            $this->reject('Một người không thể kết hôn với chính mình.');
+        }
+        if ($this->family->spouseExists($a, $b)[0]['exists']) {
+            $this->reject('Quan hệ vợ chồng đã tồn tại, kể cả theo chiều ngược lại.');
+        }
+        $this->validateMarriageYear($first, $second, $marriageYear);
+        $this->family->addSpouseOf($a, $b, $marriageYear);
     }
 
     public function removeSpouse(string $a, string $b): void
