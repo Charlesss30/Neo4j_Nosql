@@ -60,7 +60,16 @@ export function pedigreeSvg(graph, title = 'Cây gia phả') {
     });
     nodes.forEach(node => {
         parts.push(`<g><title>${xml(node.name)} (${xml(node.id)})</title><rect x="${node.x - 90}" y="${node.y - 40}" width="180" height="80" rx="6" fill="${xml(node.color)}" stroke="#688375"/>`);
-        String(node.label).split('\n').forEach((line, index) => parts.push(`<text x="${node.x}" y="${node.y - 7 + index * 21}" text-anchor="middle" font-size="14" fill="#20362d">${xml(line)}</text>`));
+        const [name, ...details] = String(node.label).split('\n');
+        const lines = [];
+        let line = '';
+        for (const character of name) {
+            line += character;
+            if ([...line].length === 22) {lines.push(line); line = '';}
+        }
+        if (line) lines.push(line);
+        lines.push(...details);
+        lines.forEach((text, index) => parts.push(`<text x="${node.x}" y="${node.y - (lines.length - 1) * 9 + index * 18}" text-anchor="middle" font-size="14" fill="#20362d">${xml(text)}</text>`));
         parts.push('</g>');
     });
     parts.push('</g></svg>');

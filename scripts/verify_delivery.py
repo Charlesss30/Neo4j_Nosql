@@ -215,11 +215,15 @@ def main():
         graph.run("MATCH (parent:Person {id:'P010'}) CREATE (p:Person {id:'T_BACKUP',name:'Kiểm chứng sao lưu',gender:'F',birthYear:2001,note:'Created after seed'}) CREATE (parent)-[:PARENT_OF]->(p)")
         before = graph.snapshot()
         dc("restart", "neo4j")
+        graph = Graph("http://" + dc("port", "neo4j", "7474").splitlines()[0])
         graph.ready()
         assert graph.snapshot() == before, "Volume did not preserve writes after restart"
         dc("stop", "neo4j")
         backup_volume = resource_volume("backups")
-        dump_output = command(docker + ["run", "--rm", "--user", "root", "-e", "HEAP_SIZE=256m", "--volumes-from", source_container,
+        mounts = json.loads(command(docker + ["inspect", "--format", "{{json .Mounts}}", source_container]))
+        data_volume = next(mount["Name"] for mount in mounts if mount["Destination"] == "/data" and mount["Type"] == "volume")
+        assert data_volume.startswith(project + "_"), "Only the isolated Compose volume may be dumped"
+        dump_output = command(docker + ["run", "--rm", "--user", "root", "-e", "HEAP_SIZE=256m", "-v", data_volume + ":/data",
                                       "-v", backup_volume + ":/backups", IMAGE, "neo4j-admin", "database", "dump", "neo4j", "--to-path=/backups"])
         (output / "dump.log").write_text(dump_output, encoding="utf-8")
         helper = project + "-export"
@@ -239,6 +243,8 @@ def main():
                                    "witness": "T_BACKUP and its PARENT_OF edge were added after seeding and recovered from the dump.",
                                    "authNote": "The graph dump does not include system users/roles; the fresh server initializes its own demo credentials."}
         dc("start", "neo4j")
+        graph = Graph("http://" + dc("port", "neo4j", "7474").splitlines()[0])
+        report["neo4jUrl"] = graph.url.removesuffix("/db/neo4j/tx/commit")
         graph.ready()
         for target in [graph, restored]:
             target.run("MATCH (p:Person {id:'T_BACKUP'}) DETACH DELETE p")
