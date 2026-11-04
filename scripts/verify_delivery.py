@@ -86,8 +86,9 @@ def profile(graph, statement, parameters, repetitions=5):
     operators = []
 
     def visit(node):
-        operators.append({"operator": node["operatorType"], "rows": node.get("rows"),
-                          "dbHits": node.get("dbHits", 0), "estimatedRows": node.get("args", {}).get("EstimatedRows")})
+        operators.append({"operator": node["operatorType"], "rows": node.get("rows", node.get("Rows")),
+                          "dbHits": node.get("dbHits", node.get("DbHits", 0)),
+                          "estimatedRows": node.get("EstimatedRows", node.get("args", {}).get("EstimatedRows"))})
         for child in node.get("children", []):
             visit(child)
     visit(plan)
@@ -177,6 +178,7 @@ def main():
         name = project + "-" + suffix
         command(docker + ["volume", "create", "--label", "familytree.verification=" + project, name])
         volumes.append(name)
+        command(docker + ["run", "--rm", "--user", "root", "--entrypoint", "chown", "-v", name + ":/owned", IMAGE, "7474:7474", "/owned"])
         return name
 
     def server(suffix, volume):
@@ -235,6 +237,7 @@ def main():
                                       "-v", backup_volume + ":/backups:ro", IMAGE, "neo4j-admin", "database", "load", "neo4j", "--from-path=/backups"])
         (output / "load.log").write_text(load_output, encoding="utf-8")
         restored = server("restored", restore_volume)
+        restored.run("CALL db.awaitIndexes(60)")
         after = restored.snapshot()
         assert before == after, "Restored properties, edges, or schema differ"
         report["backupRestore"] = {"before": before, "after": after, "equal": True, "restartPreserved": True,
