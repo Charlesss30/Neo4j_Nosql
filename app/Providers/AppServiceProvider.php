@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\GraphWriteLock;
 use App\Services\Neo4jService;
 use Illuminate\Support\ServiceProvider;
 use Laudis\Neo4j\Authentication\Authenticate;
@@ -33,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
             ->build());
 
         $this->app->singleton(Neo4jService::class);
+        $this->app->singleton(GraphWriteLock::class);
     }
 
     /**

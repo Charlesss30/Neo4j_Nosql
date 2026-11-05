@@ -6,15 +6,15 @@ use App\Exceptions\Neo4jQueryException;
 use App\Http\Requests\RestoreBackupRequest;
 use App\Services\CypherStatements;
 use App\Services\FamilyBackupService;
+use App\Services\GraphWriteLock;
 use App\Services\Neo4jService;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Laudis\Neo4j\Contracts\TransactionInterface;
 use Laudis\Neo4j\Databags\Plan;
 use Laudis\Neo4j\Databags\ProfiledQueryPlan;
 use RuntimeException;
@@ -27,6 +27,7 @@ class AdminController extends Controller
         private readonly Neo4jService $neo4j,
         private readonly CypherStatements $statements,
         private readonly FamilyBackupService $backups,
+        private readonly GraphWriteLock $writeLock,
     ) {}
 
     public function index(): View
@@ -97,9 +98,7 @@ class AdminController extends Controller
 
         try {
             if ($validated['sample'] === 'nameIndex') {
-                $extra['profiles'] = Cache::store('file')->lock('neo4j-admin-maintenance', 60)->block(
-                    3, fn (): array => $this->compareNameIndex($validated['name']),
-                );
+                $extra['profiles'] = $this->writeLock->run(fn (): array => $this->compareNameIndex($validated['name']));
             } else {
                 $sample = $this->samples()[$validated['sample']];
                 $extra['profiles'] = [$this->runProfile(
@@ -107,7 +106,8 @@ class AdminController extends Controller
                 )];
             }
         } catch (Throwable $exception) {
-            $extra['error'] = 'Không thể phân tích truy vấn. '.Neo4jQueryException::fromDriver($exception)->getMessage();
+            $extra['error'] = 'Không thể phân tích truy vấn. '.($exception instanceof LockTimeoutException
+                ? $exception->getMessage() : Neo4jQueryException::fromDriver($exception)->getMessage());
         }
 
         return view('admin', $this->screen($extra));
@@ -128,23 +128,24 @@ class AdminController extends Controller
                 throw new RuntimeException('Tệp schema hoặc seed rỗng.');
             }
 
-            Cache::store('file')->lock('neo4j-admin-maintenance', 60)->block(3, fn (): mixed => Cache::store('file')->lock('family-write', 60)->block(5, function () use ($schema, $seed): void {
+            $this->writeLock->run(function () use ($schema, $seed): void {
                 foreach ($schema as $statement) {
                     $this->neo4j->run($statement);
                 }
 
-                $this->neo4j->client()->writeTransaction(function (TransactionInterface $transaction) use ($seed): void {
-                    $transaction->run('MATCH (n) DETACH DELETE n')->getSummary();
+                $this->neo4j->transaction(function () use ($seed): void {
+                    $this->neo4j->run('MATCH (n) DETACH DELETE n');
 
                     foreach ($seed as $statement) {
-                        $transaction->run($statement)->getSummary();
+                        $this->neo4j->run($statement);
                     }
                 });
-            }));
+            });
 
             return to_route('admin.index')->with('success', 'Đã đặt lại và nạp dữ liệu mẫu. Dự kiến: 30 người, 36 PARENT_OF và 11 SPOUSE_OF.');
         } catch (Throwable $exception) {
-            return to_route('admin.index')->with('error', 'Không thể đặt lại dữ liệu. '.Neo4jQueryException::fromDriver($exception)->getMessage());
+            return to_route('admin.index')->with('error', 'Không thể đặt lại dữ liệu. '.($exception instanceof LockTimeoutException
+                ? $exception->getMessage() : Neo4jQueryException::fromDriver($exception)->getMessage()));
         }
     }
 

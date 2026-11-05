@@ -7,4 +7,5 @@ return [
     'database' => env('NEO4J_DATABASE', 'neo4j'),
     'socket_timeout' => 3.0,
     'query_timeout' => 10.0,
+    'write_lock_wait_seconds' => 5,
 ];

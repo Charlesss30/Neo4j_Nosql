@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +17,7 @@ class FamilyBackupService
     public function __construct(
         private readonly Neo4jService $neo4j,
         private readonly CypherStatements $statements,
+        private readonly GraphWriteLock $writeLock,
     ) {}
 
     public function create(): string
@@ -156,6 +156,7 @@ class FamilyBackupService
 
         $people = array_column($document['persons'], null, 'id');
         $parentCounts = [];
+        $parents = [];
         $seen = [];
 
         foreach ($people as $person) {
@@ -180,14 +181,30 @@ class FamilyBackupService
             $seen[$key] = true;
 
             if ($edge['type'] === 'PARENT_OF') {
+                $parents[$edge['to']][] = $edge['from'];
                 $parentCounts[$edge['to']] = ($parentCounts[$edge['to']] ?? 0) + 1;
                 if ($edge['properties'] !== [] || $parentCounts[$edge['to']] > 2
                     || $people[$edge['from']]['birthYear'] >= $people[$edge['to']]['birthYear']) {
                     $this->reject('Quan hệ cha mẹ không hợp lệ: tối đa hai cha mẹ, cha mẹ phải sinh trước con và quan hệ không có thuộc tính.');
                 }
-            } elseif (isset($edge['properties']['marriageYear'])
-                && $edge['properties']['marriageYear'] < max($people[$edge['from']]['birthYear'], $people[$edge['to']]['birthYear'])) {
-                $this->reject('Bản sao lưu có năm kết hôn trước năm sinh của vợ hoặc chồng.');
+            }
+            try {
+                if ($edge['type'] === 'PARENT_OF') {
+                    FamilyRelationshipPolicy::validateParent($people[$edge['from']], $people[$edge['to']]);
+                } else {
+                    FamilyRelationshipPolicy::validateMarriageYear($people[$edge['from']], $people[$edge['to']], $edge['properties']['marriageYear'] ?? null);
+                }
+            } catch (ValidationException $exception) {
+                $this->reject('Bản sao lưu: '.($exception->errors()['family'][0] ?? 'Quan hệ không hợp lệ.'));
+            }
+        }
+        foreach ($document['relationships'] as $edge) {
+            if ($edge['type'] === 'SPOUSE_OF') {
+                try {
+                    FamilyRelationshipPolicy::validateBloodMarriage($edge['from'], $edge['to'], $parents);
+                } catch (ValidationException $exception) {
+                    $this->reject('Bản sao lưu: '.FamilyRelationshipPolicy::BLOOD_MARRIAGE_MESSAGE);
+                }
             }
         }
 
@@ -279,9 +296,7 @@ class FamilyBackupService
      */
     private function maintenance(callable $callback): mixed
     {
-        return Cache::store('file')->lock('neo4j-admin-maintenance', 60)->block(
-            5, fn (): mixed => Cache::store('file')->lock('family-write', 60)->block(5, $callback),
-        );
+        return $this->writeLock->run($callback);
     }
 
     private function reject(string $message): never

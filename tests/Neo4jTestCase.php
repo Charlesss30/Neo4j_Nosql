@@ -19,6 +19,9 @@ abstract class Neo4jTestCase extends TestCase
 
     protected function setUp(): void
     {
+        if (getenv('NEO4J_TEST_DATABASE') !== '1' && getenv('NEO4J_RESTORE_TESTS') !== '1') {
+            $this->markTestSkipped('Set NEO4J_TEST_DATABASE=1 only after selecting a dedicated disposable Neo4j database.');
+        }
         parent::setUp();
         $this->neo4j = $this->app->make(Neo4jService::class);
         $this->assertTrue($this->neo4j->ping(), 'Start Neo4j and load the seed before running integration tests.');

@@ -105,6 +105,54 @@ class AdminBackupRestoreTest extends Neo4jTestCase
         }
     }
 
+    public function test_reset_failure_rolls_back_the_deleted_graph_and_restores_the_query_runner(): void
+    {
+        $this->createTestPerson('T_RESET_KEEP');
+        $before = $this->family->graphAll()[0];
+        $faulty = new class($this->app->make(ClientInterface::class)) extends Neo4jService
+        {
+            private bool $deleted = false;
+
+            public function run(string $cypher, array $params = []): array
+            {
+                if ($this->deleted && str_contains($cypher, 'PARENT_OF')) {
+                    throw new RuntimeException('Injected reset failure after deleting the graph');
+                }
+                $result = parent::run($cypher, $params);
+                $this->deleted = $this->deleted || $cypher === 'MATCH (n) DETACH DELETE n';
+
+                return $result;
+            }
+        };
+        $this->app->instance(Neo4jService::class, $faulty);
+        $this->post('/admin/reset', ['confirm_reset' => 'yes'])->assertSessionHas('error');
+        $this->assertSame($before, $this->family->graphAll()[0]);
+        $this->assertTrue($faulty->ping());
+    }
+
+    public function test_failed_name_profile_restores_the_real_index_in_finally(): void
+    {
+        $profileClient = $this->createMock(ClientInterface::class);
+        $profileClient->method('run')->willThrowException(new RuntimeException('Injected PROFILE failure'));
+        $faulty = new class($this->app->make(ClientInterface::class), $profileClient) extends Neo4jService
+        {
+            public function __construct(ClientInterface $client, private readonly ClientInterface $profileClient)
+            {
+                parent::__construct($client);
+            }
+
+            public function client(): ClientInterface
+            {
+                return $this->profileClient;
+            }
+        };
+        $this->app->instance(Neo4jService::class, $faulty);
+        $this->post('/admin/profile', ['sample' => 'nameIndex', 'name' => 'Nguyễn Minh Khang'])
+            ->assertOk()->assertSee('Không thể phân tích truy vấn.');
+        $this->assertSame([['state' => 'ONLINE']], $this->neo4j->run("SHOW INDEXES YIELD name, state WHERE name = 'person_name' RETURN state"));
+        $this->assertTrue($faulty->ping());
+    }
+
     public function test_empty_graph_can_be_backed_up_and_restored(): void
     {
         $original = $this->post('/admin/backups')->assertOk()->streamedContent();

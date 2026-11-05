@@ -212,7 +212,9 @@ def main():
         report["composerValidation"] = dc("exec", "-T", "app", "composer", "validate", "--strict")
         report["platformRequirements"] = dc("exec", "-T", "app", "composer", "check-platform-reqs")
         print("Running Laravel integration tests against Docker Neo4j...", flush=True)
-        tests = dc("exec", "-T", "-e", "APP_ENV=testing", "-e", "SESSION_DRIVER=array", "-e", "CACHE_STORE=array", "app", "php", "artisan", "test", "--compact", "--fail-on-warning", "--fail-on-risky")
+        tests = dc("exec", "-T", "-e", "APP_ENV=testing", "-e", "SESSION_DRIVER=array", "-e", "CACHE_STORE=array",
+                   "-e", "NEO4J_TEST_DATABASE=1", "-e", "NEO4J_RESTORE_TESTS=1",
+                   "app", "php", "artisan", "test", "--compact", "--fail-on-warning", "--fail-on-risky")
         (output / "tests.log").write_text(tests, encoding="utf-8")
         report["testsOutput"] = tests
         assert graph.snapshot() == initial, "Integration tests changed the seed"

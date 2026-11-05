@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Illuminate\Contracts\Cache\LockTimeoutException;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
 class FamilyService
@@ -11,6 +10,7 @@ class FamilyService
     public function __construct(
         private readonly FamilyRepository $family,
         private readonly Neo4jService $neo4j,
+        private readonly GraphWriteLock $writeLock,
     ) {}
 
     /** @return array<string, mixed> */
@@ -137,6 +137,20 @@ class FamilyService
             $this->reject('Quan hệ này tạo vòng lặp trong gia phả.');
         }
         $this->validateBirthOrder($parent, $child);
+        $conflicts = $this->neo4j->run(<<<'CYPHER'
+MATCH (a:Person)-[:SPOUSE_OF]->(b:Person)
+WHERE (EXISTS { MATCH (a)-[:PARENT_OF*0..]->(:Person {id: $parentId}) }
+       AND EXISTS { MATCH (:Person {id: $childId})-[:PARENT_OF*0..]->(b) })
+   OR (EXISTS { MATCH (b)-[:PARENT_OF*0..]->(:Person {id: $parentId}) }
+       AND EXISTS { MATCH (:Person {id: $childId})-[:PARENT_OF*0..]->(a) })
+   OR (a.id = $childId AND EXISTS { MATCH (:Person {id: $parentId})-[:PARENT_OF]->(b) })
+   OR (b.id = $childId AND EXISTS { MATCH (:Person {id: $parentId})-[:PARENT_OF]->(a) })
+RETURN a.id AS firstId, b.id AS secondId
+LIMIT 1
+CYPHER, compact('parentId', 'childId'));
+        if ($conflicts !== []) {
+            $this->reject('Quan hệ cha mẹ này làm một cặp vợ chồng trở thành tổ tiên–hậu duệ hoặc anh chị em.');
+        }
         $this->family->addParentOf($parentId, $childId);
     }
 
@@ -168,6 +182,15 @@ class FamilyService
             $this->reject('Quan hệ vợ chồng đã tồn tại, kể cả theo chiều ngược lại.');
         }
         $this->validateMarriageYear($first, $second, $marriageYear);
+        $forbidden = $this->neo4j->run(<<<'CYPHER'
+MATCH (first:Person {id: $a}), (second:Person {id: $b})
+RETURN EXISTS { MATCH (first)-[:PARENT_OF*1..]->(second) }
+    OR EXISTS { MATCH (second)-[:PARENT_OF*1..]->(first) }
+    OR EXISTS { MATCH (first)<-[:PARENT_OF]-(:Person)-[:PARENT_OF]->(second) } AS forbidden
+CYPHER, compact('a', 'b'));
+        if ($forbidden[0]['forbidden'] ?? false) {
+            $this->reject(FamilyRelationshipPolicy::BLOOD_MARRIAGE_MESSAGE);
+        }
         $this->family->addSpouseOf($a, $b, $marriageYear);
     }
 
@@ -200,9 +223,7 @@ class FamilyService
      */
     private function validateBirthOrder(array $parent, array $child): void
     {
-        if (isset($parent['birthYear'], $child['birthYear']) && $parent['birthYear'] >= $child['birthYear']) {
-            $this->reject('Cha mẹ phải sinh trước con.');
-        }
+        FamilyRelationshipPolicy::validateParent($parent, $child);
     }
 
     /**
@@ -211,9 +232,7 @@ class FamilyService
      */
     private function validateMarriageYear(array $first, array $second, ?int $year): void
     {
-        if ($year !== null && ($year > (int) date('Y') || $year < max($first['birthYear'] ?? 0, $second['birthYear'] ?? 0))) {
-            $this->reject('Năm kết hôn phải từ năm sinh của cả hai người đến năm hiện tại.');
-        }
+        FamilyRelationshipPolicy::validateMarriageYear($first, $second, $year);
     }
 
     private function reject(string $message): never
@@ -230,7 +249,7 @@ class FamilyService
     private function write(callable $callback): mixed
     {
         try {
-            return Cache::store('file')->lock('family-write', 30)->block(5, fn (): mixed => $this->neo4j->transaction($callback));
+            return $this->writeLock->run(fn (): mixed => $this->neo4j->transaction($callback));
         } catch (LockTimeoutException) {
             $this->reject('Gia phả đang được cập nhật. Vui lòng thử lại sau.');
         }

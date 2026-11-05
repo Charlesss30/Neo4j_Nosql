@@ -61,6 +61,20 @@ class AdminBackupInputTest extends TestCase
     public function test_invalid_people_and_relationships_are_rejected_even_with_a_valid_checksum(): void
     {
         $mutations = [
+            'marriage after death' => function (array &$data): void {
+                $data['persons'][2]['deathYear'] = 2000;
+            },
+            'parent death before child' => function (array &$data): void {
+                $data['persons'][0]['deathYear'] = 1985;
+            },
+            'blood marriage' => function (array &$data): void {
+                $data['relationships'][] = ['from' => 'C', 'to' => 'A', 'type' => 'PARENT_OF', 'properties' => []];
+            },
+            'sibling marriage' => function (array &$data): void {
+                $data['persons'][] = ['id' => 'D', 'name' => 'D', 'gender' => 'F', 'birthYear' => 1970];
+                $data['relationships'][] = ['from' => 'D', 'to' => 'A', 'type' => 'PARENT_OF', 'properties' => []];
+                $data['relationships'][] = ['from' => 'D', 'to' => 'C', 'type' => 'PARENT_OF', 'properties' => []];
+            },
             'string year' => function (array &$data): void {
                 $data['persons'][0]['birthYear'] = '1980';
             },
