@@ -16,7 +16,7 @@
         </div>
     @endif
     <div class="row g-3 mb-4">
-        @foreach ([['Tổng thành viên', $life['living'] + $life['deceased'], 'Tất cả thành viên trong gia phả'], ['Còn sống', $life['living'], 'Chưa ghi nhận năm mất'], ['Đã mất', $life['deceased'], 'Đã ghi nhận năm mất']] as [$label, $value, $description])
+        @foreach ([['Tổng thành viên', $life['living'] + $life['deceased'], 'Toàn bộ dữ liệu, gồm cả các cây rời'], ['Còn sống', $life['living'], 'Chưa ghi nhận năm mất'], ['Đã mất', $life['deceased'], 'Đã ghi nhận năm mất']] as [$label, $value, $description])
             <div class="col-md-4"><section class="card h-100"><div class="card-body p-4">
                 <h2 class="h6 text-secondary">{{ $label }}</h2>
                 <div class="stat-number my-2">{{ $statisticsAvailable ? number_format($value) : '—' }}</div>
@@ -25,8 +25,24 @@
         @endforeach
     </div>
     @if($statisticsAvailable)
+        <form method="GET" action="{{ route('dashboard') }}" class="card card-body p-4 mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-9">
+                    <label for="dashboard-root" class="form-label">Gốc thống kê thế hệ</label>
+                    <select id="dashboard-root" name="root" class="form-select" @disabled($people === [])>
+                        @forelse ($people as $person)
+                            <option value="{{ $person['id'] }}" @selected(($rootPerson['id'] ?? null) === $person['id'])>{{ $person['id'] }} · {{ $person['name'] }}</option>
+                        @empty
+                            <option value="">Chưa có thành viên để chọn gốc</option>
+                        @endforelse
+                    </select>
+                </div>
+                <div class="col-md-3"><button type="submit" class="btn btn-success w-100" @disabled($people === [])>Xem thống kê nhánh</button></div>
+            </div>
+            <p class="small text-secondary mt-3 mb-0">Các số tổng, giới tính và thành viên nhiều con nhất tính trên toàn bộ dữ liệu. Biểu đồ thế hệ chỉ tính nhánh đã chọn, gồm cả phối ngẫu; không nhất thiết bằng tổng toàn hệ thống.</p>
+        </form>
         <div class="row g-4 mb-4">
-            <section class="col-md-7"><div class="card card-body h-100 p-4"><h2 class="h5">Thành viên theo thế hệ</h2><p class="small text-secondary">Tính từ P001, gồm vợ/chồng của các thành viên trong nhánh.</p><div style="height: 260px;"><canvas id="generation-chart" role="img" aria-label="Biểu đồ thành viên theo thế hệ"></canvas></div><p class="small mt-3 mb-0">@forelse($generations as $row)Thế hệ {{ $row['generation'] }}: {{ $row['total'] }}@if(!$loop->last) · @endif @empty Chưa có dữ liệu thế hệ từ P001. @endforelse</p></div></section>
+            <section class="col-md-7"><div class="card card-body h-100 p-4"><h2 class="h5">Thành viên theo thế hệ</h2><p class="small text-secondary">@if($rootPerson)Nhánh {{ $rootPerson['id'] }} · {{ $rootPerson['name'] }}, gồm vợ/chồng của các thành viên trong nhánh.@else Chưa có gốc thống kê. @endif</p><div style="height: 260px;"><canvas id="generation-chart" role="img" aria-label="Biểu đồ thành viên theo thế hệ"></canvas></div><p class="small mt-3 mb-0">@forelse($generations as $row)Thế hệ {{ $row['generation'] }}: {{ $row['total'] }}@if(!$loop->last) · @endif @empty Chưa có dữ liệu thế hệ trong nhánh đã chọn. @endforelse</p></div></section>
             <section class="col-md-5"><div class="card card-body h-100 p-4"><h2 class="h5">Tỷ lệ giới tính</h2><div style="height: 300px;"><canvas id="gender-chart" role="img" aria-label="Biểu đồ tỷ lệ giới tính"></canvas></div><p id="chart-message" class="small text-secondary mt-2 mb-0">Số liệu chi tiết có trong các bảng bên dưới.</p></div></section>
         </div>
         @push('scripts')
