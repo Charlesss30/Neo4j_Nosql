@@ -45,6 +45,9 @@ Trên macOS/Linux dùng `cp .env.example .env` cho lần cài đầu.
 Giữ cấu hình/key nếu đã cài ứng dụng; không chạy lại key:generate trên ứng dụng đang dùng.
 Hướng dẫn DB/CSV/native: [neo4j/README.md](neo4j/README.md).
 Seed chuẩn **30 người / 36 PARENT_OF / 11 SPOUSE_OF**. Không nạp lại seed nếu cần giữ thay đổi demo.
+Ngoài lệnh cypher-shell, `php artisan db:seed` cũng nạp schema/seed Neo4j qua
+`DatabaseSeeder`; không dùng seeder SQL và không xóa graph trước khi nạp.
+Seed dùng MERGE nhưng có thể ghi lại thuộc tính fixture, nên chỉ nạp vào DB demo/kiểm thử.
 
 Các giá trị cần có trong `.env` (đã có trong `.env.example`):
 
@@ -69,7 +72,7 @@ Gốc minh họa: <http://127.0.0.1:8000>.
 
 | URL | Chức năng |
 | --- | --- |
-| `/` | Dashboard, thống kê và biểu đồ |
+| `/?root=P010` | Dashboard; thống kê toàn graph và thế hệ theo gốc đã chọn |
 | `/persons` | Tìm tên, danh sách, phân trang |
 | `/persons/create` | Thêm thành viên |
 | `/persons/P014` | Hồ sơ; anh chị em mẫu P015 và P016 |
@@ -80,7 +83,7 @@ Gốc minh họa: <http://127.0.0.1:8000>.
 | `/tree?all=1` | Toàn bộ đồ thị |
 | `/api/tree?root=P010` | JSON nodes/edges của nhánh P010 |
 | `/relation?a=P010&b=P012` | Đường đi ngắn nhất và diễn giải |
-| `/admin` | Schema, PROFILE, reset demo local |
+| `/admin` | Sao lưu/khôi phục JSON, schema, PROFILE, reset demo local |
 
 Bấm tên để mở hồ sơ. Trên cây, bấm node để chọn người trong biểu mẫu thêm người thân;
 bấm đúp node để mở hồ sơ. Đồ thị đường quan hệ vẫn mở hồ sơ khi bấm node.
@@ -88,23 +91,70 @@ Tìm kiếm không phân biệt hoa/thường nhưng **không bỏ dấu tiếng
 Nam xanh, nữ hồng, người đã mất có † và màu xám. Vợ/chồng nét đứt cùng tầng;
 cha mẹ → con nối bằng nhánh gấp khúc. Anh chị em xếp theo năm sinh, tách đúng các nhóm con khi có nhiều cuộc hôn nhân. Dùng “Vừa khung”, “Cỡ chữ rõ” hoặc ＋/− để xem; trên điện thoại có thể kéo/chụm hai ngón tay. Có thể tồn tại nhiều đường đi ngắn nhất cùng độ dài.
 
+Dashboard ưu tiên P001 khi chưa chọn gốc, sau đó lấy một người từ `roots`.
+Gốc yêu cầu không tồn tại trả 404; DB rỗng có trạng thái trống. Giới tính, sống/mất,
+top cha mẹ và tổng thành viên là toàn graph; biểu đồ thế hệ chỉ thuộc gốc đã chọn.
+Ví dụ P010 có **2 / 3 / 2** người theo thế hệ, tổng 7, trong graph 30 người.
+
+## Quy tắc quan hệ
+
+- `PARENT_OF` được hiểu là cha mẹ sinh học trong phạm vi đồ án. Cha/mẹ sinh trước
+  con; tối đa hai cha mẹ; không tự nhận, không trùng và không có chu trình.
+- Nếu biết năm mất: con sinh không sau năm mất của mẹ, hoặc không sau năm mất của
+  cha cộng 1. Đây là quy ước kỹ thuật cho dữ liệu chỉ có năm, không phải kết luận
+  y khoa/pháp lý. Không tự gán năm mất khi thiếu; không đặt chênh lệch tuổi tối thiểu.
+- Chặn hôn nhân giữa tổ tiên–hậu duệ và anh chị em chung ít nhất một cha/mẹ.
+  Thêm cạnh cha mẹ sau hôn nhân cũng kiểm tra mâu thuẫn này, kể cả qua cạnh trung gian.
+  Không mở rộng thành cấm anh em họ hoặc giới hạn số hôn nhân.
+- Năm kết hôn có thể trống; nếu có phải không trước năm sinh hai người, không sau
+  hiện tại hoặc năm mất đã biết của bất kỳ người nào. Cùng năm mất được chấp nhận.
+- Thêm người kèm quan hệ và sửa năm sinh/mất/giới tính đều kiểm tra lại các quan hệ
+  liên quan. Lỗi làm rollback toàn bộ người/cạnh trong transaction.
+
+## Sao lưu và khôi phục tại Admin
+
+Mở `/admin#backup-restore` trong môi trường `local`. Bấm **Tạo & tải bản sao lưu**
+để lưu bản JSON trên máy chủ và tải về máy. Có thể tải lại 10 bản gần nhất.
+Khôi phục bằng tệp JSON và ô xác nhận thay toàn bộ gia phả. App kiểm tra định dạng,
+checksum, kiểu dữ liệu và quy tắc quan hệ trước khi ghi; tự lưu bản graph hiện tại
+trước khi thay. Không lưu được bản an toàn thì dừng. Thao tác thay graph là một
+transaction, lỗi giữa chừng sẽ rollback. Giới hạn tệp 10 MB, 20.000 người/100.000 cạnh;
+đây là giới hạn đầu vào, chưa phải chứng minh UI xử lý tốt cây cỡ đó.
+
+JSON chứa người và hai loại cạnh nghiệp vụ; không chứa tài khoản, cấu hình hay
+custom schema. App khôi phục schema chuẩn của dự án. Tệp nằm ở
+`storage/app/private/family-backups/`; không tự xóa các bản cũ, danh sách chỉ hiện 10 bản.
+Graph có label/type/thuộc tính ngoài hợp đồng hoặc dữ liệu không hợp lệ sẽ bị từ chối,
+không tự sửa/xóa dữ liệu cũ. Đây là export logic, khác dump nhị phân offline của Neo4j.
+Dump database gia phả cũng không chứa user/role của database `system`.
+
 ## Kiểm thử
 
-**Bật Neo4j và nạp seed trước** khi chạy toàn bộ tests. Dùng cơ sở dữ liệu demo.
+**Chuẩn bị Neo4j kiểm thử riêng, có thể bỏ đi, và nạp seed vào đó trước.**
+Không trỏ integration tests vào database người dùng. Community có thể chạy một
+instance riêng với thư mục data và cổng Bolt khác; kiểm tra URI trước khi bật cờ.
 
 ```powershell
-php artisan test --compact
+$env:NEO4J_URI='<DEDICATED_TEST_BOLT_URI>'
+$env:NEO4J_TEST_DATABASE='1'
+$env:NEO4J_RESTORE_TESTS='1' # Chỉ bật trên DB riêng: có test thay/xóa toàn graph.
+php vendor/bin/phpunit --do-not-cache-result --fail-on-warning --fail-on-risky
 # Chỉ định dạng/kiểm tra các tệp mình sửa; có thể dùng toàn bộ khi nhóm đã thống nhất:
 php vendor/bin/pint --test
+node --test tests/js/pedigree-export.test.mjs
 php artisan route:list --except-vendor
 composer validate --strict
 composer check-platform-reqs
 ```
 
 `FamilyRepositoryContractTest` đối chiếu nguyên văn đủ 34 truy vấn và tham số với `neo4j/queries.cypher`.
-`FamilyRulesTest`, `PersonTest`, `FamilyGraphTest` dùng Neo4j thật: chỉ tạo/sửa/xóa người **T_**;
-tearDown chỉ dọn T_ và so sánh toàn bộ đồ thị gốc, không xóa/sửa P001–P030.
-Test HTTP cấp P031 dùng mock, không ghi mã P vào seed. Không chạy integration song song chung DB.
+Các test CRUD/quy tắc thông thường tạo người **T_**, dọn fixture rồi so toàn bộ graph gốc.
+`AdminBackupRestoreTest` thực sự thay/xóa graph trên DB cô lập và hoàn trả graph gốc;
+chỉ chạy khi `NEO4J_RESTORE_TESTS=1`. Thiếu cả hai cờ thì integration tests skip
+trước khi kết nối DB. Cờ là xác nhận lựa chọn DB của người chạy, không tự xác minh
+URI có an toàn hay không. Không chạy integration song song chung DB.
+Test cấp P031 dùng mock. Có test hai tiến trình tranh khóa, rollback reset/restore,
+phục hồi index sau PROFILE lỗi và request tiếp theo hoạt động.
 
 Kiểm tra lại sau test trong Neo4j Browser:
 
@@ -115,6 +165,8 @@ MATCH ()-[r:SPOUSE_OF]->() RETURN count(r) AS spouseOf;
 ```
 
 Kết quả seed chuẩn **30 / 36 / 11**. Kết quả chạy thực tế và ảnh: [báo cáo app](docs/report-app.md).
+Lượt sửa theo bàn giao 05/11/2026: [review-fixes.md](docs/review-fixes.md),
+kèm [bằng chứng mới](docs/review-fixes-verification.json); không thay số liệu lịch sử.
 
 ## Cấu trúc
 
@@ -123,6 +175,9 @@ Kết quả seed chuẩn **30 / 36 / 11**. Kết quả chạy thực tế và �
 | `app/Services/Neo4jService.php` | Singleton, chuẩn hóa kết quả, transaction, lỗi |
 | `app/Services/FamilyRepository.php` | 34 phương thức Cypher theo catalog |
 | `app/Services/FamilyService.php` | Quy tắc và thao tác ghi có khóa/transaction |
+| `app/Services/FamilyRelationshipPolicy.php` | Quy tắc năm và huyết thống dùng chung |
+| `app/Services/GraphWriteLock.php` | Khóa OS dùng chung cho ghi, seed và bảo trì |
+| `app/Services/FamilyBackupService.php` | JSON backup/restore, bản an toàn và validation |
 | `app/Services/FamilyGraphService.php` | Dữ liệu vis-network, tầng, diễn giải |
 | `app/Services/FamilyTreeLayout.php` | Bố trí cố định từng gia đình/nhánh và sắp theo năm sinh |
 | `app/Http/Requests/` | Validation và ép kiểu input |
@@ -134,8 +189,15 @@ Kết quả seed chuẩn **30 / 36 / 11**. Kết quả chạy thực tế và �
 ## Giới hạn và khắc phục lỗi
 
 - Chưa có đăng nhập/phân quyền app. Community không có RBAC.
-- Quy tắc FamilyService chỉ bảo vệ thao tác qua app. Không reset Admin hoặc ghi trực tiếp bằng Browser trong lúc nhập liệu.
-- Khóa tệp chỉ tuần tự hóa ghi app trên một máy; nhiều máy chủ/client trực tiếp cần giải pháp khác.
+- Quy tắc FamilyService bảo vệ thao tác qua app; ghi trực tiếp bằng Browser/Bolt có thể bỏ qua.
+- CRUD, seed, backup/restore, reset và so sánh index cùng dùng `GraphWriteLock` tại
+  `storage/framework/cache/graph-write.lock`: OS `flock`, chờ tối đa 5 giây mặc định
+  (`neo4j.write_lock_wait_seconds`), giữ đến khi xong/lỗi/process kết thúc, không hết hạn TTL.
+  Lời gọi lồng cùng singleton không lấy lại khóa. Chỉ bảo vệ các process dùng chung
+  tệp trên một máy; không phải khóa phân tán. Không xóa/đổi tệp khóa khi app đang chạy.
+- `APP_ENV=local` là điều kiện môi trường, không phải đăng nhập hay phân quyền người dùng.
+- Validation mới bảo vệ thao tác mới; chưa có công cụ audit toàn bộ dữ liệu cũ.
+- Danh sách chọn người vẫn tải toàn bộ; chưa load test render/export UI 20.000 người.
 - Cấp ID bằng max+1 có thể dùng lại mã cao nhất đã xóa; constraint ID vẫn do Neo4j thực thi.
 - Cây xếp theo từng nhánh và năm sinh; các gia đình rời được đặt riêng. Với hôn nhân nối hai nhánh, vẫn hiển thị đủ cha mẹ dù có thể có đường nối dài.
 - CDN cần Internet; mất thư viện vẫn có bảng/danh sách link và thông báo.
@@ -143,7 +205,11 @@ Kết quả seed chuẩn **30 / 36 / 11**. Kết quả chạy thực tế và �
 - PHP/Composer chưa trong PATH: thêm `<PHP_HOME>`, `<COMPOSER_HOME>`, kiểm tra `php -v`, `composer -V`.
 - Thiếu extension: xem `php --ini`, chạy `composer check-platform-reqs`.
 - Cổng 8000 bận: `php artisan serve --port=8001`.
-- Docker đã được kiểm chứng bằng clone sạch, Composer trong container, restart và dump/load thật vào volume mới; xem [kiểm chứng bốn hạng mục](docs/delivery-verification.md).
+- Bằng chứng delivery tại commit `d448211` ghi nhận clone sạch từ repo Git cục bộ,
+  Composer trong container, restart và dump/load thật vào volume mới; xem
+  [kiểm chứng bốn hạng mục](docs/delivery-verification.md). Đây không phải bằng chứng
+  clone trực tiếp GitHub hay kiểm chứng lại mã mới ngày 05/11. Lượt mới dùng native;
+  máy hiện không có Docker CLI.
 
 Phát triển trên nhánh riêng, mở PR vào main để người còn lại review; không push trực tiếp main.
 
