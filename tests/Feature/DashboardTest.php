@@ -16,6 +16,7 @@ class DashboardTest extends TestCase
         $neo4j->method('ping')->willReturn(true);
         $this->app->instance(Neo4jService::class, $neo4j);
         $family = $this->createMock(FamilyRepository::class);
+        $family->method('getPerson')->willReturn([['person' => ['id' => 'P001', 'name' => 'Nguyễn An']]]);
         $family->method('statsByGender')->willReturn([['gender' => 'M', 'total' => 16], ['gender' => 'F', 'total' => 14]]);
         $family->expects($this->once())->method('statsByGeneration')->with('P001')->willReturn([['generation' => 1, 'total' => 2], ['generation' => 2, 'total' => 7]]);
         $family->method('livingVsDeceased')->willReturn([['living' => 25, 'deceased' => 5]]);

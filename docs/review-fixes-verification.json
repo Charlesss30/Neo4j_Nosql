@@ -1,0 +1,395 @@
+{
+  "measuredAtUtc": "2026-11-05T13:53:41.466570+00:00",
+  "measuredAtLocal": "2026-11-05T20:53:41.466570+07:00",
+  "timezone": "Asia/Saigon",
+  "sourceCommit": "273ee593a758b1bd64a3db0f9ed0919716f361cc",
+  "sourceBranch": "feature/app-review-fixes",
+  "sourceState": {
+    "testedCodeCommitted": true,
+    "pendingTrackedChangesBeforeEvidenceWrite": [
+      "README.md",
+      "docs/qa-app.md",
+      "docs/qa-db.md",
+      "docs/report-app.md",
+      "docs/report-db.md"
+    ],
+    "pendingChangesAreDocumentationOnly": true,
+    "newDocumentationAndScreenshotsAddedAfterCodeCommit": true,
+    "pushed": false,
+    "merged": false
+  },
+  "runtime": {
+    "php": "8.3.30",
+    "laravel": "13.39.0",
+    "laudis": "3.7.1",
+    "phpunit": "12.5.43",
+    "node": "24.16.0",
+    "neo4jComponents": [
+      {
+        "name": "Neo4j Kernel",
+        "versions": [
+          "5.26.31"
+        ],
+        "edition": "community"
+      }
+    ],
+    "javaMajor": 17,
+    "os": "Windows",
+    "mode": "native"
+  },
+  "tests": {
+    "phpunit": {
+      "command": "php vendor/bin/phpunit --do-not-cache-result --fail-on-warning --fail-on-risky --log-junit neo4j/.runtime/review-tests.xml",
+      "environment": {
+        "NEO4J_URI": "bolt://127.0.0.1:17687",
+        "NEO4J_DATABASE": "neo4j",
+        "NEO4J_TEST_DATABASE": "1",
+        "NEO4J_RESTORE_TESTS": "1"
+      },
+      "tests": 92,
+      "assertions": 1190,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "warnings": 0,
+      "risky": 0,
+      "passed": true,
+      "junitSeconds": 9.826323,
+      "terminalDurationMs": 9844,
+      "junitSha256": "6f5e5928408f48fa41447590807938671d1f19806985d5e45d1d1262c9f17dfc"
+    },
+    "javascript": {
+      "command": "node --test tests/js/pedigree-export.test.mjs",
+      "tests": 3,
+      "passed": 3,
+      "failures": 0
+    },
+    "integrationGuard": {
+      "command": "php vendor/bin/phpunit --filter test_ancestor --do-not-cache-result --log-junit neo4j/.runtime/review-guard.xml",
+      "uri": "bolt://127.0.0.1:1",
+      "dedicatedDatabaseFlagsUnset": true,
+      "tests": 1,
+      "assertions": 0,
+      "skipped": 1,
+      "errors": 0,
+      "noDatabaseConnectionAttempted": true
+    },
+    "additionalChecks": {
+      "pint --test": "passed",
+      "composer validate --strict": "passed",
+      "composer check-platform-reqs": "passed",
+      "composer show --direct": "versions confirmed",
+      "php artisan route:list --except-vendor": {
+        "routes": 23,
+        "adminBackupRoutes": 3
+      },
+      "scripts/verify_delivery.py syntax": "passed",
+      "FamilyRepositoryContractTest": "34 catalog queries and parameter contracts unchanged"
+    }
+  },
+  "graphVerification": {
+    "beforeMeasuredAtUtc": "2026-11-05T13:42:59.260373+00:00",
+    "afterMeasuredAtUtc": "2026-11-05T13:47:43.217981+00:00",
+    "method": "Before: compare every node label/property and stored edge/type/property against canonical CSV. After: compare whole graph/schema SHA-256 with before; count T_ and check indexes ONLINE. Digest from existing scripts/verify_delivery.py Graph.snapshot excludes volatile schema IDs and index read counters.",
+    "databases": {
+      "primary": {
+        "persons": 30,
+        "relationships": 47,
+        "sha256": "73142ef6d15ba301e827027f8c782515ddda11b03387679cf474675dc46671fe",
+        "beforeSha256": "73142ef6d15ba301e827027f8c782515ddda11b03387679cf474675dc46671fe",
+        "unchanged": true,
+        "csvExactMatch": true,
+        "parentOf": 36,
+        "spouseOf": 11,
+        "testPeople": 0,
+        "indexes": [
+          {
+            "name": "index_343aff4e",
+            "state": "ONLINE"
+          },
+          {
+            "name": "index_f7700477",
+            "state": "ONLINE"
+          },
+          {
+            "name": "person_id",
+            "state": "ONLINE"
+          },
+          {
+            "name": "person_name",
+            "state": "ONLINE"
+          }
+        ]
+      },
+      "isolated": {
+        "persons": 30,
+        "relationships": 47,
+        "sha256": "73142ef6d15ba301e827027f8c782515ddda11b03387679cf474675dc46671fe",
+        "beforeSha256": "73142ef6d15ba301e827027f8c782515ddda11b03387679cf474675dc46671fe",
+        "unchanged": true,
+        "csvExactMatch": true,
+        "parentOf": 36,
+        "spouseOf": 11,
+        "testPeople": 0,
+        "indexes": [
+          {
+            "name": "index_343aff4e",
+            "state": "ONLINE"
+          },
+          {
+            "name": "index_f7700477",
+            "state": "ONLINE"
+          },
+          {
+            "name": "person_id",
+            "state": "ONLINE"
+          },
+          {
+            "name": "person_name",
+            "state": "ONLINE"
+          }
+        ]
+      }
+    },
+    "primaryDatabaseResetOrRestored": false,
+    "destructiveTestsDatabase": "isolated instance on Bolt 17687 / HTTP 17474"
+  },
+  "browser": {
+    "tool": "computer-use in-app browser",
+    "testedPages": [
+      "/admin#backup-restore",
+      "/?root=P010"
+    ],
+    "requestedViewports": [
+      {
+        "screen": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "screen": "tablet",
+        "width": 820,
+        "height": 1180
+      },
+      {
+        "screen": "phone",
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "measurementNote": "Widths are actual document.clientWidth after scrollbar/frame; screenshots use native 375 px capture. Temporary viewport override reset after checks.",
+    "measurements": [
+      {
+        "page": "admin",
+        "screen": "desktop",
+        "controlsFit": true,
+        "scrollWidth": 1425,
+        "width": 1425
+      },
+      {
+        "page": "admin",
+        "screen": "tablet",
+        "controlsFit": true,
+        "scrollWidth": 805,
+        "width": 805
+      },
+      {
+        "page": "admin",
+        "screen": "phone",
+        "controlsFit": true,
+        "scrollWidth": 375,
+        "width": 375
+      },
+      {
+        "page": "dashboard",
+        "screen": "desktop",
+        "scrollWidth": 1425,
+        "selectedRoot": "P010",
+        "width": 1425
+      },
+      {
+        "page": "dashboard",
+        "screen": "tablet",
+        "scrollWidth": 805,
+        "selectedRoot": "P010",
+        "width": 805
+      },
+      {
+        "page": "dashboard",
+        "screen": "phone",
+        "scrollWidth": 375,
+        "selectedRoot": "P010",
+        "width": 375
+      }
+    ],
+    "dashboardBranch": [
+      2,
+      3,
+      2
+    ],
+    "liveRestorePerformed": false,
+    "download": {
+      "fileName": "gia-pha-d8ee52dc-365f-4f28-9039-2a425c965b9c.json",
+      "bytes": 13582,
+      "sha256": "d3f10ec242687e4226059223cd4c2f4334d35d4c8dc860465a7c1beb8840e536",
+      "counts": {
+        "persons": 30,
+        "parentOf": 36,
+        "spouseOf": 11
+      },
+      "checksumValid": true
+    },
+    "screenshots": [
+      {
+        "path": "docs/screenshots/admin-backup-restore-phone.jpg",
+        "bytes": 170945,
+        "sha256": "a5412c49feb4ff148ce5a40f5eb878c966feb2727d23ceb156edd543b1a86a00",
+        "width": 375,
+        "height": 4253
+      },
+      {
+        "path": "docs/screenshots/dashboard-root-phone.jpg",
+        "bytes": 110575,
+        "sha256": "7a6e9b9f701f4341bb3c6cf2e5cf5693ee1703aa9e3dcc04a45bee0984f8afc5",
+        "width": 375,
+        "height": 2884,
+        "fileModifiedAtUtc": "2026-11-05T13:56:13.023355+00:00"
+      }
+    ],
+    "exportSvgPngPdfRerun": false,
+    "screenshotNote": "Dashboard screenshot recaptured after chart animation settled; full image inspected."
+  },
+  "newCoverage": [
+    "Ancestor/descendant and full/half-sibling marriages rejected in both directions",
+    "Parent insertion creating forbidden blood marriage through remote intermediates rejected",
+    "Cousin marriage allowed; no minimum age gap added",
+    "Marriage year after either death rejected; same year/null accepted",
+    "Biological mother death-year and father death-year+1 boundaries; profile edits and create-relative rollback",
+    "Dashboard explicit/default/missing/empty roots, invalid request, disconnected branches; real P010 generation sum 7 with global count 30",
+    "Two OS processes coordinate lock through stdout/stdin; timeout and exception release; singleton wiring for all write/maintenance paths",
+    "Real reset and restore failure after deletion rolls back; next request succeeds",
+    "Real index restored ONLINE in finally after injected PROFILE error; next Admin request succeeds",
+    "JSON complete property/relationship round-trip, safety copy, storage failure, empty graph, unsupported labels and invalid input rejected",
+    "Neo4j DatabaseSeeder idempotence, rollback and unrelated-data preservation"
+  ],
+  "policy": {
+    "PARENT_OF": "biological parents for project; no adoptive-parent distinction",
+    "mother": "child.birthYear <= mother.deathYear when deathYear known",
+    "father": "child.birthYear <= father.deathYear + 1 when deathYear known",
+    "note": "Technical year-only data-model convention, not medical/legal fact. No guessed death year, minimum age gap, cousin ban or spouse-count limit added."
+  },
+  "historicalEvidence": {
+    "filesUnchangedFrom": "daff0ebb38a537e78523ea5735e093e70e9792e2",
+    "comparison": "Git filtered blob identity; working-file SHA-256 recorded separately because Windows checkout may use CRLF. Historical files were not rewritten.",
+    "files": [
+      {
+        "path": "docs/app-verification.json",
+        "sha256OfWorkingFile": "581f78047a9d2f63a4e3411a2413275c6be91015ca04542f3ce9b6361cc143e8",
+        "gitBlob": "620a88077a2a628bc4a03d66565ea632f72497fe"
+      },
+      {
+        "path": "docs/delivery-verification.json",
+        "sha256OfWorkingFile": "ccf2e107450c8f61c91c5f6d469c3fe8f677a537627679cd39e3c3803a884cd5",
+        "gitBlob": "2c3d2434b87f0686b82de255b87dc27553397960"
+      },
+      {
+        "path": "neo4j/verification-results.json",
+        "sha256OfWorkingFile": "15b9af1cde6d02a9287fdde399b81177e8e157c87910c3cad29f033675c4239f",
+        "gitBlob": "56be33692a395281592a5be3141f3c10c0199632"
+      },
+      {
+        "path": "neo4j/milestone2-results.json",
+        "sha256OfWorkingFile": "d8ac51d67ce65ee3a4fd1770403b5f8e25b8181542d82278c5e2eee641716448",
+        "gitBlob": "7b096513f531ee4f6ad323ea31a9cf9ba577c0a7"
+      },
+      {
+        "path": "neo4j/evidence/backup-reference.json",
+        "sha256OfWorkingFile": "9f4c28a42d7bda547fd4ad4c54fa2954b75562cb821c6cdc89cf8b6861ed32f3",
+        "gitBlob": "51e6e53ee6e32136312143e527a618013f64a29f"
+      },
+      {
+        "path": "neo4j/evidence/explain-plan.json",
+        "sha256OfWorkingFile": "c6a522497ceca6900523847720261197efedb9deeac4aa0e025273a2f167e493",
+        "gitBlob": "4502337ed408b7991e8db8d08b543769744ae8a8"
+      },
+      {
+        "path": "neo4j/evidence/profile-comparison.json",
+        "sha256OfWorkingFile": "23d94cebcda119d329622d65a668626c708c8af07d142c61a9fa06ddf2732be9",
+        "gitBlob": "d276d90fa97e367f0c2d7a1de0b3c27a81ccd5d1"
+      },
+      {
+        "path": "neo4j/evidence/query-samples.json",
+        "sha256OfWorkingFile": "62769240413c1ddcd1688ee3117817e7956afd68021d46460f988846368c35c0",
+        "gitBlob": "1200a35906bc267f6c49a7fe1cf954e76c1095ca"
+      },
+      {
+        "path": "neo4j/evidence/schema-and-counts.json",
+        "sha256OfWorkingFile": "8454d299bd2f4a8e41761f8e6c0bef5ae8be87301afe04b808ea52c9e2689e1f",
+        "gitBlob": "acf10292e4d431e386de3ad01b0aede84200e247"
+      },
+      {
+        "path": "neo4j/evidence/screen-captures.json",
+        "sha256OfWorkingFile": "e26db9f1f0f1dc28c4d4738c4c2c04758a28d23ee0b2b4dfe64cafc89a53e15c",
+        "gitBlob": "65879caca165c15fb50afa9fca2f89ff0e542648"
+      },
+      {
+        "path": "neo4j/evidence/sql-comparison.json",
+        "sha256OfWorkingFile": "0b8612325e3af09af2da2dac6c69529031d5ecefe8c6a0554628f474e914fedd",
+        "gitBlob": "5123fad664df401d888a306f2538ed03769517c1"
+      }
+    ],
+    "deliverySourceCommit": "d448211877788f900508c671ce15d9f961fdf112",
+    "cleanCloneMethod": "Historical delivery cloned committed local Git repository, not directly GitHub.",
+    "binaryDumpNote": "Historical dump/load proof is separate from current JSON round-trip; family database dump excludes system users/roles."
+  },
+  "notRerun": {
+    "checks": [
+      "Docker clean clone",
+      "binary dump/load",
+      "20,000-person PROFILE",
+      "browser SVG/PNG/PDF export"
+    ],
+    "docker": {
+      "rerun": false,
+      "cliFound": false,
+      "officialWindowsCliPresent": false
+    },
+    "reason": "Docker CLI absent. Historical delivery retained, not claimed to validate code 273ee59. New browser checks cover Admin/Dashboard; export has JS regression tests, not a new browser export capture."
+  },
+  "remainingLimits": [
+    "No app authentication; APP_ENV=local is environment gate, not user authorization",
+    "File lock only coordinates app processes sharing the same file on one host; direct Bolt clients bypass it",
+    "No full audit/automatic repair of existing invalid family data",
+    "Year-only biological-parent policy cannot encode actual dates or adoptive relationships",
+    "Name search retains Vietnamese accents; choices loads all people",
+    "Historical 20,000-person query benchmark does not establish UI performance; DB-hit reduction is not latency speed-up",
+    "JSON limited to family contract, not accounts/configuration/custom schema; no automatic retention deletion"
+  ],
+  "cleanup": {
+    "isolatedTestInstanceStopped": true,
+    "confirmedAtUtc": "2026-11-05T13:57:46.467918+00:00",
+    "pidAndCreationTimeCheckedBeforeStop": true,
+    "primaryNeo4jAndLaravelLeftRunning": true,
+    "ports": {
+      "17474": false,
+      "17687": false,
+      "7474": true,
+      "7687": true,
+      "8000": true
+    },
+    "httpChecks": [
+      {
+        "url": "http://127.0.0.1:7474",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8000/admin",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8000/?root=P010",
+        "status": 200
+      }
+    ]
+  }
+}

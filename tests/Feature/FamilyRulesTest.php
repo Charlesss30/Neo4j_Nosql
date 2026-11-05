@@ -60,8 +60,9 @@ class FamilyRulesTest extends Neo4jTestCase
         $this->service->addParent('T_001', 'T_002');
         $this->post('/relationships/parent', ['parentId' => 'T_001', 'childId' => 'T_002'])
             ->assertSessionHasErrors(['family' => 'Quan hệ cha mẹ – con đã tồn tại.']);
-        $this->service->addSpouse('T_001', 'T_002', null);
-        foreach ([['a' => 'T_001', 'b' => 'T_002'], ['a' => 'T_002', 'b' => 'T_001']] as $pair) {
+        $this->createTestPerson('T_003', 1975, 'F');
+        $this->service->addSpouse('T_001', 'T_003', null);
+        foreach ([['a' => 'T_001', 'b' => 'T_003'], ['a' => 'T_003', 'b' => 'T_001']] as $pair) {
             $this->post('/relationships/spouse', $pair)->assertSessionHasErrors('family');
         }
         $this->assertCount(1, $this->family->spouses('T_001'));
