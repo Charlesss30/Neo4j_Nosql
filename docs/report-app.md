@@ -5,7 +5,9 @@
 Ứng dụng tiếp nối khung Laravel và catalog 34 truy vấn đã có trên main.
 Nhánh app thay route placeholder bằng CRUD thành viên, quản lý quan hệ,
 cây gia phả, tra cứu đường đi, biểu đồ Dashboard và tests với Neo4j thật.
-Toàn bộ `neo4j/` được giữ nguyên. Cypher Console đã được gỡ theo yêu cầu; Admin vẫn có schema, PROFILE và reset local, dùng parser CypherStatements để tách câu lệnh.
+Catalog, schema và seed chuẩn giữ nguyên. Cypher Console đã được gỡ theo yêu cầu;
+Admin có schema, PROFILE, reset local và sao lưu/khôi phục gia phả JSON.
+Lượt sửa ngày 05/11/2026 được ghi riêng trong [review-fixes.md](review-fixes.md).
 
 ```mermaid
 flowchart LR
@@ -33,14 +35,17 @@ flowchart LR
 | `PersonController`, `RelationshipController` | Nhận request, gọi service, trả view/redirect |
 | `TreeController`, `RelationController` | Gốc/hai người và lỗi không tìm thấy |
 | `FamilyService` | Quy tắc nghiệp vụ, khóa và transaction ghi |
+| `FamilyRelationshipPolicy` | Quy tắc năm và huyết thống dùng chung với import JSON |
+| `GraphWriteLock` | Singleton khóa OS dùng chung ghi nghiệp vụ và bảo trì |
+| `FamilyBackupService`, `RestoreBackupRequest` | Backup/restore JSON, bản an toàn, validation |
 | `FamilyGraphService` | Node/cạnh cho vis-network, tầng, câu diễn giải |
 | `FamilyTreeLayout` | Khối gia đình, thứ tự nhánh/năm sinh, tọa độ cố định |
-| `CypherStatements` | Parser tách câu schema/seed dùng riêng cho Admin |
+| `CypherStatements` | Parser tách câu schema/seed cho Admin và seeder Neo4j |
 | `FamilyRepository` | 34 query và tham số theo catalog |
 | `Neo4jService` | `run`, `client`, `transaction`, `ping`, `lastError`; chuyển đệ quy về mảng/scalar PHP |
 | `bootstrap/app.php`, `resources/views/errors/neo4j.blade.php` | Lỗi DB thân thiện, HTML/JSON 503 |
 | `resources/views/persons/` | Danh sách, form, hồ sơ, xác nhận xóa, partial link |
-| `tests/Neo4jTestCase.php` | Fixture T_, dọn riêng T_, đối chiếu đồ thị gốc |
+| `tests/Neo4jTestCase.php` | Chặn integration khi chưa bật cờ DB riêng; đối chiếu graph gốc |
 
 ## Quy tắc dữ liệu
 
@@ -54,7 +59,7 @@ Anh chị em, tổ tiên, hậu duệ và họ hàng được suy ra, không t�
 - Nơi sinh tối đa 100, ghi chú tối đa 500 ký tự.
 - Ép năm thành int trước Cypher; ô tùy chọn trống thành null.
 - Cấp ID bằng `sprintf('P%03d', maxPersonNumber + 1)` trong luồng ghi có khóa.
-- Sửa năm sinh kiểm tra lại cha mẹ, con và năm kết hôn để không làm sai quan hệ hiện có.
+- Sửa năm sinh/mất/giới tính kiểm tra lại cha mẹ, con và hôn nhân; lỗi không lưu một phần hồ sơ.
 - Trang xóa hiển thị relationshipCount; DETACH DELETE xóa người và cạnh, giữ những người khác.
 - ID không tồn tại trả 404. Danh sách 10 dòng/trang, skip/limit là int.
 
@@ -65,23 +70,43 @@ wouldCreateCycle phải false; khi có hai năm sinh, cha mẹ phải sinh **tr�
 Không áp chênh tối thiểu 12 năm. Lệch một năm vẫn qua quy tắc kỹ thuật hiện tại.
 Kiểm tra vòng lặp bảo vệ các truy vấn tổ tiên/hậu duệ trước chu trình cha mẹ.
 
+Trong phạm vi đồ án, `PARENT_OF` biểu diễn cha mẹ sinh học, chưa phân biệt cha mẹ nuôi.
+Nếu biết năm mất, mẹ phải có `child.birthYear <= mother.deathYear`; cha cho phép
+`child.birthYear <= father.deathYear + 1`. Dung sai một năm là lựa chọn mô hình hóa
+dữ liệu theo năm, không phải khẳng định y khoa/pháp luật. Không suy diễn năm mất khi thiếu.
+Ví dụ mẹ sinh 1950/mất 1980 không thể thêm con sinh 2000; cha mất 2000 có thể có con
+sinh 2001 theo quy ước demo, nhưng con sinh 2002 bị chặn.
+
 ### Vợ chồng
 
 Cả hai tồn tại, khác nhau, chưa có cạnh theo cả hai chiều. Năm kết hôn tùy chọn là int,
-không trước năm sinh của một trong hai người, không sau hiện tại.
+không trước năm sinh của một trong hai người, không sau hiện tại hay năm mất đã biết
+của bất kỳ người nào. Cùng năm mất hoặc thiếu năm kết hôn vẫn được chấp nhận.
 Xóa quan hệ yêu cầu cả hai người và cạnh thực sự tồn tại; lỗi tiếng Việt.
-Không tự thêm quy tắc cấm hôn nhân họ hàng hay giới hạn số vợ/chồng ngoài phạm vi prompt.
+
+Chặn tổ tiên–hậu duệ và anh chị em chung ít nhất một cha/mẹ; không mở rộng cấm anh
+em họ hay giới hạn số phối ngẫu. Thêm cạnh cha mẹ cũng kiểm tra chiều ngược: cạnh
+trực tiếp hoặc trung gian không được làm một cặp phối ngẫu hiện có trở thành anh
+chị em/tổ tiên–hậu duệ. Kiểm tra và ghi cùng transaction/khóa; tạo người kèm quan
+hệ sai rollback cả người mới và các cạnh đã thêm trong thao tác đó.
 
 ### Transaction và đồng thời
 
-FamilyService::write giữ khóa tệp `family-write`, rồi gọi Neo4jService::transaction.
-Helper dùng ClientInterface::writeTransaction đúng API Laudis 3.7.1;
-mọi run của repository trong callback đi qua cùng TransactionInterface.
-Lỗi validation rollback; finally trả runner về client.
-Đã thử rollback trên Neo4j thật và kiểm tra cùng runner bằng mock driver.
+FamilyService, seeder, reset, PROFILE thay index, backup và restore dùng cùng singleton
+`GraphWriteLock`. Khóa OS `flock` ở `storage/framework/cache/graph-write.lock`, chờ
+tối đa 5 giây mặc định, giữ đến khi callback xong/lỗi hoặc process kết thúc; không
+có TTL làm hết khóa giữa chừng. Callback lồng cùng singleton dùng quyền giữ khóa
+hiện có. Không xóa/đổi tệp khóa trong lúc app đang chạy.
 
-Khóa tệp chỉ tuần tự hóa request ghi app trên một máy, không thay isolation nhiều máy chủ/client trực tiếp.
-Admin reset dùng khóa bảo trì riêng; không reset hoặc ghi bằng Browser đồng thời với nhập liệu.
+`Neo4jService::transaction()` gọi `beginTransaction`, `commit`, `rollback` tường minh;
+mọi `run` trong callback dùng cùng runner, `finally` trả runner về client. Admin
+reset dùng helper này cho xóa và nạp seed; lỗi giữa chừng hoàn tác graph. Schema
+IF NOT EXISTS chạy riêng; PROFILE phục hồi `person_name` trong `finally` kể cả lỗi.
+Đã kiểm thử rollback trên Neo4j thật, request sau lỗi và tranh khóa bằng hai process
+đồng bộ stdout/stdin, không dựa vào sleep ngẫu nhiên để kết luận hết race.
+
+Khóa chỉ bảo vệ các process app dùng cùng tệp trên một máy. Client Bolt trực tiếp
+hoặc nhiều máy chủ không chia sẻ khóa cần cơ chế khác.
 Constraint ID ở Neo4j vẫn bảo vệ tính duy nhất; quy tắc gia phả không phải constraint DB.
 
 ## Trang và truy vấn
@@ -90,7 +115,7 @@ Tên phương thức chính là tên trong `neo4j/queries.cypher`.
 
 | Trang / hành động | Phương thức repository |
 | --- | --- |
-| `/` | statsByGender, statsByGeneration(P001), livingVsDeceased, topParents, oldestPerson |
+| `/?root={id}` | statsByGender, statsByGeneration(gốc đã chọn), livingVsDeceased, topParents, oldestPerson |
 | `/persons` | countPersons, searchPersons |
 | Thêm người | maxPersonNumber, createPerson |
 | Hồ sơ `/persons/{id}` | getPerson, parents, spouses, children, siblings, uncles, cousins, ancestors, descendants |
@@ -103,8 +128,34 @@ Tên phương thức chính là tên trong `neo4j/queries.cypher`.
 | `/tree`, `/api/tree` | getPerson, roots, subtree hoặc graphAll, generations |
 | `/relation` | getPerson, relationPath; getPerson bổ sung giới tính từng node |
 
-Không sửa Cypher nghiệp vụ. Input truyền qua mảng tham số riêng, không nối vào câu truy vấn.
-CRUD/cây/tra cứu dùng repository; Admin có các câu SHOW, thống kê schema, PROFILE và nạp schema/seed riêng như phần demo DB. Ping hạ tầng và câu dọn fixture T_ cũng nằm ngoài catalog.
+Giữ nguyên 34 query và tham số trong catalog/FamilyRepository. Kiểm tra huyết thống
+bổ sung trong FamilyService dùng Cypher có tham số, tách khỏi catalog cố định.
+Admin có SHOW, thống kê schema, PROFILE, backup/restore và schema/seed riêng.
+Không nối input vào Cypher. Ping hạ tầng và dọn fixture cũng ngoài catalog.
+
+Dashboard cho chọn gốc, ưu tiên P001 nếu chưa chọn rồi fallback người từ roots.
+Gốc yêu cầu không tồn tại trả 404, DB rỗng hiển thị trạng thái trống. Tổng thành viên,
+giới tính, sống/mất, top cha mẹ và người cao tuổi thuộc toàn graph; chỉ biểu đồ thế
+hệ theo nhánh đã chọn. P010 có 2/3/2 người (7), dù toàn graph có 30 người.
+
+## Sao lưu và khôi phục trong Admin
+
+Ở `/admin#backup-restore`, tạo/tải JSON chứa Person và hai loại cạnh, tải lại 10 bản
+gần nhất; restore yêu cầu tệp tối đa 10 MB và xác nhận thay toàn bộ gia phả. Dữ liệu
+được kiểm tra checksum, kiểu, ID, endpoint, cạnh trùng, chu trình, số cha mẹ và các
+quy tắc năm/huyết thống trước ghi. Giới hạn nhận 20.000 người/100.000 cạnh chưa phải
+bằng chứng hiệu năng xử lý/UI ở mức đó.
+
+App lưu snapshot an toàn trước khi thay graph; lưu không thành công thì không xóa.
+DELETE/CREATE/đối chiếu snapshot diễn ra trong một transaction, lỗi sẽ rollback.
+Tệp ở storage private, UUID tải được validate, không dùng đường dẫn input tùy ý.
+Chỉ hiển thị 10 bản gần nhất, chưa có retention tự xóa. Graph ngoài hợp đồng hoặc
+dữ liệu cũ không hợp lệ bị từ chối, không tự sửa dữ liệu.
+
+Đây là backup logic gia phả, không chứa tài khoản, cấu hình hoặc custom schema;
+restore áp dụng schema chuẩn dự án. Dump nhị phân Community là luồng offline riêng
+đã có bằng chứng delivery cũ; dump gia phả không bao gồm user/role database `system`.
+Các route bảo trì vẫn giới hạn `local` ở server; điều này không thay đăng nhập/phân quyền.
 
 ## Đồ thị và diễn giải
 
@@ -119,7 +170,8 @@ Với hôn nhân nối hai nhánh, chọn một nhánh chính để dành chỗ 
 Cha mẹ có mũi tên; vợ chồng nét đứt, không mũi tên, smooth=false.
 Có nhãn ĐỜI, nút vừa khung/cỡ chữ rõ/zoom; mobile mở vào gia đình gốc để giữ tên dễ đọc.
 Tọa độ hiển thị tính lại từ các quan hệ hiện có, không lưu ngược vào dữ liệu Person.
-Nam xanh, nữ hồng, người mất xám và †. Bấm node mở hồ sơ; có danh sách link thay thế canvas.
+Nam xanh, nữ hồng, người mất xám và †. Trên cây, bấm node chọn người để thêm người
+thân, bấm đúp mở hồ sơ; đồ thị đường quan hệ mở hồ sơ khi bấm node. Có link thay canvas.
 
 relationPath chỉ trả ID/tên nên app tải giới tính bằng getPerson.
 relFrom là ID đầu cạnh **được lưu**, không phải thứ tự đang đi trên path:
@@ -134,20 +186,21 @@ Path bằng độ dài có thể khác nhau; test không giả định cách ph�
 
 ## Kiểm chứng thực tế
 
-Lần kiểm tra ngày **03/11/2026 (Asia/Saigon)**: `php artisan test --compact` đạt **49 tests / 752 assertions**.
-Pint toàn dự án, Composer validate/platform requirements đều đạt; routes không còn placeholder.
-Sau test, đối chiếu toàn bộ seed với CSV: **30 người / 36 PARENT_OF / 11 SPOUSE_OF**,
-đúng mọi thuộc tính và cạnh, **0 người T_ còn lại**.
-Chi tiết máy đọc được: [app-verification.json](app-verification.json).
-Pint toàn dự án, Composer validate/platform requirements đều đạt; routes không còn placeholder.
-Sau test, đối chiếu toàn bộ seed với CSV: **30 người / 36 PARENT_OF / 11 SPOUSE_OF**,
-đúng mọi thuộc tính và cạnh, **0 người T_ còn lại**.
-Chi tiết máy đọc được: [app-verification.json](app-verification.json).
+Các lần đo được giữ riêng, không thay timestamp/SHA/số liệu cũ:
 
-FamilyRepositoryContractTest đối chiếu nguyên văn 34 query và tham số.
-`check_queries.py` tạm **ngoài repo** đối chiếu normalized text: **34 OK, mismatches: 0**.
-Integration tests chỉ ghi người T_, không đụng P001–P030; sau mỗi test so sánh toàn bộ
-node/property/cạnh gốc. Test HTTP cấp P031 dùng mock để tránh ghi mã P vào seed.
+| Lượt | Nguồn và phạm vi |
+| --- | --- |
+| 03/11/2026 | [app-verification.json](app-verification.json): native, 49 tests / 752 assertions |
+| Delivery mã `d448211` | [delivery-verification.json](delivery-verification.json): 58 tests / 820 assertions, Docker/clone Git cục bộ/dump-load thật và query 20.000 người |
+| Sửa bàn giao 05/11/2026 | [review-fixes-verification.json](review-fixes-verification.json): mã `273ee59`, native cô lập, **92 tests / 1190 assertions**, 3 JS tests; kiểm tra UI mới qua trình duyệt |
+
+Lượt mới so toàn graph trước/sau và CSV: **30 / 36 / 11**, mọi thuộc tính/cạnh khớp,
+0 T_, name index ONLINE. `FamilyRepositoryContractTest` vẫn đối chiếu đủ 34 query.
+Tests thường dùng fixture T_; test restore/reset thực sự thay/xóa graph **chỉ trên
+instance kiểm thử riêng**, rồi hoàn trả graph gốc. Không chạy trên DB người dùng.
+Thiếu cờ xác nhận DB kiểm thử thì integration skip trước kết nối. Xem lệnh tại README.
+Lượt mới không chạy lại Docker, dump nhị phân, benchmark 20.000 người hoặc browser
+export SVG/PNG/PDF; máy không có Docker CLI. Giữ kết quả delivery làm bằng chứng lịch sử.
 
 Đã thử CRUD, integer/null, XSS tên, tự nhận cha mẹ, cha mẹ thứ ba, vòng lặp, năm sinh sai,
 trùng cha mẹ, trùng vợ chồng chiều ngược, năm kết hôn sai, xóa cạnh không tồn tại,
@@ -160,7 +213,14 @@ Thế hệ từ P001 **2, 7, 11, 7, 3**; nam/nữ **14/16**; còn sống/đã m�
 
 ## Ảnh thật và danh sách chụp lại khi demo
 
-Ảnh chụp từ phiên Edge kiểm thử local nối Neo4j thật, không phải ảnh dựng.
+Các ảnh PNG dưới đây thuộc phiên Edge cũ nối Neo4j thật. Ảnh JPEG mới ngày 05/11
+được chụp qua trình duyệt kiểm tra native, dùng cho tính năng mới:
+
+- [Admin sao lưu/khôi phục trên điện thoại](screenshots/admin-backup-restore-phone.jpg).
+- [Dashboard chọn P010 trên điện thoại](screenshots/dashboard-root-phone.jpg).
+
+Lượt mới kiểm tra kích thước desktop/tablet/phone bằng DOM: không tràn ngang trang;
+bảng rộng trên Admin có thanh cuộn trong vùng bảng. Không dùng ảnh cũ làm bằng chứng UI mới.
 
 | Ảnh | Điểm cần thấy |
 | --- | --- |
@@ -187,14 +247,19 @@ và kết quả test terminal. Không dùng dữ liệu cá nhân thật.
 
 - Tìm tên chưa bỏ dấu, có gợi ý “gõ có dấu”.
 - Chưa có đăng nhập/phân quyền app. Community không có RBAC. Không còn trang nhập Cypher tùy ý trong ứng dụng.
-- Client trực tiếp/Browser/Admin reset có thể bỏ qua quy tắc app.
+- Client trực tiếp/Browser có thể bỏ qua quy tắc app; reset nạp fixture chuẩn và cần xác nhận local.
 - Khóa tệp chỉ dùng chung trên một máy; ID max+1 có thể dùng lại mã cao nhất đã xóa.
+- Dữ liệu chỉ có năm; quy ước cha/mẹ sinh học chưa biểu diễn cha mẹ nuôi hoặc ngày tháng cụ thể.
+- Chưa audit toàn bộ dữ liệu cũ; validation mới chỉ chặn các thao tác liên quan sau sửa.
 - Các cây rời được đặt thành từng cụm. Hôn nhân nối hai nhánh có thể cần đường nối dài; mọi quan hệ thật vẫn được giữ.
   Bố cục không tạo thêm huyết thống hoặc suy diễn hôn nhân khi hai người chỉ cùng làm cha mẹ.
 - CDN cần Internet; mất thư viện vẫn có bảng/danh sách link và thông báo.
-- Chỉ kiểm chứng seed 30 người; chưa chứng minh hiệu năng gia phả lớn.
-- **Docker chưa được kiểm thử trên máy này**; các số liệu dùng Neo4j native 5.26.31.
-- Không khẳng định đã chạy backup/dump hoặc clean-clone Docker.
+- Dataset 20.000 người kiểm chứng query tổng hợp tại delivery, chưa chứng minh UI
+  render/export toàn bộ 20.000 người; choices vẫn tải toàn bộ danh sách.
+- Giảm DB hits không đồng nghĩa tăng tốc thời gian tương ứng. Không dùng CONTAINS làm equality index demo.
+- Clone sạch delivery là từ repo Git cục bộ, không chứng minh clone trực tiếp GitHub.
+- Lượt mới chỉ native 5.26.31 và JSON restore trên DB cô lập; chưa chạy lại Docker/dump
+  nhị phân trên mã sửa mới. Artifact nhị phân delivery trên máy cũ không mặc nhiên có trong repo này.
 
 Cách bố trí gia đình tham khảo mô hình [family nodes của yWorks](https://kb.yworks.com/article/703/index.html), tự triển khai phần bố trí, không cài thêm thư viện.
 API hiển thị: [vis-network](https://visjs.github.io/vis-network/docs/network/),

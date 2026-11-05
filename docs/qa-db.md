@@ -76,6 +76,14 @@ Các truy vấn nghiệp vụ truyền giá trị bằng tham số riêng, khôn
 Fixture có seed và LOAD CSV; phải nạp người trước cạnh, chuyển năm sang integer,
 đọc CSV từ thư mục import của server. Cả hai cách đã cho cùng 30 người, 36 cạnh
 cha mẹ và 11 cạnh hôn nhân trên Neo4j native. Seed không giữ thay đổi người dùng
-phát sinh sau đó. Backup toàn bộ database Community có thể dùng
-`neo4j-admin database dump` khi offline. Phần dump trong báo cáo là **tham khảo,
-chưa thực hiện**; Docker cũng chưa được kiểm thử trên máy hiện tại.
+phát sinh sau đó. Backup database Community dùng `neo4j-admin database dump` khi
+offline, load sang instance/volume phù hợp; dump gia phả không chứa user/role của
+database `system`. Đợt mốc 3 `993b129` mới kiểm tra help, chưa dump. Đợt delivery
+`d448211` đã thử Docker, clone Git cục bộ và dump/load thật với hash graph/schema
+khớp trước/sau; xem [delivery-verification.md](delivery-verification.md).
+
+Hiện Admin còn có JSON backup/restore gia phả: tải tệp, xác nhận khôi phục, lưu
+bản an toàn trước khi thay và rollback khi lỗi. JSON không chứa tài khoản/cấu hình/
+custom schema. Lượt 05/11 kiểm thử JSON trên DB riêng và giữ nguyên seed; chưa chạy
+lại Docker/dump nhị phân trên mã sửa mới vì máy không có Docker CLI. Nguồn riêng:
+[review-fixes.md](review-fixes.md). Không trộn bằng chứng của các lượt này.

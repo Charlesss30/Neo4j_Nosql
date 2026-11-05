@@ -6,6 +6,61 @@
         <span class="badge text-bg-light border">Môi trường: {{ app()->environment() }}</span>
     </div>
     @if ($error)<div class="alert alert-danger" role="alert">{{ $error }}</div>@endif
+    <section id="backup-restore" class="card border-success mb-4" aria-labelledby="backup-heading">
+        <div class="card-body p-4">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3">
+                <div><div class="eyebrow">Bảo toàn dữ liệu</div><h2 id="backup-heading" class="h4 mt-1">Sao lưu &amp; khôi phục gia phả</h2></div>
+                <span class="badge text-bg-light border">Tệp JSON · tối đa 10 MB</span>
+            </div>
+            <p class="text-secondary small">Bản sao lưu chứa toàn bộ thông tin thành viên, quan hệ cha mẹ–con và vợ chồng. Giữ tệp trên máy để có thể khôi phục khi cần. Tài khoản, cấu hình và các index riêng của Neo4j không nằm trong tệp này.</p>
+            @if ($backupError)<div class="alert alert-danger" role="alert">{{ $backupError }}</div>@endif
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <h3 class="h5">Tạo bản sao lưu</h3>
+                    <p class="text-secondary small">Lưu một bản trên máy chủ và tải tệp JSON về máy của bạn.</p>
+                    <form method="POST" action="{{ route('admin.backups.store') }}">
+                        @csrf
+                        <button id="create-backup" class="btn btn-success" type="submit" @disabled(! $local)>Tạo &amp; tải bản sao lưu</button>
+                    </form>
+                </div>
+                <div class="col-lg-7">
+                    <h3 class="h5">Khôi phục từ bản sao lưu</h3>
+                    <p class="text-secondary small">Thay thế gia phả hiện tại bằng dữ liệu trong tệp. Hệ thống tự lưu bản dữ liệu trước khi khôi phục vào lịch sử bên dưới. Nếu có lỗi trong quá trình ghi, giao dịch được hoàn tác.</p>
+                    <form method="POST" action="{{ route('admin.restore') }}" enctype="multipart/form-data">
+                        @csrf
+                        <label class="form-label" for="restore-backup">Tệp sao lưu gia phả (.json)</label>
+                        <input id="restore-backup" name="backup" type="file" class="form-control mb-3" accept=".json,application/json" required @disabled(! $local)>
+                        <div class="form-check mb-3">
+                            <input id="confirm-restore" name="confirm_restore" type="checkbox" class="form-check-input" value="yes" required @disabled(! $local)>
+                            <label class="form-check-label small" for="confirm-restore">Tôi xác nhận thay toàn bộ gia phả hiện tại bằng bản sao lưu đã chọn.</label>
+                        </div>
+                        <button id="restore-backup-button" class="btn btn-outline-danger" type="submit" @disabled(! $local)>Khôi phục từ tệp</button>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4">
+            <h3 class="h6">10 bản sao lưu gần nhất <span class="text-secondary fw-normal">(giờ Việt Nam)</span></h3>
+            <div class="table-responsive">
+                <table class="table table-hover small align-middle mb-0">
+                    <thead><tr><th>Thời gian</th><th>Loại bản sao</th><th>Thành viên</th><th>Quan hệ</th><th>Tệp sao lưu</th></tr></thead>
+                    <tbody>
+                        @forelse ($backups as $backup)
+                            <tr>
+                                <td class="text-nowrap">{{ \Carbon\Carbon::parse($backup['created_at'])->timezone('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s') }}</td>
+                                <td>{{ $backup['reason'] === 'before_restore' ? 'Tự lưu trước khôi phục' : 'Sao lưu thủ công' }}</td>
+                                <td>{{ $backup['counts']['persons'] }}</td>
+                                <td>{{ $backup['counts']['parentOf'] + $backup['counts']['spouseOf'] }}</td>
+                                <td><a class="btn btn-sm btn-outline-success text-nowrap" href="{{ route('admin.backups.download', $backup['id']) }}">Tải JSON</a></td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="5" class="text-secondary">Chưa có bản sao lưu. Bấm “Tạo &amp; tải bản sao lưu” để lưu dữ liệu hiện tại.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @unless ($local)<p class="small text-secondary mt-3 mb-0">Sao lưu và khôi phục chỉ bật khi APP_ENV=local.</p>@endunless
+        </div>
+    </section>
     <div class="row g-3 mb-4">
         @foreach ([['Tổng nút', $nodeTotal], ['Tổng quan hệ', $relationshipTotal]] as [$label, $total])
             <div class="col-md-6"><div class="card h-100"><div class="card-body p-4"><div class="eyebrow">{{ $label }}</div><div class="stat-number mt-2">{{ $total ?? '—' }}</div></div></div></div>

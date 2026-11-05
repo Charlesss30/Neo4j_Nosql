@@ -4,8 +4,10 @@
 
 Báo cáo trình bày mô hình dữ liệu, truy vấn Cypher, quản trị và kiểm chứng phần DB
 của đồ án quản lý gia phả. Code nền dùng để đo ở commit `993b129`, sau khi hợp nhất
-mốc 2 qua PR #3. Ở phiên bản ứng dụng hiện tại, Cypher Console đã được gỡ theo yêu cầu;
-trang `/admin` tiếp tục cung cấp schema, PROFILE và reset demo local.
+mốc 2 qua PR #3. Số liệu mốc 3 dưới đây là bằng chứng lịch sử của lần đo đó.
+Ở phiên bản hiện tại, Cypher Console đã gỡ; `/admin` có schema, PROFILE, reset demo
+local và backup/restore gia phả JSON. Các sửa quy tắc/khóa/Dashboard ngày 05/11 được
+kiểm chứng riêng trong [review-fixes.md](review-fixes.md), không thay số liệu cũ.
 Chức năng ứng dụng hiện tại được mô tả trong [báo cáo app](report-app.md).
 
 Số liệu dưới đây được lấy từ những lần chạy thật, không lấy số minh họa của tài liệu:
@@ -21,7 +23,7 @@ Số liệu dưới đây được lấy từ những lần chạy thật, khôn
 | Giới tính / tình trạng | 14 nam, 16 nữ; 25 còn sống, 5 đã mất |
 | Thế hệ từ P001 | 5 thế hệ, lần lượt 2, 7, 11, 7, 3 người |
 | Kiểm thử Laravel ở mốc 2 | 72 test, 318 assertions đạt |
-| Kiểm thử ứng dụng hiện tại | 49 test, 752 assertions đạt; Console đã gỡ |
+| Kiểm thử ứng dụng ngày 03/11/2026 | 49 test, 752 assertions đạt; Console đã gỡ |
 
 Mốc 3 đã chạy lại **đủ 34 truy vấn** để xuất ví dụ. Các ví dụ ghi dùng P901–P903
 trong giao dịch và đã rollback; toàn bộ graph sau phép thử được so sánh với snapshot
@@ -33,9 +35,10 @@ ban đầu. PROFILE được chạy lại qua trang Admin thật. Nguồn kiểm
 - [Kết quả SQL đối chiếu](../neo4j/evidence/sql-comparison.json).
 - [Kiểm chứng mốc 1](../neo4j/verify.md) và [kiểm chứng mốc 2](../neo4j/verify-m2.md).
 
-Docker chưa được kiểm thử trên máy này vì chưa có Docker. Các kết quả thực thi là
-của bản Neo4j native trong vùng dữ liệu demo riêng. Không suy ra rằng kiểm thử native
-đã chứng minh cấu hình container chạy thành công.
+Trong đợt mốc 3 ở commit `993b129`, Docker chưa được kiểm thử trên máy đo; các kết
+quả bên dưới dùng Neo4j native. Sau đó [delivery](delivery-verification.md) tại mã
+`d448211` ghi nhận Docker, clone sạch từ repo Git cục bộ và dump/load thật; không phải
+clone trực tiếp GitHub. Lượt sửa 05/11 lại dùng native, chưa chạy lại Docker trên mã mới.
 
 ## 2. Neo4j và mô hình property graph
 
@@ -195,7 +198,8 @@ docker exec familytree-neo4j cypher-shell -u neo4j -p familytree123 -d neo4j -f 
 docker exec familytree-neo4j cypher-shell -u neo4j -p familytree123 -d neo4j -f /scripts/load_csv.cypher
 ```
 
-Đây là cách chạy theo cấu hình repository; container chưa được chạy thử trên máy đo.
+Đây là cách chạy theo cấu hình repository; container chưa được chạy thử trong đợt
+đo mốc 3 này. Bằng chứng Docker ở đợt delivery sau được dẫn riêng tại mục 1.
 Mốc 1 đã kiểm tra LOAD CSV thật trên Neo4j native: trong giao dịch, xóa graph demo,
 nạp CSV hai lần, đối chiếu toàn bộ thuộc tính/cạnh với seed rồi rollback.
 
@@ -222,11 +226,15 @@ phát hiện mã trùng nhưng không biến cách sinh mã này thành bộ đ�
 
 Ứng dụng hiện tại điều phối các quy tắc bằng `FamilyService`, dùng một transaction
 cho kiểm tra và ghi, kèm khóa tệp để tuần tự hóa các request ghi app trên cùng máy.
-Khóa này không bảo vệ client ghi trực tiếp hoặc nhiều máy chủ không chia sẻ khóa.
+Từ lượt sửa 05/11, `GraphWriteLock` dùng chung cho CRUD, seed, reset, PROFILE thay
+index và backup/restore; giữ khóa OS đến khi xong, không dùng TTL. Reset dùng helper
+begin/commit/rollback tường minh. Khóa không bảo vệ client ghi trực tiếp hoặc nhiều
+máy chủ không chia sẻ khóa. Quy tắc năm/huyết thống mới được nêu tại
+[báo cáo app](report-app.md#quy-tắc-dữ-liệu); 34 query catalog giữ nguyên.
 
 Community vẫn có xác thực bằng tài khoản/mật khẩu nhưng không có role RBAC như
 Enterprise. Ứng dụng hiện tại chưa có đăng nhập/phân quyền riêng.
-`APP_ENV=local` giới hạn môi trường được chạy reset và so sánh bỏ index, không phải
+`APP_ENV=local` giới hạn môi trường được chạy reset, so sánh bỏ index và JSON restore, không phải
 quyền của từng người dùng. [Neo4j: quản lý user và giới hạn Community](https://neo4j.com/docs/operations-manual/current/authentication-authorization/manage-users/)
 
 Cypher Console và bộ lọc câu lệnh của nó thuộc phiên bản mốc 2, đã được gỡ khỏi
@@ -296,11 +304,18 @@ DB đã offline. Theo hướng dẫn chính thức, thư mục đích cần tồ
 neo4j-admin database dump neo4j --to-path=<BACKUP_DIR>
 ```
 
-**Tham khảo, chưa thực hiện dump trong đợt kiểm chứng này.** Đã chạy
+**Tham khảo, chưa thực hiện dump trong đợt mốc 3 ở commit `993b129`.** Đã chạy
 `database dump --help` trên đúng Neo4j 5.26.31 và xác nhận tham số; server demo vẫn
 online. Khi thực hiện cần dừng đúng instance, chọn đúng data/config, dump sang thư
 mục riêng rồi khởi động và kiểm tra lại. Không sao chép nóng thư mục data để coi là
 backup nhất quán. [Neo4j: backup offline](https://neo4j.com/docs/operations-manual/current/backup-restore/offline-backup/)
+
+Đợt delivery tại mã `d448211` sau đó đã dump/load thật sang volume mới và so hash
+graph/schema trước/sau, bao gồm người/cạnh thêm sau seed; xem
+[delivery-verification.json](delivery-verification.json). Dump database gia phả
+không chứa user/role của database `system`. JSON backup/restore hiện có ở Admin
+là luồng logic riêng, không chứa tài khoản/cấu hình/custom schema, được kiểm thử
+ngày 05/11 trên instance cô lập. Không coi JSON round-trip là đo lại dump nhị phân.
 
 ## 10. Đối chiếu SQL: tìm tất cả tổ tiên của P028
 
@@ -363,7 +378,8 @@ khối lượng, index và phần cứng nên không kết luận bên nào nhan
   định nghĩa theo phạm vi huyết thống của catalog, không tự bao gồm quan hệ thông gia.
 - Thế hệ là quan hệ với gốc được chọn, không phải phép suy ra trực tiếp từ năm sinh.
 - Fixture nhỏ và hư cấu; số DB hits không đại diện cho hệ thống gia phả quy mô lớn.
-- Docker chưa được chạy thực tế trên máy này; dump mới tham khảo, chưa thực hiện.
+- Trong đợt đo mốc 3 này Docker/dump chưa thực hiện; bằng chứng delivery sau và
+  kiểm chứng native mã sửa mới được dẫn riêng ở mục 1 và 9.
 
 Các lệnh tái lập dùng PHP/Python trong PATH; nếu chưa có, chọn executable bằng
 placeholder theo [neo4j/README.md](../neo4j/README.md). Giữ nguyên `.env` cá nhân,
