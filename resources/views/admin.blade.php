@@ -42,7 +42,7 @@
             <h3 class="h6">10 bản sao lưu gần nhất <span class="text-secondary fw-normal">(giờ Việt Nam)</span></h3>
             <div class="table-responsive">
                 <table class="table table-hover small align-middle mb-0">
-                    <thead><tr><th>Thời gian</th><th>Loại bản sao</th><th>Thành viên</th><th>Quan hệ</th><th><span class="visually-hidden">Tải tệp</span></th></tr></thead>
+                    <thead><tr><th>Thời gian</th><th>Loại bản sao</th><th>Thành viên</th><th>Quan hệ</th><th>Tệp sao lưu</th></tr></thead>
                     <tbody>
                         @forelse ($backups as $backup)
                             <tr>
