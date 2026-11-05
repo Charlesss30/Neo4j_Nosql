@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\Neo4jQueryException;
+use App\Http\Requests\RestoreBackupRequest;
 use App\Services\CypherStatements;
+use App\Services\FamilyBackupService;
 use App\Services\Neo4jService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -11,19 +13,67 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Laudis\Neo4j\Contracts\TransactionInterface;
 use Laudis\Neo4j\Databags\Plan;
 use Laudis\Neo4j\Databags\ProfiledQueryPlan;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 class AdminController extends Controller
 {
-    public function __construct(private readonly Neo4jService $neo4j, private readonly CypherStatements $statements) {}
+    public function __construct(
+        private readonly Neo4jService $neo4j,
+        private readonly CypherStatements $statements,
+        private readonly FamilyBackupService $backups,
+    ) {}
 
     public function index(): View
     {
         return view('admin', $this->screen());
+    }
+
+    public function backup(): StreamedResponse|RedirectResponse
+    {
+        abort_unless(app()->environment('local'), 403);
+
+        try {
+            return $this->downloadBackup($this->backups->create());
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return to_route('admin.index')->with('error', 'Không thể tạo bản sao lưu. Kiểm tra kết nối Neo4j và quyền lưu tệp rồi thử lại.');
+        }
+    }
+
+    public function downloadBackup(string $backup): StreamedResponse
+    {
+        abort_unless(app()->environment('local'), 403);
+        $content = $this->backups->contents($backup);
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, 'gia-pha-'.$backup.'.json', ['Content-Type' => 'application/json', 'Cache-Control' => 'no-store']);
+    }
+
+    public function restore(RestoreBackupRequest $request): RedirectResponse
+    {
+        try {
+            $result = $this->backups->restore($request->file('backup')->get());
+
+            return to_route('admin.index')->with('success', 'Đã khôi phục '.$result['counts']['persons'].' thành viên, '
+                .$result['counts']['parentOf'].' quan hệ cha mẹ–con và '.$result['counts']['spouseOf']
+                .' quan hệ vợ chồng. Bản dữ liệu trước khi khôi phục đã được lưu trong lịch sử sao lưu.');
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return to_route('admin.index')->with('error', 'Khôi phục chưa hoàn tất. Kiểm tra kết nối Neo4j và bản sao lưu trước khi thử lại.');
+        }
     }
 
     public function profile(Request $request): View
@@ -47,7 +97,7 @@ class AdminController extends Controller
 
         try {
             if ($validated['sample'] === 'nameIndex') {
-                $extra['profiles'] = Cache::lock('neo4j-admin-maintenance', 60)->block(
+                $extra['profiles'] = Cache::store('file')->lock('neo4j-admin-maintenance', 60)->block(
                     3, fn (): array => $this->compareNameIndex($validated['name']),
                 );
             } else {
@@ -78,7 +128,7 @@ class AdminController extends Controller
                 throw new RuntimeException('Tệp schema hoặc seed rỗng.');
             }
 
-            Cache::lock('neo4j-admin-maintenance', 60)->block(3, function () use ($schema, $seed): void {
+            Cache::store('file')->lock('neo4j-admin-maintenance', 60)->block(3, fn (): mixed => Cache::store('file')->lock('family-write', 60)->block(5, function () use ($schema, $seed): void {
                 foreach ($schema as $statement) {
                     $this->neo4j->run($statement);
                 }
@@ -90,7 +140,7 @@ class AdminController extends Controller
                         $transaction->run($statement)->getSummary();
                     }
                 });
-            });
+            }));
 
             return to_route('admin.index')->with('success', 'Đã đặt lại và nạp dữ liệu mẫu. Dự kiến: 30 người, 36 PARENT_OF và 11 SPOUSE_OF.');
         } catch (Throwable $exception) {
@@ -106,7 +156,17 @@ class AdminController extends Controller
             'labels' => [], 'relationshipTypes' => [], 'error' => null, 'profiles' => [],
             'samples' => $this->samples(), 'selected' => 'person', 'lookupName' => 'Nguyễn Minh Khang',
             'local' => app()->environment('local'),
+            'backups' => [], 'backupError' => null,
         ];
+
+        if ($data['local']) {
+            try {
+                $data['backups'] = $this->backups->history();
+            } catch (Throwable $exception) {
+                report($exception);
+                $data['backupError'] = 'Không thể đọc lịch sử sao lưu. Kiểm tra quyền truy cập thư mục lưu tệp.';
+            }
+        }
 
         try {
             $data['constraints'] = $this->neo4j->run('SHOW CONSTRAINTS');
