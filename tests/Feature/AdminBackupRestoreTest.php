@@ -128,6 +128,7 @@ class AdminBackupRestoreTest extends Neo4jTestCase
         $this->post('/admin/reset', ['confirm_reset' => 'yes'])->assertSessionHas('error');
         $this->assertSame($before, $this->family->graphAll()[0]);
         $this->assertTrue($faulty->ping());
+        $this->post('/admin/backups')->assertOk()->assertDownload();
     }
 
     public function test_failed_name_profile_restores_the_real_index_in_finally(): void
@@ -151,6 +152,7 @@ class AdminBackupRestoreTest extends Neo4jTestCase
             ->assertOk()->assertSee('Không thể phân tích truy vấn.');
         $this->assertSame([['state' => 'ONLINE']], $this->neo4j->run("SHOW INDEXES YIELD name, state WHERE name = 'person_name' RETURN state"));
         $this->assertTrue($faulty->ping());
+        $this->get('/admin')->assertOk();
     }
 
     public function test_empty_graph_can_be_backed_up_and_restored(): void
